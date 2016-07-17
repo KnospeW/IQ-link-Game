@@ -73,4 +73,4 @@ In the second part of the semester, you will have the opportunity to meet and in
 
 You should find all course materials available from this web site.
 
-A draft copy of the course's administrative overview is available [here](https://gitlab.cecs.anu.edu.au/comp1110/comp1110/blob/master/assets/AdminOverview2016.pdf). This will be made final early in the semester.
+A draft copy of the course's administrative overview is available [here](https://gitlab.cecs.anu.edu.au/comp1110/comp1110/wikis/assessment). This will be made final early in the semester.
