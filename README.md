@@ -26,6 +26,10 @@ one. These are:
 
 ## Lectures
 
+Our lectures are scheduled as follows:
+- Tuesday 9-11 [Coombs T](http://www.anu.edu.au/maps#show=11651)
+- Friday 1-2 [MCC T3](http://www.anu.edu.au/maps#show=11415)
+
 It is very important that you understand how the course content will be delivered.
 First, the core content will be available in pdfs ahead of time. Second, during
 our allotted lecture times I will work thorugh the material, focusing heavily on
@@ -54,6 +58,14 @@ At the center of the course is a large group project, which you will complete in
 ## Mid-Semester Exam
 
 There will be a short mid-semester exam on Monday week 7, at 5pm.   The exam will be electronic.  Details will be available in week 4.
+
+## Engagement
+
+This class depends entirely on engagement from you.  You will profit because you'll
+enjoy the class a great deal more, and you'll undoubtably see your engagement 
+reflected in your final mark.   Some students need a nudge, and in deference to them,
+this class has 5% of the marks attached to engagment (this comes from participation in your lab, engagement on the piazza
+forum and engagement in in-lecture quizes).
 
 ## Practicioner Cameos
 
