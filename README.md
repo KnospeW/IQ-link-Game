@@ -1,12 +1,9 @@
-# Introduction to Software Systems
-## 2016 COMP1110/COMP1140/COMP1510/COMP6710
+# Introduction to Software Systems 2016 
+COMP1110/COMP1140/COMP1510/COMP6710
 
-## Announcements
-Welcome to COMP1110 for 2016. You should find all the information you need on
+Welcome to Introduction to Software Systems for 2016. You should find all the information you need on
 this web site, and on the piazza forum, which you'll be invited to join in
 week one.
-
-Welcome to Introduction to Software Systems.
 
 This course has three broad foci:
 - core computer science, such as data structures, programming language fundamentals, complexity, as well as some history;
@@ -19,7 +16,7 @@ The course is fast paced, particularly during the first four to five weeks (plea
 
 Week one is very important in this course. It is essential that you complete
 Lab 1, including setup of your own computer if you intend to use one. A
-step-by-step video shows you how to complete [lab 1](https://gitlab.cecs.anu.edu.au/comp1110/comp1110-labs/blob/master/src/comp1110/lab1/README.md).
+[step-by-step video](https://gitlab.cecs.anu.edu.au/comp1110/comp1110/wikis/how-to-videos) shows you how to complete [lab 1](https://gitlab.cecs.anu.edu.au/comp1110/comp1110-labs/blob/master/src/comp1110/lab1/README.md).
 You will not be enrolled in a lab group during week one, but you may attend **any**
 scheduled lab time in week
 one. These are:
