@@ -1,0 +1,1 @@
+Information for COMP1110/COMP1140/COMP1510/COMP6710 can all be found on this repo's [wiki](https://gitlab.cecs.anu.edu.au/comp1110/comp1110/wikis/home).
