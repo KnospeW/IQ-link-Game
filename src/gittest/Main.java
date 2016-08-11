@@ -5,6 +5,9 @@ package gittest;
  */
 public class Main {
     public void main()
-    {}
-    B b = new B();
+    {
+        B b = new B();
+        A a = new A();
+
+    }
 }
