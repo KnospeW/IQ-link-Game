@@ -13,7 +13,8 @@ public class LinkGame {
      * - it consists of exactly three characters
      * - the first character is in the range A .. X
      * - the second character is in the range A .. L
-     * - the third character is in the range A .. L
+     * - the third character is in the range A .. F if the second character is A, otherwise
+     *   in the range A .. L
      *
      * @param piecePlacement A string describing a piece placement
      * @return True if the piece placement is well-formed
