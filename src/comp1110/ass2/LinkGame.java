@@ -34,7 +34,6 @@ public class LinkGame {
      */
     static boolean isPlacementWellFormed(String placement) {
         // FIXME Task 4: determine whether a placement is well-formed
-        String foo;
         return false;
     }
 
