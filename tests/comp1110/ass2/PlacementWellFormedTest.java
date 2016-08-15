@@ -54,5 +54,20 @@ public class PlacementWellFormedTest {
         }
     }
 
+    @Test
+    public void testDuplicate() {
+        Random r = new Random();
+
+        for (int i = 0; i < PLACEMENTS.length; i++) {
+            String p = PLACEMENTS[i];
+            int dup = r.nextInt(12);
+            int victim = (dup + 1 + r.nextInt(11)) % 12;
+
+            String bad = p.substring(1 + 3 * dup, 2 + (3 * dup));
+            String base = p.substring(0, 1 + 3 * victim) + bad + p.substring(2 + 3 * victim, p.length());
+            String test = TestUtility.shufflePlacement(base);
+            assertFalse("Placement '" + test + "' uses piece '" + bad + "' twice, but passed.", LinkGame.isPlacementWellFormed(test));
+        }
+    }
 }
 
