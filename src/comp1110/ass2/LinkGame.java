@@ -12,6 +12,7 @@ import java.util.List;
 public class LinkGame {
 
     static List<String> board = new ArrayList<>();
+    static String pieceSequence = "";
 
     // Converts a piece's data with thee placement location into a placement string.
     static String getPlacement(Piece piece, int placementLocation) {
