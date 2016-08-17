@@ -28,6 +28,10 @@ public class Board extends Application {
     {
 
     }
+    // flip the selected piece when a MouseEvent is captured
+    public void flipPiece(MouseEvent e ) {
+
+    }
     //change the board when the user attemped to move the piece
     public void movePiece(MouseEvent e)
     {
@@ -41,6 +45,14 @@ public class Board extends Application {
     // if the placement is not well formed, retrun the warning
     public void invalidPlacement(String placement)
     {
+
+    }
+
+    private void snapGrid() {
+
+    }
+
+    private void snapHome() {
 
     }
     @Override
