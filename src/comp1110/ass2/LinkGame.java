@@ -20,7 +20,7 @@ public class LinkGame {
     }
 
     // Find openings in a peg to determine valid placement
-    static String breakPlacement(Peg peg) {
+    static String breakPlacement(Pegs pegs) {
         return "";
     }
 
