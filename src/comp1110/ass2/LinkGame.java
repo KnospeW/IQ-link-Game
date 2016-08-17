@@ -1,5 +1,8 @@
 package comp1110.ass2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class provides the text interface for the Link Game
  *
@@ -7,6 +10,22 @@ package comp1110.ass2;
  * (http://www.smartgames.eu/en/smartgames/iq-link)
  */
 public class LinkGame {
+
+    static List<String> board = new ArrayList<>();
+    static String pieceSequence = "";
+
+    // Converts a piece's data with thee placement location into a placement string.
+    static String getPlacement(Piece piece, int placementLocation) {
+        return "";
+    }
+
+    // Find openings in a peg to determine valid placement
+    static String breakPlacement(Peg peg) {
+        return "";
+    }
+
+    // Update the board after a placement
+    static void updateBoard(String placementString) {}
 
     /**
      * Determine whether a piece placement is well-formed according to the following:
