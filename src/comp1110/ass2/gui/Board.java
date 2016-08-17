@@ -1,6 +1,7 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.LinkGame;
+import comp1110.ass2.Pegs;
 import javafx.application.Application;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -17,9 +18,16 @@ public class Board extends Application {
 
     // FIXME Task 12: Generate interesting starting placements
 
+    Pegs pegs;
+
     //create our Borad,have 12 grey circle backgrounds
     //it is the initial container, the center will be the solution area
     public void createBoard()
+    {
+
+    }
+    // create each piece
+    public void drawPiece()
     {
 
     }
@@ -48,11 +56,13 @@ public class Board extends Application {
 
     }
 
-    private void snapGrid() {
+    private void snapGrid()
+    {
 
     }
 
-    private void snapHome() {
+    private void snapHome()
+    {
 
     }
     @Override
