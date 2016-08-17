@@ -8,3 +8,9 @@ Members and phone numbers:
 Roles:
     Room booking:       Joel
     Repo management:    Alex
+
+Due to people's computers' users not being the correct names, the following substitutions can be made for
+    creation records:
+    joelmcleod      Joel
+    azphr           Alex
+    Administrator   Yicong

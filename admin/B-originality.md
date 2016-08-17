@@ -1,8 +1,7 @@
 We declare that the work we have submitted for Stage B of this assignment and all stages before it is entirely our own work, with the following documented exceptions:
 
-Signed: Mary Jones (u2345678), Bob Smith (u3456789), and Sue Black (u0123456)
-We declare that the work we have submitted for Stage B of this assignment and all stages before it is entirely our own work
+*  The idea of having pieces snap to the board's grid was inspired by Steve Blackburn in the habitat assignment.
 
-*  ....
+*
 
-Signed: Yicong Du (u6127601), Bob Smith (u3456789), and Sue Black (u0123456)
+Signed: Alex Smith (u5838800), Joel McLeod (u6061764), and Yicong Du (u6127601)
