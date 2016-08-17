@@ -1,6 +1,8 @@
 package comp1110.ass2.gui;
 
+import comp1110.ass2.LinkGame;
 import javafx.application.Application;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class Board extends Application {
@@ -15,6 +17,32 @@ public class Board extends Application {
 
     // FIXME Task 12: Generate interesting starting placements
 
+    //create our Borad,have 12 grey circle backgrounds
+    //it is the initial container, the center will be the solution area
+    public void createBoard()
+    {
+
+    }
+    //  change the look of the selected piece and rotate it when a MouseEvent is captured
+    public void rotatePiece(MouseEvent e )
+    {
+
+    }
+    //change the board when the user attemped to move the piece
+    public void movePiece(MouseEvent e)
+    {
+
+    }
+    // while the game starts,show the pictures of 12 Pieces on both side of the board
+    public void createPieces()
+    {
+
+    }
+    // if the placement is not well formed, retrun the warning
+    public void invalidPlacement(String placement)
+    {
+
+    }
     @Override
     public void start(Stage primaryStage) throws Exception {
 
