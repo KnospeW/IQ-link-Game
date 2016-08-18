@@ -1,7 +1,9 @@
 package comp1110.ass2;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class provides the text interface for the Link Game
@@ -20,13 +22,14 @@ public class LinkGame {
     }
 
     // Find openings in a peg to determine valid placement
-    static String breakPlacement(Peg peg) {
+    static String breakPlacement(Pegs peg) {
         return "";
     }
 
     // Update the board after a placement
     static void updateBoard(String placementString) {}
 
+    //long string into several arrays of 3-char string
     /**
      * Determine whether a piece placement is well-formed according to the following:
      * - it consists of exactly three characters
@@ -38,10 +41,27 @@ public class LinkGame {
      * @param piecePlacement A string describing a piece placement
      * @return True if the piece placement is well-formed
      */
+    // FIXME Task 3: determine whether a piece placement is well-formed
     static boolean isPiecePlacementWellFormed(String piecePlacement) {
-        // FIXME Task 3: determine whether a piece placement is well-formed
-        return false;
+        int len=piecePlacement.length();
+        char[] chars=piecePlacement.toCharArray();
+        if (len==3)
+        {
+           //judge the range of each character and for the third character has two different situations
+            if ((int)chars[0]> 64 && (int)chars[0]<89 && (int)chars[1]> 64 && (int)chars[1]<77&&(((int)chars[2]>64&&(int)chars[2]<77&&chars[1]!='A')||((int)chars[2]>64&&(int)chars[2]<71&&chars[1]=='A')))
+           return true;
+            else
+                return false;
+
+        }
+        else {
+            return false;
+        }
     }
+
+
+
+
 
     /**
      * Determine whether a placement string is well-formed:
@@ -52,12 +72,36 @@ public class LinkGame {
      * @param placement A string describing a placement of one or more pieces
      * @return True if the placement is well-formed
      */
-    static boolean isPlacementWellFormed(String placement) {
+    static boolean isPlacementWellFormed(String placement)
+        {
         // FIXME Task 4: determine whether a placement is well-formed
-        return false;
-    }
+            if(placement.length()%3!=0)
+                return false;
+            String[] s = new String[placement.length()/3];  //devide the string placement into 3-char array
+            int flag=0;
+            for(int i=0; i<placement.length()/3;i++)
+            {
+                s[i]=placement.substring(i*3,i*3+3);      //placement to piece
+            }
+            for (String str:s)
+            {
+                if(!isPiecePlacementWellFormed(str))
+                    return false;
+            }
+            //List<String> list = Arrays.asList(s);        //to list
+            Set set = new HashSet();
+            for (int i = 0; i < s.length; i++) {      //hashset without duplicate,compare hash with the length of String array
+                // set.add(list.get(i));
+                set.add(s[i]);
+            }
+            if (set.size()==s.length)
+                return true;                     //if the number of members between hashset and string array are not the same.has duplicate
+            else
+                return false;
 
-    /**
+        }
+
+    /**}
      * Return a array of peg locations according to which pegs the given piece placement touches.
      * The values in the array should be ordered according to the links that constitute the
      * piece.
@@ -96,4 +140,11 @@ public class LinkGame {
         // FIXME Task 10: determine all solutions to the game, given a particular starting placement
         return null;
     }
+
+    //to modify the MAP and set the placement
+    static void setPlacement(String placement)
+    {
+
+    }
+
 }
