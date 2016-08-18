@@ -1,5 +1,9 @@
 package comp1110.ass2;
 
+import static comp1110.ass2.Orientation.*;
+import static comp1110.ass2.PieceSegment.*;
+import static comp1110.ass2.PieceType.*;
+
 /**
  * Created by joelmcleod on 17/08/2016.
  */
@@ -23,8 +27,18 @@ public enum Piece {
                 (which will always be on 1 in the above diagram in the A orientation), and the third set
                 is the second branch.
     */
+    A   (LINE,OA,
+            RING,2,3,
+            BALL,4,0,
+            BALL,1,0)
     ;
 
+    private PieceSegment segment;
+    private Orientation orientation;
+    private PieceType type;
+    Piece(PieceType type, Orientation o, PieceSegment origin, int or1, int or2, PieceSegment branch1, int br11, int br12, PieceSegment branch2, int br21, int br22) {
+
+    }
 
     //direction: six (inc 0) values
     int findOpening(String direction) {

@@ -22,7 +22,7 @@ public class LinkGame {
     }
 
     // Find openings in a peg to determine valid placement
-    static String breakPlacement(Pegs peg) {
+    static String breakPlacement(Pegs pegs) {
         return "";
     }
 
@@ -58,10 +58,6 @@ public class LinkGame {
             return false;
         }
     }
-
-
-
-
 
     /**
      * Determine whether a placement string is well-formed:
@@ -140,11 +136,4 @@ public class LinkGame {
         // FIXME Task 10: determine all solutions to the game, given a particular starting placement
         return null;
     }
-
-    //to modify the MAP and set the placement
-    static void setPlacement(String placement)
-    {
-
-    }
-
 }

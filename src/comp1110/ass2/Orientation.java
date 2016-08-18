@@ -5,5 +5,5 @@ package comp1110.ass2;
  */
 public enum Orientation {
 
-    A,B,C,D,E,F,G,H,I,J,K,L
+    OA,OB,OC,OD,OE,OF,OG,OH,OI,OJ,OK,OL
 }

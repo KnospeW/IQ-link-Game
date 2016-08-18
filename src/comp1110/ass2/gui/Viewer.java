@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -33,6 +35,12 @@ public class Viewer extends Application {
     private final Group controls = new Group();
     TextField textField;
 
+    public static final String URL_BASE = "assets/";
+
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     /**
      * Draw a placement in the window, removing any previously drawn one
@@ -41,9 +49,21 @@ public class Viewer extends Application {
      */
     void makePlacement(String placement) {
         // FIXME Task 5: implement the simple placement viewer
+
     }
 
-
+    private class Piece extends ImageView {
+        Piece(char id) {
+            setImage(new Image(Viewer.class.getResource(URL_BASE + id + ".png").toString()));
+        }
+    }
+//    private void assignImages() {
+//        Image[] imageSet = {A,B,C,D,E,F,G,H,I,J,K,L};
+//        for (int n=0;n<imageSet.length;n++) {
+//            imageSet[n] = new Image(Viewer.class.getResource(URL_BASE + n + ".png").toString());
+//        }
+//        A = new Image(Viewer.class.getResource(URL_BASE + "A.png").toString());
+//    }
     /**
      * Create a basic text field for input and a refresh button.
      */
@@ -75,8 +95,10 @@ public class Viewer extends Application {
         root.getChildren().add(controls);
 
         makeControls();
+//        assignImages();
 
         primaryStage.setScene(scene);
         primaryStage.show();
+        root.getChildren().add(new Piece('A'));
     }
 }
