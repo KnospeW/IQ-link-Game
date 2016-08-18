@@ -41,6 +41,7 @@ public class LinkGame {
      * @param piecePlacement A string describing a piece placement
      * @return True if the piece placement is well-formed
      */
+    
     // FIXME Task 3: determine whether a piece placement is well-formed
     static boolean isPiecePlacementWellFormed(String piecePlacement) {
         int len=piecePlacement.length();
