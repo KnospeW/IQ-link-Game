@@ -32,9 +32,7 @@ public class Viewer extends Application {
 
     private final Group root = new Group();
     private final Group controls = new Group();
-    TextField textField;
-
-    public static final String URL_BASE = "assets/";
+    private TextField textField;
 
 
     public static void main(String[] args) {
@@ -46,10 +44,10 @@ public class Viewer extends Application {
      *
      * @param placement  A valid placement string
      */
-    void makePlacement(String placement) {
+    private void makePlacement(String placement) {
         // FIXME Task 5: implement the simple placement viewer
         // Will import a location, a piece, and a rotation.
-        if (root.getChildren().size() > 1) root.getChildren().remove(1);    // removes any pieces present
+//        if (root.getChildren().size() > 1) root.getChildren().remove(1);    // removes any pieces present
         char name = placement.charAt(1);                                    // pulls the name char
         Character location = placement.charAt(0);                           // pulls the location char
         Character rotation = placement.charAt(2);                           // pulls the rotation char
@@ -57,15 +55,17 @@ public class Viewer extends Application {
         Piece piece = new Piece(name);                                      // creates the piece
         int rMod = rotation - 'A';                                          // rotation step
         double sMod = 1;
-        int iSize = 100*(int)sMod;                                          // piece size modifier
+//        int iSize = 100*(int)sMod;                                          // piece size modifier
+        int iSize = SQUARE_SIZE * (int) sMod;
         int row = (location - 'A') % 6;
         int col = (location - 'A') / 6;
         double x = 0;
         if (col % 2 != 0)
             x = Math.round(Math.cos(rMod*60)) * iSize/2;                    // spacing on odd rows
         x = x + 25 + row * iSize;
-        int pyt = (iSize * iSize) + ((iSize / 2) * (iSize / 2));            // pythagoras, to save line space
-        double y = 25 + (col * (Math.sqrt(pyt) -25*sMod) );
+//        int pyt = (iSize * iSize) + ((iSize / 2) * (iSize / 2));            // pythagoras, to save line space
+//        double y = 25 + (col * (Math.sqrt(pyt) -25*sMod) );
+        double y = 25 + (ROW_HEIGHT * col);
 
         piece.setScaleX(sMod);                                              // scale pieces if needed
         if (rMod > 5) piece.setScaleY(-sMod);                               // flips pieces
@@ -82,7 +82,7 @@ public class Viewer extends Application {
 
     private class Piece extends ImageView {
         Piece(char id) {
-            setImage(new Image(Viewer.class.getResource(URL_BASE + id + ".png").toString()));
+            setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
         }
     }
 
