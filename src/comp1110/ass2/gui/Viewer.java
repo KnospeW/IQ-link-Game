@@ -49,7 +49,7 @@ public class Viewer extends Application {
     void makePlacement(String placement) {
         // FIXME Task 5: implement the simple placement viewer
         // Will import a location, a piece, and a rotation.
-//        if (root.getChildren().size() > 1) root.getChildren().remove(1);    // removes any pieces present
+        if (root.getChildren().size() > 1) root.getChildren().remove(1);    // removes any pieces present
         char name = placement.charAt(1);                                    // pulls the name char
         Character location = placement.charAt(0);                           // pulls the location char
         Character rotation = placement.charAt(2);                           // pulls the rotation char
