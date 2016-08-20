@@ -1,8 +1,6 @@
 package comp1110.ass2.gui;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -141,6 +139,9 @@ public class Viewer extends Application {
 }
 
 // SCRAPYARD
+
+//import javafx.event.ActionEvent;
+//import javafx.event.EventHandler;
 
 //import javafx.scene.transform.Rotate;
 //import javafx.scene.transform.Scale;
