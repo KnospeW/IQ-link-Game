@@ -30,14 +30,82 @@ public enum Piece {
     A   (LINE,OA,
             RING,2,3,
             BALL,4,0,
-            BALL,1,0)
-    ;
+            BALL,1,0),
+    B    (LINE,OA,
+            RING,0,0,
+            BALL,4,0,
+            RING,3,0),
+    C    (LINE,OA,
+            RING,0,0,
+            BALL,4,0,
+            RING,2,0),
+    D     (WIDEV,OA,
+            RING,0,0,
+            BALL,4,0,
+            RING,6,0),
+    E     (WIDEV,OA,
+            RING,0,0,
+            BALL,4,0,
+            RING,1,0),
+    F     (WIDEV,OA,
+            RING,0,0,
+            BALL,4,0,
+            RING,2,0),
+    G     (WIDEV,OA,
+            RING,5,0,
+            BALL,4,0,
+            BALL,5,0),
+    H      (WIDEV,OA,
+            RING,0,0,
+            RING,2,0,
+            RING,3,0),
+    I      (V,OA,
+            BALL,1,2,
+            BALL,4,0,
+            RING,2,0),
+    J      (V,OA,
+            BALL,1,2,
+            BALL,4,0,
+            RING,1,0),
+    K      (V,OA,
+            RING,6,0,
+            BALL,4,0,
+            BALL,6,0),
+    L      (V,OA,
+            RING,6,0,
+            BALL,4,0,
+            RING,2,0);
+
+
+
+
 
     private PieceSegment segment;
     private Orientation orientation;
     private PieceType type;
+    private String[] PieceInfo;
     Piece(PieceType type, Orientation o, PieceSegment origin, int or1, int or2, PieceSegment branch1, int br11, int br12, PieceSegment branch2, int br21, int br22) {
+        PieceInfo[0]=type.toString();
+        PieceInfo[1]=o.toString();
+        PieceInfo[2]=origin.toString();
+        PieceInfo[3]=Integer.toString(or1);
+        PieceInfo[4]=Integer.toString(or2);
+        PieceInfo[5]=branch1.toString();
+        PieceInfo[6]=Integer.toString(br11);
+        PieceInfo[7]=Integer.toString(br12);
+        PieceInfo[8]=branch2.toString();
+        PieceInfo[9]=Integer.toString(br21);
+        PieceInfo[10]=Integer.toString(br22);
 
+
+    }
+    public void setOrientation(Orientation o)
+    {
+        this.orientation=o;
+    }
+    public String[] getPieceInfo()
+    {
+        return PieceInfo;
     }
 
     //direction: six (inc 0) values

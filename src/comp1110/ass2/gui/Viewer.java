@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 /**
@@ -47,37 +49,48 @@ public class Viewer extends Application {
     private void makePlacement(String placement) {
         // FIXME Task 5: implement the simple placement viewer
         // Will import a location, a piece, and a rotation.
-//        if (root.getChildren().size() > 1) root.getChildren().remove(1);    // removes any pieces present
-        char name = placement.charAt(1);                                    // pulls the name char
-        Character location = placement.charAt(0);                           // pulls the location char
-        Character rotation = placement.charAt(2);                           // pulls the rotation char
+        while (root.getChildren().size() > 25)
+            root.getChildren().remove(root.getChildren().size()-1);      //remove any pieces before(acturally there's 24 circles at first)
+//
 
-        Piece piece = new Piece(name);                                      // creates the piece
-        int rMod = rotation - 'A';                                          // rotation step
-        double sMod = 1;
-//        int iSize = 100*(int)sMod;                                          // piece size modifier
-        int iSize = SQUARE_SIZE * (int) sMod;
-        int row = (location - 'A') % 6;
-        int col = (location - 'A') / 6;
-        double x = 0;
-        if (col % 2 != 0)
-            x = Math.round(Math.cos(rMod*60)) * iSize/2;                    // spacing on odd rows
-        x = x + 25 + row * iSize;
+
+                                                                                  //break placement into pieceplacement
+        for(int i=0;i<placement.length()/3;i++)
+        {
+            char name = placement.charAt(3*i+1);                                    // pulls the name char
+            Character location = placement.charAt(3*i);                           // pulls the location char
+            Character rotation = placement.charAt(3*i+2);                           // pulls the rotation char
+
+            Piece piece = new Piece(name);                                      // creates the piece
+            int rMod = rotation - 'A';                                          // rotation step
+            double sMod = 1;
+  //        int iSize = 100*(int)sMod;                                          // piece size modifier
+            int iSize = SQUARE_SIZE * (int) sMod;
+            int row = (location - 'A') % 6;
+            int col = (location - 'A') / 6;
+            double x = 0;
+            if (col % 2 != 0)                                          // spacing on odd rows
+                x=iSize/2;                                            //I think the center's position have no relationship with rotation;
+            // x = Math.round(Math.cos(rMod * 60)) * iSize / 2;
+            x = x + 25 + row * iSize;
 //        int pyt = (iSize * iSize) + ((iSize / 2) * (iSize / 2));            // pythagoras, to save line space
 //        double y = 25 + (col * (Math.sqrt(pyt) -25*sMod) );
-        double y = 25 + (ROW_HEIGHT * col);
+            double y = 25 + (ROW_HEIGHT * col);
 
-        piece.setScaleX(sMod);                                              // scale pieces if needed
-        if (rMod > 5) piece.setScaleY(-sMod);                               // flips pieces
+            piece.setX(x);                                                     //set center coordinate
+            piece.setY(y);
+
+            piece.setScaleX(sMod);                                              // scale pieces if needed
+            if (rMod > 5) piece.setScaleY(-sMod);                               // flips pieces
             else piece.setScaleY(sMod);
-        piece.setRotate(60*rMod);                                           // rotate in multiples of 60 deg
-        piece.setX(x);
-        piece.setY(y);
+                                                                         // rotate in multiples of 60 deg
+            piece.setRotate(60 * rMod);
 
 //        System.out.println(placement);                                      // debugging
 //        System.out.println(row + ", " + col);
 //        System.out.println(x + ", " + y);
-        root.getChildren().add(piece);                                      // adds piece to stage
+            root.getChildren().add(piece);
+        }// adds piece to stage
     }
 
     private class Piece extends ImageView {
@@ -118,6 +131,23 @@ public class Viewer extends Application {
         Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
 
         root.getChildren().add(controls);
+
+
+        // ADD PEGS
+        for (int i=0;i<24;i++) {
+            int col = i / 6;
+            int row = i % 6;
+            double x=0,y=0;
+            if (col % 2 != 0)
+                x =  SQUARE_SIZE / 2;
+            x= x + 25 + row * SQUARE_SIZE+150;
+            y = 25 + (ROW_HEIGHT * col)+150;
+
+
+            Circle a = new Circle(x,y,30, Color.GRAY);
+            root.getChildren().add(a);
+
+        }
 
 //        makePlacement("BAA");                                               // debugging
 //        makePlacement("HBA");

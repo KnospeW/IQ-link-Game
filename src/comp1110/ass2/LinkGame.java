@@ -111,7 +111,61 @@ public class LinkGame {
      */
     static int[] getPegsForPiecePlacement(String piecePlacement) {
         // FIXME Task 6: determine the pegs touched by a piece placement
-        return null;
+        int [] PegLocations=new int[3];
+        int br1,origin,br2;
+        int[] OddNeighbour={-1,-7,-6,+1,+6,+5};
+        int[] EvenNeighbour={-1,-6,-5,+1,+7,+6};
+ /*         1    2
+        0  origin  3       neighbours records the origin's neibour pegs in this order, pay attention that the relationships are not the same
+           5   4*/          // for odd and even rows
+        origin=piecePlacement.charAt(0)-'A';
+//        Piece piece=Piece.valueOf(piecePlacement.substring(1,2));
+//        piece.setOrientation(Orientation.valueOf('O'+piecePlacement.substring(2,3)));
+        int PieceType= piecePlacement.charAt(1)-'A';
+        int Orientation=piecePlacement.charAt(2)-'A';
+        int row = 1+origin/6;           //row 1 2 3 4
+        int col = 1 +origin%6;           //column 1 2 3 4 5 6
+
+        if(Orientation<6) {
+            br1 = (row % 2 == 0) ? (origin + EvenNeighbour[Orientation] ):( origin+OddNeighbour[Orientation]);
+               if (PieceType < 3)       //which shows a line type
+                   br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+3)%6] ):( origin+OddNeighbour[(Orientation+3)%6]);
+                else if (PieceType < 8)   //a big v type
+                  br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+2)%6] ):( origin+OddNeighbour[(Orientation+2)%6]);
+               else                        // a v type
+                   br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+1)%6] ):( origin+OddNeighbour[(Orientation+1)%6]);
+        }
+        else
+        {
+            Orientation=Orientation-6;      //flip change the start like the postion 2 will flip to 4, and 1 flip to 5
+            br1 = (row % 2 == 0) ? (origin + EvenNeighbour[Orientation] ):( origin+OddNeighbour[Orientation]);
+            if (PieceType < 3)
+                br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+3)%6] ):( origin+OddNeighbour[(Orientation+3)%6]);
+            else if (PieceType < 8)
+                br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+4)%6] ):( origin+OddNeighbour[(Orientation+4)%6]);
+            else
+                br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+5)%6] ):( origin+OddNeighbour[(Orientation+5)%6]);
+
+        }
+
+        // we should judge whether it's off the grid
+        int rowbr1=br1/6+1;
+        int colbr1=br1%6+1;
+        int rowbr2=br2/6+1;
+        int colbr2=br2%6+1;
+        //if the column and row are not ajacent or the index out of 0-23 it is offgrid
+        if (Math.abs(rowbr1 - row) > 1 || Math.abs(colbr1 - col) > 1 || br1>23||br1<0){
+            br1 = -1;
+        }
+        if (Math.abs(rowbr2 - row) > 1 || Math.abs(colbr2 - col) > 1 || br2>23||br2<0){
+            br2 = -1;
+          }
+        PegLocations[0]=br1;
+        PegLocations[1]=origin;
+        PegLocations[2]=br2;
+        
+
+        return PegLocations;
     }
 
 
