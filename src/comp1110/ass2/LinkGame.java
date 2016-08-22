@@ -41,7 +41,7 @@ public class LinkGame {
      * @param piecePlacement A string describing a piece placement
      * @return True if the piece placement is well-formed
      */
-    
+
     // FIXME Task 3: determine whether a piece placement is well-formed
     static boolean isPiecePlacementWellFormed(String piecePlacement) {
         int len=piecePlacement.length();
@@ -72,7 +72,7 @@ public class LinkGame {
     static boolean isPlacementWellFormed(String placement)
         {
         // FIXME Task 4: determine whether a placement is well-formed
-            if(placement.length()%3!=0)
+            if(placement==""||placement==null||placement.length()%3!=0)
                 return false;
             String[] s = new String[placement.length()/3];  //devide the string placement into 3-char array
             int flag=0;
@@ -89,7 +89,7 @@ public class LinkGame {
             Set set = new HashSet();
             for (int i = 0; i < s.length; i++) {      //hashset without duplicate,compare hash with the length of String array
                 // set.add(list.get(i));
-                set.add(s[i]);
+                set.add(s[i].charAt(1));
             }
             if (set.size()==s.length)
                 return true;                     //if the number of members between hashset and string array are not the same.has duplicate
