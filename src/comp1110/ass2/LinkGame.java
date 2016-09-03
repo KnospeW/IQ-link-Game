@@ -72,29 +72,31 @@ public class LinkGame {
     static boolean isPlacementWellFormed(String placement)
         {
         // FIXME Task 4: determine whether a placement is well-formed
-            if(placement==""||placement==null||placement.length()%3!=0)
+            if(placement.equals("") || placement.length() % 3 != 0)
                 return false;
-            String[] s = new String[placement.length()/3];  //devide the string placement into 3-char array
-            int flag=0;
-            for(int i=0; i<placement.length()/3;i++)
-            {
-                s[i]=placement.substring(i*3,i*3+3);      //placement to piece
+
+            String[] s = new String[placement.length()/3];  //divide the string placement into sets of 3 characters
+
+            for(int i = 0; i < placement.length() / 3; i++) {
+                s[i] = placement.substring(i*3,i*3+3);      //placement to piece
             }
-            for (String str:s)
-            {
+            for (String str : s) {
                 if(!isPiecePlacementWellFormed(str))
                     return false;
             }
+
             //List<String> list = Arrays.asList(s);        //to list
             Set set = new HashSet();
-            for (int i = 0; i < s.length; i++) {      //hashset without duplicate,compare hash with the length of String array
-                // set.add(list.get(i));
-                set.add(s[i].charAt(1));
+
+            for (String str : s) {              //hashset without duplicate,compare hash with the length of String array
+//                set.add(list.get(i));
+                set.add(str.charAt(1));
             }
-            if (set.size()==s.length)
-                return true;                     //if the number of members between hashset and string array are not the same.has duplicate
-            else
-                return false;
+//            if (set.size()==s.length)
+//                return true;                     //if the number of members between hashset and string array are not the same.has duplicate
+//            else
+//                return false;
+            return set.size() == s.length;
 
         }
 
@@ -178,7 +180,7 @@ public class LinkGame {
      */
     static boolean isPlacementValid(String placement) {
         // FIXME Task 7: determine whether a placement is valid
-        return false;
+        return isPlacementWellFormed(placement) && isPiecePlacementWellFormed(placement);
     }
 
     /**
