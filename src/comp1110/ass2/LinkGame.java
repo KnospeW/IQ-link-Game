@@ -93,14 +93,14 @@ public class LinkGame {
                 set.add(str.charAt(1));
             }
 //            if (set.size()==s.length)
-//                return true;                     //if the number of members between hashset and string array are not the same.has duplicate
-//            else
+//                return true;                     //if the number of members between hashset and
+//            else                                 //string array are not the same.has duplicate
 //                return false;
-            return set.size() == s.length;
+            return set.size() == s.length;          // tighter form
 
         }
 
-    /**}
+    /**
      * Return a array of peg locations according to which pegs the given piece placement touches.
      * The values in the array should be ordered according to the units that constitute the
      * piece.
@@ -113,41 +113,43 @@ public class LinkGame {
      */
     static int[] getPegsForPiecePlacement(String piecePlacement) {
         // FIXME Task 6: determine the pegs touched by a piece placement
-        int [] PegLocations=new int[3];
-        int br1,origin,br2;
-        int[] OddNeighbour={-1,-7,-6,+1,+6,+5};
-        int[] EvenNeighbour={-1,-6,-5,+1,+7,+6};
- /*         1    2
-        0  origin  3       neighbours records the origin's neibour pegs in this order, pay attention that the relationships are not the same
-           5   4*/          // for odd and even rows
-        origin=piecePlacement.charAt(0)-'A';
+        int[] PegLocations = new int[3];
+        int[] OddNeighbour = {-1,-7,-6,+1,+6,+5};
+        int[] EvenNeighbour = {-1,-6,-5,+1,+7,+6};
+        int br1,br2;
+
+ /**
+  *     1    2         neighbours records the origin's neighbour pegs in this order,
+  *  0  origin  3      pay attention that the relationships are not the same
+  *     5    4         for odd and even rows
+  */
 //        Piece piece=Piece.valueOf(piecePlacement.substring(1,2));
 //        piece.setOrientation(Orientation.valueOf('O'+piecePlacement.substring(2,3)));
-        int PieceType= piecePlacement.charAt(1)-'A';
-        int Orientation=piecePlacement.charAt(2)-'A';
-        int row = 1+origin/6;           //row 1 2 3 4
-        int col = 1 +origin%6;           //column 1 2 3 4 5 6
+        int origin      = piecePlacement.charAt(0)-'A';
+        int PieceType   = piecePlacement.charAt(1)-'A';
+        int orientation = piecePlacement.charAt(2)-'A';
 
-        if(Orientation<6) {
-            br1 = (row % 2 == 0) ? (origin + EvenNeighbour[Orientation] ):( origin+OddNeighbour[Orientation]);
+        int row = 1 + origin / 6;           //row 1 2 3 4
+        int col = 1 + origin % 6;           //column 1 2 3 4 5 6
+
+        
+        if(orientation < 6) {
+            br1 = (row % 2 == 0) ? (origin + EvenNeighbour[orientation] ):( origin+OddNeighbour[orientation]);
                if (PieceType < 3)       //which shows a line type
-                   br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+3)%6] ):( origin+OddNeighbour[(Orientation+3)%6]);
+                   br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(orientation+3)%6] ):( origin+OddNeighbour[(orientation+3)%6]);
                 else if (PieceType < 8)   //a big v type
-                  br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+2)%6] ):( origin+OddNeighbour[(Orientation+2)%6]);
+                  br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(orientation+2)%6] ):( origin+OddNeighbour[(orientation+2)%6]);
                else                        // a v type
-                   br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+1)%6] ):( origin+OddNeighbour[(Orientation+1)%6]);
-        }
-        else
-        {
-            Orientation=Orientation-6;      //flip change the start like the postion 2 will flip to 4, and 1 flip to 5
-            br1 = (row % 2 == 0) ? (origin + EvenNeighbour[Orientation] ):( origin+OddNeighbour[Orientation]);
+                   br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(orientation+1)%6] ):( origin+OddNeighbour[(orientation+1)%6]);
+        } else {
+            orientation=orientation-6;      //flip change the start like the postion 2 will flip to 4, and 1 flip to 5
+            br1 = (row % 2 == 0) ? (origin + EvenNeighbour[orientation] ):( origin+OddNeighbour[orientation]);
             if (PieceType < 3)
-                br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+3)%6] ):( origin+OddNeighbour[(Orientation+3)%6]);
+                br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(orientation+3)%6] ):( origin+OddNeighbour[(orientation+3)%6]);
             else if (PieceType < 8)
-                br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+4)%6] ):( origin+OddNeighbour[(Orientation+4)%6]);
+                br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(orientation+4)%6] ):( origin+OddNeighbour[(orientation+4)%6]);
             else
-                br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(Orientation+5)%6] ):( origin+OddNeighbour[(Orientation+5)%6]);
-
+                br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(orientation+5)%6] ):( origin+OddNeighbour[(orientation+5)%6]);
         }
 
         // we should judge whether it's off the grid
