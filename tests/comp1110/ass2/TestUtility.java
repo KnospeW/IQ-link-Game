@@ -152,7 +152,7 @@ public class TestUtility {
                 orientation = (top ? 1 : 4) + r.nextInt(2) + (r.nextBoolean() ? 0 : 6);
         }
         if (piece == 0 && orientation >= 6) orientation = (orientation + 3) % 6;
-        return "" + ('A' + peg) + ('A' + piece) + ('A' + orientation);
+        return "" + (char) ('A' + peg) + (char) ('A' + piece) + (char) ('A' + orientation);
     }
 
 
