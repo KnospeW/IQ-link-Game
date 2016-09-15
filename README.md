@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # COMP1110 Assignment 2
 
 *This assignment is only for those enrolled in COMP1110, COMP1510, or COMP6710. COMP1140 students should look [here](https://gitlab.cecs.anu.edu.au/comp1110/comp1140-ass2).*
@@ -203,3 +204,5 @@ runtime).
 **High Distinction**
 * _All of the Distinction-level criteria, plus the following..._
 * Tasks #11 and #12
+=======
+Information for COMP1110/COMP1140/COMP1510/COMP6710 can all be found on this repo's [wiki](https://gitlab.cecs.anu.edu.au/comp1110/comp1110/wikis/home).
