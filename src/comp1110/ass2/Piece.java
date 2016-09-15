@@ -4,10 +4,6 @@ import static comp1110.ass2.Orientation.*;
 import static comp1110.ass2.PieceSegment.*;
 import static comp1110.ass2.PieceType.*;
 
-/**
- * Created by joelmcleod on 17/08/2016.
- */
-
 public enum Piece {
     /*  Defines the possible pieces.
         Each piece has an 11-bit sequence defining their configuration.
@@ -76,9 +72,9 @@ public enum Piece {
             BALL,4,0,
             RING,2,0);
 
-    public Orientation orientation;
-    public PieceType type;
-    public String[] PieceInfo;
+    private Orientation orientation;
+    private PieceType type;
+    private String[] PieceInfo;
     private PieceSegment segment;
 
     Piece(PieceType type, Orientation o, PieceSegment origin, int or1, int or2, PieceSegment branch1, int br11, int br12, PieceSegment branch2, int br21, int br22) {
@@ -96,6 +92,10 @@ public enum Piece {
 
         this.orientation = o;
         this.type = type;
+    }
+
+    public Orientation getOrientation() {
+        return this.orientation;
     }
 
     /**
@@ -129,15 +129,4 @@ public enum Piece {
     int findOpening(String direction) {
         return 0;
     }
-
-    public Orientation getOrientation() {
-        return this.orientation;
-    }
 }
-
-
-
-
-
-
-
