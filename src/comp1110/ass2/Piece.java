@@ -76,33 +76,50 @@ public enum Piece {
             BALL,4,0,
             RING,2,0);
 
-
-
-
-
+    public Orientation orientation;
+    public PieceType type;
+    public String[] PieceInfo;
     private PieceSegment segment;
-    private Orientation orientation;
-    private PieceType type;
-    private String[] PieceInfo;
+
     Piece(PieceType type, Orientation o, PieceSegment origin, int or1, int or2, PieceSegment branch1, int br11, int br12, PieceSegment branch2, int br21, int br22) {
-        PieceInfo[0]=type.toString();
-        PieceInfo[1]=o.toString();
-        PieceInfo[2]=origin.toString();
-        PieceInfo[3]=Integer.toString(or1);
-        PieceInfo[4]=Integer.toString(or2);
-        PieceInfo[5]=branch1.toString();
-        PieceInfo[6]=Integer.toString(br11);
-        PieceInfo[7]=Integer.toString(br12);
-        PieceInfo[8]=branch2.toString();
-        PieceInfo[9]=Integer.toString(br21);
-        PieceInfo[10]=Integer.toString(br22);
+//        PieceInfo[0]=type.toString();
+//        PieceInfo[1]=o.toString();
+//        PieceInfo[2]=origin.toString();
+//        PieceInfo[3]=Integer.toString(or1);
+//        PieceInfo[4]=Integer.toString(or2);
+//        PieceInfo[5]=branch1.toString();
+//        PieceInfo[6]=Integer.toString(br11);
+//        PieceInfo[7]=Integer.toString(br12);
+//        PieceInfo[8]=branch2.toString();
+//        PieceInfo[9]=Integer.toString(br21);
+//        PieceInfo[10]=Integer.toString(br22);
 
+        this.orientation = o;
+        this.type = type;
+    }
 
+    /**
+     * @param index Takes an orientation as an offset from its current orientation. Will not allow flipping.
+     */
+    public void rotatePiece(int index) {
+        Orientation curr = this.orientation;
+        for (int i = 0; i < index; i++) {
+            curr = curr.rotate();
+        }
+        this.orientation = curr;
     }
-    public void setOrientation(Orientation o)
-    {
-        this.orientation=o;
+
+    /**
+     *  @param o Takes an orientation as an absolute orientation. Will allow flipping.
+     */
+    public void rotatePiece(Orientation o) {
+        this.orientation = o;
     }
+
+    public void flipPiece() {
+        this.rotatePiece(this.getOrientation().flip());
+    }
+
     public String[] getPieceInfo()
     {
         return PieceInfo;
@@ -113,9 +130,8 @@ public enum Piece {
         return 0;
     }
 
-    //mark piece as array of ball or ring + opening, pull orientation from enum
-    String definePiece(char pieceName) {
-        return "";
+    public Orientation getOrientation() {
+        return this.orientation;
     }
 }
 
