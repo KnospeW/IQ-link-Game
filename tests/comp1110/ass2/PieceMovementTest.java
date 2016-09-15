@@ -43,9 +43,9 @@ public class PieceMovementTest {
     @Test
     public void testFlip() {
         Piece piece = Piece.C;
-        piece.flipPiece();
         Orientation exp = piece.getOrientation().flip();
-        assertTrue("Piece flip failed: expected + " +exp.toString()+ " and got " + piece.getOrientation(), piece.getOrientation().flip()==exp);
+        piece.flipPiece();
+        assertTrue("Piece flip failed: expected + " +exp.toString()+ " and got " + piece.getOrientation(), piece.getOrientation()==exp);
     }
 
 }
