@@ -3,6 +3,8 @@ package comp1110.ass2.gui;
 import comp1110.ass2.LinkGame;
 import comp1110.ass2.Pegs;
 import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -15,6 +17,11 @@ public class Board extends Application {
     private static final int SQUARE_SIZE = 100;
     private static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
     private static final double ROW_HEIGHT = SQUARE_SIZE * 0.8660254; // 60 degrees
+
+    private final Group root = new Group();
+    private final Group pieces = new Group();
+    private final Group pegs = new Group();
+    private final Group controls = new Group();
 
     private Pegs[] board = new Pegs[24];
 
@@ -36,8 +43,8 @@ public class Board extends Application {
     public void createBoard()
     {
         int[] blank = {0,0,0,0,0,0};
-        for (Pegs peg : board) {
-            peg.updateStates(blank);
+        for (int i = 0; i < 24; i++) {
+            board[i].updateStates(blank);
         }
 
         for (int i = 0; i < 24; i++) {
@@ -49,9 +56,8 @@ public class Board extends Application {
             x = x + 25 + row * SQUARE_SIZE+150;
             y = 25 + (ROW_HEIGHT * col)+150;
 
-
             Circle a = new Circle(x,y,30, Color.GRAY);
-//            root.getChildren().add(a);
+            pegs.getChildren().add(a);
         }
     }
     // create each piece
@@ -93,8 +99,22 @@ public class Board extends Application {
     {
 
     }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("IQ Link");
+        Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
+        root.getChildren().add(pieces);
+        root.getChildren().add(pegs);
+        root.getChildren().add(controls);
 
+        createBoard();
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 }
