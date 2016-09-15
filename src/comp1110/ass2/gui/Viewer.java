@@ -51,9 +51,6 @@ public class Viewer extends Application {
         // Will import a location, a piece, and a rotation.
         while (root.getChildren().size() > 25)
             root.getChildren().remove(root.getChildren().size()-1);      //remove any pieces before(acturally there's 24 circles at first)
-//
-
-
                                                                                   //break placement into pieceplacement
         for(int i=0;i<placement.length()/3;i++)
         {
@@ -72,9 +69,9 @@ public class Viewer extends Application {
             if (col % 2 != 0)                                          // spacing on odd rows
                 x=iSize/2;                                            //I think the center's position have no relationship with rotation;
             // x = Math.round(Math.cos(rMod * 60)) * iSize / 2;
-            x = x + 25 + row * iSize;
 //        int pyt = (iSize * iSize) + ((iSize / 2) * (iSize / 2));            // pythagoras, to save line space
 //        double y = 25 + (col * (Math.sqrt(pyt) -25*sMod) );
+            x = x + 25 + row * iSize;
             double y = 25 + (ROW_HEIGHT * col);
 
             piece.setX(x);                                                     //set center coordinate
