@@ -15,7 +15,6 @@ public class LinkGame {
 
     static List<String> board = new ArrayList<>();
     static String pieceSequence = "";
-
     // Converts a piece's data with thee placement location into a placement string.
     static String getPlacement(Piece piece, int placementLocation) {
         return "";
@@ -171,8 +170,110 @@ public class LinkGame {
 
         return PegLocations;
     }
+    //translate the pieceplacement to update the pegs states indicates whether there's a ball/ring and the direction for opening and connection
+     //input:piceplacement
+    //output the string with states for br1,origin,br2
+    static int[] updatePegsPiecePlacement(String piecePlacement)
+    {
+        int[] threestates=new int[18];
+        Piece currPiece= Piece.valueOf(piecePlacement.substring(1,2));
+        int orientation = piecePlacement.charAt(2)-'A';
+      //  Orientation currOrientation=Orientation.valueOf('O'+piecePlacement.substring(2,3));
+        String[] pieceInfo= currPiece.getPieceInfo();
+     //   for (String s : pieceInfo)
+     //   System.out.println(s);
+        for (int i=0;i<3;i++)
+        {
+            if(pieceInfo[3*i+2].equals("BALL"))
+            {
+                threestates[i*6]=1;
+                if(orientation<=5) {                 //rotating  if no openings and connections doesn't change
+                    if (!pieceInfo[3 * i + 3].equals("0"))
+                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
+                    if(!pieceInfo[3 * i + 4].equals("0"))
+                    threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
+                }
+                else
+                {
+                    orientation= orientation-6;
+                    if(pieceInfo[3 * i +3].equals("1")||pieceInfo[3 * i +3].equals("4"))
+                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
+                    else if(pieceInfo[3*i+3].equals("3"))
+                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
+                    else if(pieceInfo[3*i+3].equals("5"))
+                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
+                    else if(pieceInfo[3*i+3].equals("2"))
+                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
+                    else if(pieceInfo[3*i+3].equals("6"))
+                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
+                    else
+                        threestates[i* 6 +1]=0;
+
+                    if(pieceInfo[3 * i +4].equals("1")||pieceInfo[3 * i +4].equals("4"))
+                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
+                    else if(pieceInfo[3*i+4].equals("3"))
+                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
+                    else if(pieceInfo[3*i+4].equals("5"))
+                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
+                    else if(pieceInfo[3*i+4].equals("2"))
+                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
+                    else if(pieceInfo[3*i+4].equals("6"))
+                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
+                    else
+                        threestates[i*6+2]=0;
+                    orientation=orientation+6;
+                }
+            }
+            else
+            {
+                threestates[i*6+3]=1;
+                if(orientation<=5){
+                    if(!pieceInfo[3 * i + 3].equals("0"))
+                    threestates[i*6+4]=(Integer.parseInt(pieceInfo[3*i+3])+orientation)%6;
+                    if(!pieceInfo[3 * i + 4].equals("0"))
+                    threestates[i*6+5]=(Integer.parseInt(pieceInfo[3*i+4])+orientation)%6;
+                }
+                else
+                {
+                    orientation= orientation-6;
+                    if(pieceInfo[3 * i +3].equals("1")||pieceInfo[3 * i +3].equals("4"))
+                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
+                    else if(pieceInfo[3*i+3].equals("3"))
+                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
+                    else if(pieceInfo[3*i+3].equals("5"))
+                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
+                    else if(pieceInfo[3*i+3].equals("2"))
+                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
+                    else if(pieceInfo[3*i+3].equals("6"))
+                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
+                    else
+                        threestates[i*6+4]=0;
+                    if(pieceInfo[3 * i +4].equals("1")||pieceInfo[3 * i +4].equals("4"))
+                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
+                    else if(pieceInfo[3*i+4].equals("3"))
+                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
+                    else if(pieceInfo[3*i+4].equals("5"))
+                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
+                    else if(pieceInfo[3*i+4].equals("2"))
+                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
+                    else if(pieceInfo[3*i+4].equals("6"))
+                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
+                    else
+                        threestates[i*6+5]=0;
+                    orientation=orientation+6;
+                }
 
 
+            }
+        }
+//        for (int s : threestates)
+//            System.out.println(s);
+        return threestates;
+    }
+
+//    public static void main(String[] args) {
+//        updatePegsPiecePlacement("CGL");
+//   }
     /**
      * Determine whether a placement is valid.  To be valid, the placement must be well-formed
      * and each piece must correctly connect with each other.
