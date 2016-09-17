@@ -28,7 +28,7 @@ public class PieceMovementTest {
         String out = "", exp = "";
         for (Orientation o : output) out = out + o.toString() + " ";
         for (Orientation o : expected) exp = exp + o.toString() + " ";
-        assertTrue("Simple rotation failed: expected " + exp + "and got " +out, equal);
+        assertTrue("Simple rotation failed: expected " +exp+ "and got " +out, equal);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class PieceMovementTest {
         Random r = new Random();
         Orientation o = Orientation.values()[r.nextInt(12)];
         piece.rotatePiece(o);
-        assertTrue("Absolute rotation failed: expected + " +o.toString()+ " and got " + piece.getOrientation(), piece.getOrientation()==o);
+        assertTrue("Absolute rotation failed: expected " +o.toString()+ " and got " +piece.getOrientation(), piece.getOrientation()==o);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class PieceMovementTest {
         Piece piece = Piece.C;
         Orientation exp = piece.getOrientation().flip();
         piece.flipPiece();
-        assertTrue("Piece flip failed: expected + " +exp.toString()+ " and got " + piece.getOrientation(), piece.getOrientation()==exp);
+        assertTrue("Piece flip failed: expected " +exp.toString()+ " and got " + piece.getOrientation(), piece.getOrientation()==exp);
     }
 
 }
