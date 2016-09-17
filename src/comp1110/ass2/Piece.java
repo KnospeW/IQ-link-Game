@@ -75,42 +75,53 @@ public enum Piece {
     private Orientation orientation;
     private PieceType type;
     private String[] PieceInfo;
-    private PieceSegment segment;
 
     Piece(PieceType type, Orientation o, PieceSegment origin, int or1, int or2, PieceSegment branch1, int br11, int br12, PieceSegment branch2, int br21, int br22) {
-//        PieceInfo[0]=type.toString();
-//        PieceInfo[1]=o.toString();
-//        PieceInfo[2]=origin.toString();
-//        PieceInfo[3]=Integer.toString(or1);
-//        PieceInfo[4]=Integer.toString(or2);
-//        PieceInfo[5]=branch1.toString();
-//        PieceInfo[6]=Integer.toString(br11);
-//        PieceInfo[7]=Integer.toString(br12);
-//        PieceInfo[8]=branch2.toString();
-//        PieceInfo[9]=Integer.toString(br21);
-//        PieceInfo[10]=Integer.toString(br22);
-
         this.orientation = o;
         this.type = type;
+        this.PieceInfo = new String[] {type.toString(), o.toString(),
+                origin.toString(),  Integer.toString(or1),  Integer.toString(or2),
+                branch1.toString(), Integer.toString(br11), Integer.toString(br12),
+                branch2.toString(), Integer.toString(br21), Integer.toString(br22)};
     }
 
     public Orientation getOrientation() {
         return this.orientation;
     }
 
+    public PieceType getPieceType() {
+        return this.type;
+    }
+
+    /**
+     * @param index Takes 0 (origin), 1 (branch that always lands on space 0), or 2 (second branch)
+     * @return A 3-bit string for the segment type and its connectors
+     */
+    public String[] getSegment(int index) throws ArrayIndexOutOfBoundsException {
+        try {
+            String type = this.PieceInfo[2 + index*3];
+            String piece1 = this.PieceInfo[3 + index*3];
+            String piece2 = this.PieceInfo[4 + index*3];
+
+            return new String[] {type, piece1, piece2};
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ArrayIndexOutOfBoundsException("Segment index out of bounds.");
+        }
+    }
+
     /**
      * @param index Takes an orientation as an offset from its current orientation. Will not allow flipping.
      */
     public void rotatePiece(int index) {
-        Orientation curr = this.orientation;
+        Orientation o = this.getOrientation();
         for (int i = 0; i < index; i++) {
-            curr = curr.rotate();
+            o = o.rotate();
         }
-        this.orientation = curr;
+        this.rotatePiece(o);
     }
 
     /**
-     *  @param o Takes an orientation as an absolute orientation. Will allow flipping.
+     * @param o Takes an orientation as an absolute orientation. Will allow flipping.
      */
     public void rotatePiece(Orientation o) {
         this.orientation = o;
