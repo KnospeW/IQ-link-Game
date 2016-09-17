@@ -58,7 +58,7 @@ public class Viewer extends Application {
             Character location = placement.charAt(3*i);                           // pulls the location char
             Character rotation = placement.charAt(3*i+2);                           // pulls the rotation char
 
-            Piece piece = new Piece(name);                                      // creates the piece
+            GFXPiece piece = new GFXPiece(name);                                      // creates the piece
             int rMod = rotation - 'A';                                          // rotation step
             double sMod = 1;
   //        int iSize = 100*(int)sMod;                                          // piece size modifier
@@ -90,8 +90,8 @@ public class Viewer extends Application {
         }// adds piece to stage
     }
 
-    private class Piece extends ImageView {
-        Piece(char id) {
+    private class GFXPiece extends ImageView {
+        GFXPiece(char id) {
             setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
         }
     }
