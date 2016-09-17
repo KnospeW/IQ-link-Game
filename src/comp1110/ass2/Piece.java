@@ -74,9 +74,22 @@ public enum Piece {
 
     private Orientation orientation;
     private PieceType type;
-    private String[] PieceInfo;
+    private String[] PieceInfo=new String[11];
+    private PieceSegment segment;
 
     Piece(PieceType type, Orientation o, PieceSegment origin, int or1, int or2, PieceSegment branch1, int br11, int br12, PieceSegment branch2, int br21, int br22) {
+//        PieceInfo[0]=type.toString();
+//        PieceInfo[1]=o.toString();
+//        PieceInfo[2]=origin.toString();
+//        PieceInfo[3]=Integer.toString(or1);
+//        PieceInfo[4]=Integer.toString(or2);
+//        PieceInfo[5]=branch1.toString();
+//        PieceInfo[6]=Integer.toString(br11);
+//        PieceInfo[7]=Integer.toString(br12);
+//        PieceInfo[8]=branch2.toString();
+//        PieceInfo[9]=Integer.toString(br21);
+//        PieceInfo[10]=Integer.toString(br22);
+
         this.orientation = o;
         this.type = type;
         this.PieceInfo = new String[] {type.toString(), o.toString(),
