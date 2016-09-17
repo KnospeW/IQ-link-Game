@@ -221,8 +221,13 @@ public class LinkGame {
                         threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
                     else
                         threestates[i*6+2]=0;
+
                     orientation=orientation+6;
                 }
+                if(threestates[i*6+1]==0&&(!pieceInfo[i*3+3].equals("0")))
+                    threestates[i*6+1]=6;
+                if(threestates[i*6+2]==0&&(!pieceInfo[i*3+4].equals("0")))
+                    threestates[i*6+2]=6;
             }
             else
             {
@@ -262,6 +267,10 @@ public class LinkGame {
                         threestates[i*6+5]=0;
                     orientation=orientation+6;
                 }
+                if(threestates[i*6+4]==0&&(!pieceInfo[i*3+3].equals("0")))
+                    threestates[i*6+4]=6;
+                if(threestates[i*6+5]==0&&(!pieceInfo[i*3+4].equals("0")))
+                    threestates[i*6+5]=6;
 
 
             }

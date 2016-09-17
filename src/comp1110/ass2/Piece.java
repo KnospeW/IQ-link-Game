@@ -18,7 +18,7 @@ public enum Piece {
             Orientation is numbered 1-6 clockwise starting from the left-most point:
              2 3
             1 0 4
-             5 6
+             6 5
             The first set of bits is for the origin segment, the second set is for the first branch
                 (which will always be on 1 in the above diagram in the A orientation), and the third set
                 is the second branch.
@@ -38,7 +38,7 @@ public enum Piece {
     D     (WIDEV,OA,
             RING,0,0,
             BALL,4,0,
-            RING,6,0),
+            RING,5,0),
     E     (WIDEV,OA,
             RING,0,0,
             BALL,4,0,
@@ -48,9 +48,9 @@ public enum Piece {
             BALL,4,0,
             RING,2,0),
     G     (WIDEV,OA,
-            RING,5,0,
+            RING,6,0,
             BALL,4,0,
-            BALL,5,0),
+            BALL,6,0),
     H      (WIDEV,OA,
             RING,0,0,
             RING,2,0,
@@ -64,11 +64,11 @@ public enum Piece {
             BALL,4,0,
             RING,1,0),
     K      (V,OA,
-            RING,6,0,
+            RING,5,0,
             BALL,4,0,
-            BALL,6,0),
+            BALL,5,0),
     L      (V,OA,
-            RING,6,0,
+            RING,5,0,
             BALL,4,0,
             RING,2,0);
 
