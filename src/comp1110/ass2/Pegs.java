@@ -8,9 +8,9 @@ package comp1110.ass2;
       _ _ _ the first digits 1/0 indicates whether there exists a ball/ring
        the second and third one indicates the direction of openings and connections
 
-            1    2
-          6        3
-            5   4
+            2    3
+          1        4
+            6   5
 */
 public class Pegs {
 //    private int[] pegStates;
