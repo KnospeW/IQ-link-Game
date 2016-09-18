@@ -28,7 +28,7 @@ public class Pegs {
 
     }
 
-    public int[] getStateArray(Pegs pegs) {
+    public int[] getStateArray() {
         int[] arr = new int[6];
         arr[0] = this.ballExit;
         arr[1] = this.ballCon1;

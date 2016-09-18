@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class PegsForPiecePlacementTest {
 
+
     void checkPegs(String test, int one, int two, int three) {
         int[] pegs = LinkGame.getPegsForPiecePlacement(test);
         assertTrue("Placement '" + test + "' returned a null pointer", pegs != null);

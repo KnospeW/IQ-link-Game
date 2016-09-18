@@ -70,7 +70,7 @@ public enum Piece {
     L      (V,OA,
             RING,5,0,
             BALL,4,0,
-            RING,2,0);
+            RING,4,0);
 
     private Orientation orientation;
     private PieceType type;
