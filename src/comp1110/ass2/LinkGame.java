@@ -170,25 +170,42 @@ public class LinkGame {
 
     //translate the pieceplacement to update the pegs states indicates whether there's a ball/ring and the direction for opening and connection
     //input:piceplacement
-    //output the string with states for br1,origin,br2
+    //output the string with states for origin,br1,br2
     static int[] updatePegsPiecePlacement(String piecePlacement) {
+        //three states will contain the states for three pegs
+        // 0-5 for the peg of origin, 6-11 for branch1,12-17 for branch2
+        //each 6 digits have the same meaning of the pegs state
+       /* _ _ _ _ _ _ an int array first 3 for ball and last 3 for ring
+        _ _ _ the first digits 1/0 indicates whether there exists a ball/ring
+        the second and third one indicates the direction of openings and connections
+
+        2    3
+        1        4
+        6   5
+                */
         int[] threestates = new int[18];
-        Piece currPiece = Piece.valueOf(piecePlacement.substring(1, 2));
-        int orientation = piecePlacement.charAt(2) - 'A';
-        //  Orientation currOrientation=Orientation.valueOf('O'+piecePlacement.substring(2,3));
+        Piece currPiece = Piece.valueOf(piecePlacement.substring(1, 2)); // initiate the specific piece
+        int orientation = piecePlacement.charAt(2) - 'A';           //orientation is presented as a int in 0-11
+                                                        //  Orientation currOrientation=Orientation.valueOf('O'+piecePlacement.substring(2,3));
         String[] pieceInfo = currPiece.getPieceInfo();
-        //   for (String s : pieceInfo)
-        //   System.out.println(s);
+                                                //   for (String s : pieceInfo)
+                                                //   System.out.println(s);
+        // do for three times to get the state of three components in one piece, the order
+        // the function behind is to update the states of each ball/ring
         for (int i = 0; i < 3; i++) {
             if (pieceInfo[3 * i + 2].equals("BALL")) {
-                threestates[i * 6] = 1;
-                if (orientation <= 5) {                 //rotating  if no openings and connections doesn't change
+                threestates[i * 6] = 1;  // the first element indicates whether a ball exists
+                if (orientation <= 5) {                 //rotating if no openings and connections doesn't change,if have openings, opengings should rotates
                     if (!pieceInfo[3 * i + 3].equals("0"))
                         threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
                     if (!pieceInfo[3 * i + 4].equals("0"))
                         threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
                 } else {
-                    orientation = orientation - 6;
+                    orientation = orientation - 6;    // it's a flip, first flip and then rotate for orientation times
+                    // orientation 1,4 no change when flip, 3,5 exchange and 2.6 exchange when flip
+                    // so the orientation 6 indicates flip, other will first flip then rotates
+
+                    // first do for the second element in the state
                     if (pieceInfo[3 * i + 3].equals("1") || pieceInfo[3 * i + 3].equals("4"))
                         threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
                     else if (pieceInfo[3 * i + 3].equals("3"))
@@ -200,8 +217,10 @@ public class LinkGame {
                     else if (pieceInfo[3 * i + 3].equals("6"))
                         threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
                     else
+                        //no opening or connection, no change
                         threestates[i * 6 + 1] = 0;
 
+                    // then do for the third element in the states, this is just for components with two openings and connections
                     if (pieceInfo[3 * i + 4].equals("1") || pieceInfo[3 * i + 4].equals("4"))
                         threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
                     else if (pieceInfo[3 * i + 4].equals("3"))
@@ -222,6 +241,7 @@ public class LinkGame {
                 if (threestates[i * 6 + 2] == 0 && (!pieceInfo[i * 3 + 4].equals("0")))
                     threestates[i * 6 + 2] = 6;
             } else {
+                // if the component is a ring, the same thing but the update 3,4,5 of the state array
                 threestates[i * 6 + 3] = 1;
                 if (orientation <= 5) {
                     if (!pieceInfo[3 * i + 3].equals("0"))
@@ -256,6 +276,7 @@ public class LinkGame {
                         threestates[i * 6 + 5] = 0;
                     orientation = orientation + 6;
                 }
+                //states should contains direction of 1 2 3 4 5 6 but 6%6=0 so if it is 6, the chance is that it should be 6 not zero
                 if (threestates[i * 6 + 4] == 0 && (!pieceInfo[i * 3 + 3].equals("0")))
                     threestates[i * 6 + 4] = 6;
                 if (threestates[i * 6 + 5] == 0 && (!pieceInfo[i * 3 + 4].equals("0")))
@@ -283,7 +304,7 @@ public class LinkGame {
 
      static boolean isPlacementValid(String placement) {
         // FIXME Task 7: determine whether a placement is valid
-
+        // first set all the pegs states is{0,0,0,0,0,0}
          int[] pegstates=new int[6];
          Pegs a= new Pegs(pegstates);     Pegs b= new Pegs(pegstates);  Pegs c= new Pegs(pegstates);   Pegs d= new Pegs(pegstates);
          Pegs e= new Pegs(pegstates);     Pegs f= new Pegs(pegstates);  Pegs g= new Pegs(pegstates);   Pegs h= new Pegs(pegstates);
@@ -302,32 +323,35 @@ public class LinkGame {
             }
             for (String piecePlacement : str) {
                 System.out.println(piecePlacement);
-                int[] pegindex = getPegsForPiecePlacement(piecePlacement);
+                int[] pegindex = getPegsForPiecePlacement(piecePlacement);   // get the peg number for each piece, the order is br1,origin,br2
                 for(int pegposition:pegindex)
                 {
-                    if(pegposition<0||pegposition>23)
+                    if(pegposition<0||pegposition>23)            //offgrid is not good
                         return false;
                 }
                 int temp=pegindex[0];
                 pegindex[0]=pegindex[1];
-                pegindex[1]=temp;              //first is the origin and then branch1
+                pegindex[1]=temp;              //exchange the position of br1 and origin to make the order become origin,br1,br2, the same with threestates from updatepegsstate
                 int[] updateStates=updatePegsPiecePlacement(piecePlacement);
-                for(int i=0;i<3;i++)
+                for(int i=0;i<3;i++)         // do for three components
                 {
                     int index= pegindex[i];
-                    int[] currStates=pegs[index].getStateArray();
-                    int[] updatePegStates= Arrays.copyOfRange(updateStates,i*6,i*6+6);
-                    if(updatePegStates[0]==1)
+                    int[] currStates=pegs[index].getStateArray();    //the current states of the peg
+                    int[] updatePegStates= Arrays.copyOfRange(updateStates,i*6,i*6+6);  //the states for each component
+                    if(updatePegStates[0]==1)                //the component is a ball
                     {
+                        // the current states shouldn't involve a ball
                         if (currStates[0]==0) {
                             if(currStates[3]==0||(currStates[3]==1&&(currStates[4]==updatePegStates[1]&&currStates[5]==updatePegStates[2])||(currStates[4]==updatePegStates[2]&&currStates[5]==updatePegStates[1])))
                             {
-
+                                  //the current states can involve a ring with the same direction. notice that the order of the two openings doesn't matter.
+                                 // so the judgement involve two different situations
                                    for(int j=3;j<6;j++)
                                     {
-                                        updatePegStates[j]=currStates[j];
+                                        updatePegStates[j]=currStates[j];        //if the components is ok, contitnue and update the states,the first 3 is the new component indicates a ball
+                                                                                // the second 3 should keep the original current states where the last 3 indicates a ring
                                     }
-                                    pegs[index].updateStates(updatePegStates);
+                                    pegs[index].updateStates(updatePegStates);   //change the pegs states
 
                             }
                             else
@@ -336,7 +360,7 @@ public class LinkGame {
                         else
                             return false;
                     }
-                    else if(updatePegStates[3]==1)
+                    else if(updatePegStates[3]==1)       //ring is also the same
                     {
                         if (currStates[3]==0) {
                             if(currStates[0]==0||(currStates[0]==1&&(currStates[1]==updatePegStates[4]&&currStates[2]==updatePegStates[5])||(currStates[1]==updatePegStates[5]&&currStates[2]==updatePegStates[4])))
@@ -364,9 +388,8 @@ public class LinkGame {
     }
 
     public static void main(String[] args) {
-        System.out.println(isPlacementValid(("OEAHKJ")));
+        System.out.println(isPlacementValid("BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ"));
     }
-
 
     /**
      * Return an array of all solutions given a starting placement.
