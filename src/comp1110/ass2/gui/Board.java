@@ -5,6 +5,7 @@ import comp1110.ass2.Pegs;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -17,6 +18,8 @@ public class Board extends Application {
     private static final int SQUARE_SIZE = 100;
     private static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
     private static final double ROW_HEIGHT = SQUARE_SIZE * 0.8660254; // 60 degrees
+
+    private static final String URI_BASE = "assets/";
 
     private final Group root = new Group();
     private final Group pieces = new Group();
@@ -33,9 +36,18 @@ public class Board extends Application {
 
     // FIXME Task 12: Generate interesting starting placements
 
-    class draggablePiece extends ImageView {
-
+    class FXPiece extends ImageView {
+        char id;
+        FXPiece(char id) {
+            this.id = id;
+            setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
+            setFitHeight(SQUARE_SIZE);
+            setFitHeight(SQUARE_SIZE);
+        }
     }
+//    class MoveFXPiece extends FXPiece {
+//
+//    }
 
 
     //create our Board, have 12 grey circle backgrounds
@@ -74,7 +86,7 @@ public class Board extends Application {
     public void flipPiece(MouseEvent e) {
 
     }
-    //change the board when the user attemped to move the piece
+    //change the board when the user attempts to move the piece
     public void movePiece(MouseEvent e)
     {
 
