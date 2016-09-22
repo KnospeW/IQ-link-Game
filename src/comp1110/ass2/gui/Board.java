@@ -44,6 +44,7 @@ public class Board extends Application {
     {
         int[] blank = {0,0,0,0,0,0};
         for (int i = 0; i < 24; i++) {
+            board[i]=new Pegs(blank);
             board[i].updateStates(blank);
         }
 
