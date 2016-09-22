@@ -46,11 +46,6 @@ public enum Orientation {
         }
     };
 
-//    @Override
-//    public String toString() {
-//        return
-//    }
-
     public Orientation rotate() {
         return values()[ordinal() + 1];
     }
