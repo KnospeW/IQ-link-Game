@@ -21,6 +21,8 @@ public class Board extends Application {
     private static final int CIRCLE_SIZE = (int) (SQUARE_SIZE * 0.3);
     private static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
     private static final double ROW_HEIGHT = SQUARE_SIZE * 0.8660254; // 60 degrees
+    private static final int X_BORDER = 150 - PIECE_IMAGE_SIZE / 2;
+    private static final int Y_BORDER = 150 - PIECE_IMAGE_SIZE / 2;
 
     private static final String URI_BASE = "assets/";
 
@@ -103,32 +105,49 @@ public class Board extends Application {
         }
 
         private void grabLocation() { // debugging method for snapGrid
-            int nearestYIndex = (int) Math.round((getLayoutY() - 25) / ROW_HEIGHT);
-            int xOffset = 25;                           // account for hexagonal placement
-            if (nearestYIndex % 2 == 1) xOffset = 75;
-            int nearestXIndex = (int) Math.round((getLayoutX() - xOffset) / SQUARE_SIZE);
+            // TODO: Copy this across to snapGrid and tweak border for maximum visibility, then arrange initial pieces
+            /*  -50 should snap to 0
+                49 should snap to 0
+                50 should snap to 1
+                149 should snap to 1
+             */
+//            int nearestYIndex = 0, nearestXIndex = 0;
+//            double temp = getLayoutY();
+//            int nearestYIndex = (int) Math.round((getLayoutY() ) / ROW_HEIGHT);
+//            while (temp > SQUARE_SIZE / 2) { temp -= SQUARE_SIZE / 2; nearestYIndex++; }
+//            int nearestXIndex = (int) Math.round(getLayoutX() - xOffset) / SQUARE_SIZE;
+//            temp = getLayoutX();
+//            while (temp > SQUARE_SIZE / 2 + xOffset) { temp -= SQUARE_SIZE / 2; nearestXIndex++; }
 
-            int nearestY = (int) Math.round(nearestYIndex * ROW_HEIGHT + 25); // more accurate to round then cast
-            int nearestX = nearestXIndex * SQUARE_SIZE + xOffset;
+            int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
+            int xOffset = 0;
+            if (nearestYIndex % 2 == 1) xOffset += SQUARE_SIZE / 2;
+            int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
+
+            double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
+            double nearestX = nearestXIndex * SQUARE_SIZE + xOffset + X_BORDER;
 
             System.out.println("Raw location: " + getLayoutX() + ", " + getLayoutY());
             System.out.println("Nearest points: " + nearestX + ", " + nearestY);
             System.out.println("Nearest indexes: " + nearestXIndex + ", " + nearestYIndex);
+
+            setLayoutX(nearestX);
+            setLayoutY(nearestY);
         }
 
         public void snapGrid() {
             boolean onGrid = true;
             int nearestYIndex = (int) Math.round((getLayoutY() - 25) / ROW_HEIGHT);
-            if (nearestYIndex < 0) { nearestYIndex = 0; onGrid = false; }    // bounce if placing outside the grid
+            if (nearestYIndex < 0) { nearestYIndex = 0; onGrid = false; }   // bounce if placing outside the grid
             if (nearestYIndex > 3) { nearestYIndex = 3; onGrid = false; }
-            int xOffset = 25;                           // account for hexagonal placement
-            if (nearestYIndex % 2 == 1) xOffset = 75;
+            int xOffset = 25;                                               // account for hexagonal placement
+            if (nearestYIndex % 2 == 1) xOffset += SQUARE_SIZE / 2;
             int nearestXIndex = (int) Math.round((getLayoutX() - xOffset) / SQUARE_SIZE);
-            if (nearestXIndex < 0) { nearestXIndex = 0; onGrid = false; }    // bounce again
+            if (nearestXIndex < 0) { nearestXIndex = 0; onGrid = false; }   // bounce again
             if (nearestXIndex > 5) { nearestXIndex = 5; onGrid = false; }
 
-            int nearestY = (int) Math.round(nearestYIndex * ROW_HEIGHT + 25); // more accurate to round then cast
-            int nearestX = nearestXIndex * SQUARE_SIZE + xOffset;
+            double nearestY = nearestYIndex * ROW_HEIGHT  + 25;
+            double nearestX = nearestXIndex * SQUARE_SIZE + xOffset;
 //            System.out.println(nearestYIndex);
 //            System.out.println(nearestY);
 //            System.out.println(nearestXIndex);
@@ -154,13 +173,13 @@ public class Board extends Application {
         }
 
         for (int i = 0; i < 24; i++) {
-            double x = 0, y;
+            double xOffset = 0;
             int col = i / 6;
             int row = i % 6;
             if (col % 2 != 0)
-                x =  SQUARE_SIZE / 2;
-            x = x + 25 + row * SQUARE_SIZE+150;
-            y = 25 + (ROW_HEIGHT * col)+150;
+                xOffset += SQUARE_SIZE / 2;
+            double x = (row * SQUARE_SIZE) + PIECE_IMAGE_SIZE/2 + xOffset + X_BORDER;
+            double y = (col * ROW_HEIGHT ) + PIECE_IMAGE_SIZE/2 + Y_BORDER;
 
             Circle a = new Circle(x, y, CIRCLE_SIZE, Color.GRAY);
             pegs.getChildren().add(a);
