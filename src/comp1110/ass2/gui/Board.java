@@ -5,7 +5,6 @@ import comp1110.ass2.Pegs;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -84,10 +83,11 @@ public class Board extends Application {
     //it is the initial container, the center will be the solution area
     public void createBoard()
     {
-//        int[] blank = {0,0,0,0,0,0};
-//        for (int i = 0; i < 24; i++) {
-//            board[i].updateStates(blank);
-//        }
+        int[] blank = {0,0,0,0,0,0};
+        for (int i = 0; i < 24; i++) {
+            board[i]=new Pegs(blank);
+            board[i].updateStates(blank);
+        }
 
         for (int i = 0; i < 24; i++) {
             double x = 0, y;

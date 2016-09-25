@@ -16,7 +16,7 @@ public class Pegs {
 //    private int[] pegStates;
     private int ballExit, ringExit, ballCon1, ballCon2, ringOpn1, ringOpn2;
 
-    Pegs(int[] states)
+    public Pegs(int[] states)
     {
 //        System.arraycopy(states, 0, this.pegStates, 0, 6); // condensed for loop to transfer array values
         this.ballExit = states[0];
