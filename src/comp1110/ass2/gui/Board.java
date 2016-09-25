@@ -2,10 +2,13 @@ package comp1110.ass2.gui;
 
 import comp1110.ass2.LinkGame;
 import comp1110.ass2.Pegs;
+import comp1110.ass2.Piece;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -57,21 +60,56 @@ public class Board extends Application {
             this.setLayoutY(initY);
 
             setOnMousePressed(e -> {
-                mouseX = e.getSceneX();
-                mouseY = e.getSceneY();
+                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE/2;
+                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE/2;
             });
 
             setOnMouseDragged(e -> {
                 setLayoutX(mouseX);
                 setLayoutY(mouseY);
-                mouseX = e.getSceneX();
-                mouseY = e.getSceneY();
+                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE/2;
+                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE/2;
+                e.consume();
             });
 
             setOnMouseReleased(e -> {
                 snapGrid();
             });
 
+            setOnKeyPressed(e -> {                  // once I get this up and working, maybe use QWERTY/ASDFGH to set
+                System.out.println(e.getText());    // specific rotations, or try and get it working while dragging.
+                if(e.getText() == "R") {
+                    rotatePiece();
+                    setRotate(getRotate() + 60);
+                }
+            });
+
+            setOnScroll(e -> {
+                rotatePiece();                      // to update the piece's properties
+                setRotate(getRotate() + 60);
+            });
+
+        }
+
+        public void snapGrid() {
+            int nearestYIndex = (int) Math.round((getLayoutY() - 25) / ROW_HEIGHT);
+            int xOffset = 25;
+            if(nearestYIndex < 0) nearestYIndex = 0;
+            if(nearestYIndex > 3) nearestYIndex = 3;
+            if(nearestYIndex % 2 == 1) xOffset = 75;
+            int nearestXIndex = (int) Math.round((getLayoutX() - xOffset) / SQUARE_SIZE);
+            if(nearestXIndex < 0) nearestXIndex = 0;
+            if(nearestXIndex > 5) nearestXIndex = 5;
+
+            int nearestY = (int) Math.round(nearestYIndex * ROW_HEIGHT + 25);
+            int nearestX = nearestXIndex * SQUARE_SIZE + xOffset;
+//            System.out.println(nearestYIndex);
+//            System.out.println(nearestY);
+//            System.out.println(nearestXIndex);
+//            System.out.println(nearestX);
+
+            setLayoutX(nearestX);
+            setLayoutY(nearestY);
         }
     }
 //    class MoveFXPiece extends FXPiece {
@@ -103,42 +141,40 @@ public class Board extends Application {
         }
     }
     // create each piece
-    public void drawPiece()
-    {
+    public void drawPiece() {
 
     }
-    //  change the look of the selected piece and rotate it when a MouseEvent is captured
-    public void rotatePiece(MouseEvent e)
-    {
+
+    // visually rotate a piece and update its data
+    public void rotatePiece() {
 
     }
+
     // flip the selected piece when a MouseEvent is captured
     public void flipPiece(MouseEvent e) {
 
     }
+
     //change the board when the user attempts to move the piece
-    public void movePiece(MouseEvent e)
-    {
+    public void movePiece(MouseEvent e) {
 
     }
+
     // while the game starts,show the pictures of 12 Pieces on both side of the board
-    public void createPieces()
-    {
+    public void createPieces() {
 
     }
+
     // if the placement is not well formed, retrun the warning
-    public void invalidPlacement(String placement)
-    {
+    public void invalidPlacement(String placement) {
 
     }
 
-    private void snapGrid()
-    {
+    private void snapGrid() {
 
     }
 
-    private void snapHome()
-    {
+    private void snapHome() {
 
     }
 
