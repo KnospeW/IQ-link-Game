@@ -38,11 +38,41 @@ public class Board extends Application {
 
     class FXPiece extends ImageView {
         char id;
-        FXPiece(char id) {
+        int initX, initY;
+        double mouseX, mouseY;
+        FXPiece(char id) throws IllegalArgumentException {
+            if (id > 'L') throw new IllegalArgumentException("Invalid piece id: " + id);
             this.id = id;
             setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
-            setFitHeight(SQUARE_SIZE);
-            setFitHeight(SQUARE_SIZE);
+//            setFitHeight(SQUARE_SIZE);
+//            setFitHeight(SQUARE_SIZE);
+            if ( id - 'A' < 6) {                           // row above the board
+                initX = (id - 'A') * SQUARE_SIZE + 50;
+                initY = 0;
+            }
+            else {
+                initX = (id - 'A' - 6) * SQUARE_SIZE + 50;  // row below the board
+                initY = BOARD_HEIGHT - SQUARE_SIZE*2;
+            }
+            this.setLayoutX(initX);
+            this.setLayoutY(initY);
+
+            setOnMousePressed(e -> {
+                mouseX = e.getSceneX();
+                mouseY = e.getSceneY();
+            });
+
+            setOnMouseDragged(e -> {
+                setLayoutX(mouseX);
+                setLayoutY(mouseY);
+                mouseX = e.getSceneX();
+                mouseY = e.getSceneY();
+            });
+
+            setOnMouseReleased(e -> {
+                snapGrid();
+            });
+
         }
     }
 //    class MoveFXPiece extends FXPiece {
@@ -54,10 +84,10 @@ public class Board extends Application {
     //it is the initial container, the center will be the solution area
     public void createBoard()
     {
-        int[] blank = {0,0,0,0,0,0};
-        for (int i = 0; i < 24; i++) {
-            board[i].updateStates(blank);
-        }
+//        int[] blank = {0,0,0,0,0,0};
+//        for (int i = 0; i < 24; i++) {
+//            board[i].updateStates(blank);
+//        }
 
         for (int i = 0; i < 24; i++) {
             double x = 0, y;
@@ -125,6 +155,10 @@ public class Board extends Application {
         root.getChildren().add(controls);
 
         createBoard();
+        root.getChildren().add(new FXPiece('A'));
+        root.getChildren().add(new FXPiece('B'));
+        root.getChildren().add(new FXPiece('G'));
+        root.getChildren().add(new FXPiece('L'));
 
         primaryStage.setScene(scene);
         primaryStage.show();
