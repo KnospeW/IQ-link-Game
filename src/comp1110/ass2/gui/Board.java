@@ -103,13 +103,13 @@ public class Board extends Application {
         public void snapGrid() {
             boolean onGrid = true;
             int nearestYIndex = (int) Math.round((getLayoutY() - 25) / ROW_HEIGHT);
-            if(nearestYIndex < 0) { nearestYIndex = 0; onGrid = false; }    // bounce if placing outside the grid
-            if(nearestYIndex > 3) { nearestYIndex = 3; onGrid = false; }
+            if (nearestYIndex < 0) { nearestYIndex = 0; onGrid = false; }    // bounce if placing outside the grid
+            if (nearestYIndex > 3) { nearestYIndex = 3; onGrid = false; }
             int xOffset = 25;                           // account for hexagonal placement
-            if(nearestYIndex % 2 == 1) xOffset = 75;
+            if (nearestYIndex % 2 == 1) xOffset = 75;
             int nearestXIndex = (int) Math.round((getLayoutX() - xOffset) / SQUARE_SIZE);
-            if(nearestXIndex < 0) { nearestXIndex = 0; onGrid = false; }    // bounce again
-            if(nearestXIndex > 5) { nearestXIndex = 5; onGrid = false; }
+            if (nearestXIndex < 0) { nearestXIndex = 0; onGrid = false; }    // bounce again
+            if (nearestXIndex > 5) { nearestXIndex = 5; onGrid = false; }
 
             int nearestY = (int) Math.round(nearestYIndex * ROW_HEIGHT + 25); // more accurate to round then cast
             int nearestX = nearestXIndex * SQUARE_SIZE + xOffset;
@@ -172,10 +172,6 @@ public class Board extends Application {
 
     // if the placement is not well formed, retrun the warning
     public void invalidPlacement(String placement) {
-
-    }
-
-    private void snapGrid() {
 
     }
 
