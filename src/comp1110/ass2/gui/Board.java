@@ -74,6 +74,7 @@ public class Board extends Application {
 
             setOnMouseReleased(e -> {
                 snapGrid();
+                checkOverlap();
             });
 
             setOnKeyPressed(e -> {                  // once I get this up and working, maybe use QWERTY/ASDFGH to set
@@ -91,25 +92,34 @@ public class Board extends Application {
 
         }
 
+        // visually rotate a piece and update its data
+        public void rotatePiece() {
+
+        }
+
+        private void checkOverlap() {
+        }
+
         public void snapGrid() {
+            boolean onGrid = true;
             int nearestYIndex = (int) Math.round((getLayoutY() - 25) / ROW_HEIGHT);
-            int xOffset = 25;
-            if(nearestYIndex < 0) nearestYIndex = 0;
-            if(nearestYIndex > 3) nearestYIndex = 3;
+            if(nearestYIndex < 0) { nearestYIndex = 0; onGrid = false; }    // bounce if placing outside the grid
+            if(nearestYIndex > 3) { nearestYIndex = 3; onGrid = false; }
+            int xOffset = 25;                           // account for hexagonal placement
             if(nearestYIndex % 2 == 1) xOffset = 75;
             int nearestXIndex = (int) Math.round((getLayoutX() - xOffset) / SQUARE_SIZE);
-            if(nearestXIndex < 0) nearestXIndex = 0;
-            if(nearestXIndex > 5) nearestXIndex = 5;
+            if(nearestXIndex < 0) { nearestXIndex = 0; onGrid = false; }    // bounce again
+            if(nearestXIndex > 5) { nearestXIndex = 5; onGrid = false; }
 
-            int nearestY = (int) Math.round(nearestYIndex * ROW_HEIGHT + 25);
+            int nearestY = (int) Math.round(nearestYIndex * ROW_HEIGHT + 25); // more accurate to round then cast
             int nearestX = nearestXIndex * SQUARE_SIZE + xOffset;
 //            System.out.println(nearestYIndex);
 //            System.out.println(nearestY);
 //            System.out.println(nearestXIndex);
 //            System.out.println(nearestX);
 
-            setLayoutX(nearestX);
-            setLayoutY(nearestY);
+            if (!onGrid) { setLayoutX(initX);    setLayoutY(initY);    }
+            else         { setLayoutX(nearestX); setLayoutY(nearestY); }
         }
     }
 //    class MoveFXPiece extends FXPiece {
@@ -142,11 +152,6 @@ public class Board extends Application {
     }
     // create each piece
     public void drawPiece() {
-
-    }
-
-    // visually rotate a piece and update its data
-    public void rotatePiece() {
 
     }
 
