@@ -7,13 +7,9 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-
-import java.security.Key;
-import java.util.Objects;
 
 public class Board extends Application {
     private static final int BOARD_WIDTH = 933;
@@ -42,7 +38,7 @@ public class Board extends Application {
 
     // FIXME Task 12: Generate interesting starting placements
 
-    class FXPiece extends ImageView {
+    private class FXPiece extends ImageView {
         char id;
         int initX, initY;
         double mouseX, mouseY;
@@ -70,7 +66,6 @@ public class Board extends Application {
                 initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;  // row below the board
                 initY = BOARD_HEIGHT - SQUARE_SIZE * 5 / 2;
             }
-//            setRotate(60);
             setLayoutX(initX);
             setLayoutY(initY);
 
@@ -107,22 +102,24 @@ public class Board extends Application {
                     flipPiece();
                     setScaleY(getScaleY() * -1);
                 }
+                checkOverlap();
             });
 
             setOnScroll(e -> {
                 rotatePiece(1);                      // to update the piece's properties
                 setRotate(getRotate() + 60);
+                checkOverlap();
             });
 
         }
 
         // visually rotate a piece and update its data
-        public void rotatePiece(int modifier) {
+        private void rotatePiece(int modifier) {
 
         }
 
         // flip the selected piece
-        public void flipPiece() {
+        private void flipPiece() {
 
         }
 
@@ -130,7 +127,6 @@ public class Board extends Application {
         }
 
         private void grabLocation() { // debugging method for snapGrid
-            // TODO: Copy this across to snapGrid and tweak border for maximum visibility, then arrange initial pieces
             /*  -50 should snap to 0
                 49 should snap to 0
                 50 should snap to 1
@@ -160,7 +156,7 @@ public class Board extends Application {
             setLayoutY(nearestY);
         }
 
-        public void snapGrid() {
+        private void snapGrid() {
             // FIXME: Strip that should be -1 is read as 0 and makes the piece snap to the board instead of home.
             boolean onGrid = true;
             int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
@@ -186,7 +182,7 @@ public class Board extends Application {
 
     //create our Board, have 12 grey circle backgrounds
     //it is the initial container, the center will be the solution area
-    public void createBoard()
+    private void createBoard()
     {
         int[] blank = {0,0,0,0,0,0};
         for (int i = 0; i < 24; i++) {
@@ -219,10 +215,6 @@ public class Board extends Application {
 
     // if the placement is not well formed, retrun the warning
     public void invalidPlacement(String placement) {
-
-    }
-
-    private void snapHome() {
 
     }
 
