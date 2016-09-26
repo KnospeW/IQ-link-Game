@@ -4,11 +4,11 @@ import comp1110.ass2.Pegs;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.text.*;
+import javafx.scene.image.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.*;
 import javafx.stage.Stage;
 
 public class Board extends Application {
@@ -27,6 +27,7 @@ public class Board extends Application {
     private final Group pieces = new Group();
     private final Group pegs = new Group();
     private final Group controls = new Group();
+    private final Group hints = new Group();
 
     private Pegs[] board = new Pegs[24];
 
@@ -213,6 +214,20 @@ public class Board extends Application {
 
     }
 
+    private void loadHints() {
+        int boxW = 470;
+        int boxH = 27;
+
+        Rectangle box = new Rectangle(10, BOARD_HEIGHT - boxH - 8, boxW, boxH);
+        box.setFill(Color.LIGHTGREY);
+
+        Text sol = new Text(15, BOARD_HEIGHT - 15, "BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ");
+        sol.setFill(Color.DARKRED);
+        sol.setFont(new Font(20));
+
+        hints.getChildren().addAll(box, sol);
+    }
+
     // if the placement is not well formed, retrun the warning
     public void invalidPlacement(String placement) {
 
@@ -231,11 +246,19 @@ public class Board extends Application {
         root.getChildren().add(controls);
 
         createBoard();
+        loadHints();
         for (char n = 'A'; n < 'M'; n++) {
             root.getChildren().add(new FXPiece(n));
         }
 
-//        scene.setOnKeyPressed(e -> System.out.println(e.getCode()));
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.SLASH && !root.getChildren().contains(hints))
+                root.getChildren().add(hints);
+        });
+
+        scene.setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.SLASH) root.getChildren().remove(hints);
+        });
 
         primaryStage.setScene(scene);
         primaryStage.show();
