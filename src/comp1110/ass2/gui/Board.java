@@ -1,8 +1,6 @@
 package comp1110.ass2.gui;
 
-import comp1110.ass2.LinkGame;
 import comp1110.ass2.Pegs;
-import comp1110.ass2.Piece;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -14,6 +12,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
+import java.security.Key;
+import java.util.Objects;
+
 public class Board extends Application {
     private static final int BOARD_WIDTH = 933;
     private static final int BOARD_HEIGHT = 700;
@@ -21,8 +22,8 @@ public class Board extends Application {
     private static final int CIRCLE_SIZE = (int) (SQUARE_SIZE * 0.3);
     private static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
     private static final double ROW_HEIGHT = SQUARE_SIZE * 0.8660254; // 60 degrees
-    private static final int X_BORDER = 150 - PIECE_IMAGE_SIZE / 2;
-    private static final int Y_BORDER = 150 - PIECE_IMAGE_SIZE / 2;
+    private static final int X_BORDER = 230 - PIECE_IMAGE_SIZE / 2;
+    private static final int Y_BORDER = 250 - PIECE_IMAGE_SIZE / 2;
 
     private static final String URI_BASE = "assets/";
 
@@ -51,53 +52,77 @@ public class Board extends Application {
             setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
             setFitHeight(PIECE_IMAGE_SIZE);
             setFitWidth (PIECE_IMAGE_SIZE);
-            if ( id - 'A' < 6) {                           // row above the board
-                initX = (id - 'A') * SQUARE_SIZE + 50;
-                initY = 0;
+            int mod = id - 'A';
+            if (mod < 4) {                                                  // row above the board
+                initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
+                if ( mod % 2 != 0) initY = 40;
+                else initY = -40;
+            }
+            else if (mod < 6) {                                             // left row
+                initX = 0;
+                initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 3);
+            }
+            else if (mod < 8) {
+                initX = BOARD_WIDTH - PIECE_IMAGE_SIZE + SQUARE_SIZE / 3;   // right row
+                initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 5);
             }
             else {
-                initX = (id - 'A' - 6) * SQUARE_SIZE + 50;  // row below the board
-                initY = BOARD_HEIGHT - SQUARE_SIZE*2;
+                initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;  // row below the board
+                initY = BOARD_HEIGHT - SQUARE_SIZE * 5 / 2;
             }
-            this.setLayoutX(initX);
-            this.setLayoutY(initY);
+//            setRotate(60);
+            setLayoutX(initX);
+            setLayoutY(initY);
 
             setOnMousePressed(e -> {
-                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE/2;
-                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE/2;
+                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2; // we want to manipulate from the centre of the piece,
+                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2; // not the corner (which is transparent)
             });
 
             setOnMouseDragged(e -> {
                 setLayoutX(mouseX);
                 setLayoutY(mouseY);
-                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE/2;
-                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE/2;
-                e.consume();
+                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2;
+                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2;
+                requestFocus();
             });
 
             setOnMouseReleased(e -> {
-//                snapGrid();
-                grabLocation();
+//                grabLocation();                     // testing
+                snapGrid();
                 checkOverlap();
             });
 
-            setOnKeyPressed(e -> {                  // once I get this up and working, maybe use QWERTY/ASDFGH to set
-                System.out.println(e.getText());    // specific rotations, or try and get it working while dragging.
-                if(e.getText() == "R") {
-                    rotatePiece();
+            setOnKeyPressed(e -> {                  // due to limitations in the engine, pieces must first be dragged
+//                System.out.println(e.getCode());    // before they can be rotated or flipped
+                if (e.getCode() == KeyCode.E) {
+                    rotatePiece(-1);
+                    setRotate(getRotate() - 60);
+                }
+                if (e.getCode() == KeyCode.R) {
+                    rotatePiece(1);
                     setRotate(getRotate() + 60);
+                }
+                if (e.getCode() == KeyCode.F) {
+                    flipPiece();
+                    setScaleY(getScaleY() * -1);
                 }
             });
 
             setOnScroll(e -> {
-                rotatePiece();                      // to update the piece's properties
+                rotatePiece(1);                      // to update the piece's properties
                 setRotate(getRotate() + 60);
             });
 
         }
 
         // visually rotate a piece and update its data
-        public void rotatePiece() {
+        public void rotatePiece(int modifier) {
+
+        }
+
+        // flip the selected piece
+        public void flipPiece() {
 
         }
 
@@ -124,8 +149,8 @@ public class Board extends Application {
             if (nearestYIndex % 2 == 1) xOffset += SQUARE_SIZE / 2;
             int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
 
-            double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
-            double nearestX = nearestXIndex * SQUARE_SIZE + xOffset + X_BORDER;
+            double nearestY = nearestYIndex * ROW_HEIGHT  + Y_BORDER;
+            double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
 
             System.out.println("Raw location: " + getLayoutX() + ", " + getLayoutY());
             System.out.println("Nearest points: " + nearestX + ", " + nearestY);
@@ -136,22 +161,19 @@ public class Board extends Application {
         }
 
         public void snapGrid() {
+            // FIXME: Strip that should be -1 is read as 0 and makes the piece snap to the board instead of home.
             boolean onGrid = true;
-            int nearestYIndex = (int) Math.round((getLayoutY() - 25) / ROW_HEIGHT);
+            int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
             if (nearestYIndex < 0) { nearestYIndex = 0; onGrid = false; }   // bounce if placing outside the grid
             if (nearestYIndex > 3) { nearestYIndex = 3; onGrid = false; }
-            int xOffset = 25;                                               // account for hexagonal placement
-            if (nearestYIndex % 2 == 1) xOffset += SQUARE_SIZE / 2;
-            int nearestXIndex = (int) Math.round((getLayoutX() - xOffset) / SQUARE_SIZE);
+            int xOffset = 0;                                                // account for hexagonal placement
+            if (nearestYIndex % 2 != 0) xOffset += SQUARE_SIZE / 2;
+            int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
             if (nearestXIndex < 0) { nearestXIndex = 0; onGrid = false; }   // bounce again
             if (nearestXIndex > 5) { nearestXIndex = 5; onGrid = false; }
 
-            double nearestY = nearestYIndex * ROW_HEIGHT  + 25;
-            double nearestX = nearestXIndex * SQUARE_SIZE + xOffset;
-//            System.out.println(nearestYIndex);
-//            System.out.println(nearestY);
-//            System.out.println(nearestXIndex);
-//            System.out.println(nearestX);
+            double nearestY = nearestYIndex * ROW_HEIGHT  + Y_BORDER;
+            double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
 
             if (!onGrid) { setLayoutX(initX);    setLayoutY(initY);    }
             else         { setLayoutX(nearestX); setLayoutY(nearestY); }
@@ -173,30 +195,20 @@ public class Board extends Application {
         }
 
         for (int i = 0; i < 24; i++) {
-            double xOffset = 0;
             int col = i / 6;
             int row = i % 6;
-            if (col % 2 != 0)
-                xOffset += SQUARE_SIZE / 2;
-            double x = (row * SQUARE_SIZE) + PIECE_IMAGE_SIZE/2 + xOffset + X_BORDER;
-            double y = (col * ROW_HEIGHT ) + PIECE_IMAGE_SIZE/2 + Y_BORDER;
+            double y = (col * ROW_HEIGHT ) + PIECE_IMAGE_SIZE / 2 + Y_BORDER;
+            int xOffset = 0;
+            if (col % 2 != 0) xOffset += SQUARE_SIZE / 2;
+            double x = (row * SQUARE_SIZE) + PIECE_IMAGE_SIZE / 2 + X_BORDER + xOffset;
 
             Circle a = new Circle(x, y, CIRCLE_SIZE, Color.GRAY);
             pegs.getChildren().add(a);
         }
     }
+
     // create each piece
     public void drawPiece() {
-
-    }
-
-    // flip the selected piece when a MouseEvent is captured
-    public void flipPiece(MouseEvent e) {
-
-    }
-
-    //change the board when the user attempts to move the piece
-    public void movePiece(MouseEvent e) {
 
     }
 
@@ -227,10 +239,11 @@ public class Board extends Application {
         root.getChildren().add(controls);
 
         createBoard();
-        root.getChildren().add(new FXPiece('A'));
-        root.getChildren().add(new FXPiece('B'));
-        root.getChildren().add(new FXPiece('G'));
-        root.getChildren().add(new FXPiece('L'));
+        for (char n = 'A'; n < 'M'; n++) {
+            root.getChildren().add(new FXPiece(n));
+        }
+
+//        scene.setOnKeyPressed(e -> System.out.println(e.getCode()));
 
         primaryStage.setScene(scene);
         primaryStage.show();
