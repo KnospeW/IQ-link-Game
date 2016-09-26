@@ -49,24 +49,8 @@ public class Board extends Application {
             setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
             setFitHeight(PIECE_IMAGE_SIZE);
             setFitWidth (PIECE_IMAGE_SIZE);
-            int mod = id - 'A';
-            if (mod < 4) {                                                  // row above the board
-                initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
-                if ( mod % 2 != 0) initY = 40;
-                else initY = -40;
-            }
-            else if (mod < 6) {                                             // left row
-                initX = 0;
-                initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 3);
-            }
-            else if (mod < 8) {
-                initX = BOARD_WIDTH - PIECE_IMAGE_SIZE + SQUARE_SIZE / 3;   // right row
-                initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 5);
-            }
-            else {
-                initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;  // row below the board
-                initY = BOARD_HEIGHT - SQUARE_SIZE * 5 / 2;
-            }
+            findInitialPlacement();
+
             setLayoutX(initX);
             setLayoutY(initY);
 
@@ -112,6 +96,27 @@ public class Board extends Application {
                 checkOverlap();
             });
 
+        }
+
+        private void findInitialPlacement() {
+            int mod = id - 'A';
+            if (mod < 4) {                                                  // row above the board
+                initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
+                if ( mod % 2 != 0) initY = 40;
+                else initY = -40;
+            }
+            else if (mod < 6) {                                             // left row
+                initX = 0;
+                initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 3);
+            }
+            else if (mod < 8) {
+                initX = BOARD_WIDTH - PIECE_IMAGE_SIZE + SQUARE_SIZE / 3;   // right row
+                initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 5);
+            }
+            else {
+                initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;  // row below the board
+                initY = BOARD_HEIGHT - SQUARE_SIZE * 5 / 2;
+            }
         }
 
         // visually rotate a piece and update its data
@@ -176,9 +181,24 @@ public class Board extends Application {
             else         { setLayoutX(nearestX); setLayoutY(nearestY); }
         }
     }
-//    class MoveFXPiece extends FXPiece {
-//
-//    }
+
+    private class preplacedPiece extends FXPiece {
+        preplacedPiece(char id, int xPeg, int yPeg) throws IllegalArgumentException {
+            super(id);
+            int xOffset = 0;
+            if (yPeg % 2 != 0) xOffset += SQUARE_SIZE / 2;
+            initY = (int) (yPeg * ROW_HEIGHT + Y_BORDER);
+            initX = xPeg * SQUARE_SIZE + X_BORDER + xOffset;
+
+            setLayoutX(initX);
+            setLayoutY(initY);
+
+            setOnMousePressed(e -> {});
+            setOnMouseDragged(e -> {});
+            setOnMouseReleased(e -> {});
+            setOnScroll(e -> {});
+        }
+    }
 
 
     //create our Board, have 12 grey circle backgrounds
@@ -241,14 +261,14 @@ public class Board extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("IQ Link");
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
-        root.getChildren().add(pieces);
         root.getChildren().add(pegs);
         root.getChildren().add(controls);
+        root.getChildren().add(pieces);
 
         createBoard();
         loadHints();
         for (char n = 'A'; n < 'M'; n++) {
-            root.getChildren().add(new FXPiece(n));
+            pieces.getChildren().add(new FXPiece(n));
         }
 
         scene.setOnKeyPressed(e -> {
