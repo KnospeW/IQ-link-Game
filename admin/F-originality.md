@@ -1,9 +1,9 @@
 We declare that the work we have submitted for Stage F of this assignment and all stages before it is entirely our own work, with the following documented exceptions:
 
-* The idea of using <...> to make the game run faster came from a discussion with <...> (noted in source code comments)
+* The base idea for the FXPiece drag-and-drop code came from Steve Blackburn in the first assignment.
 
-* The code in class <...> is based on a solution we found when researching the problem (URL provided in source code comments)
+* The solution to implementing setOnKeyPress in FXPiece came from [this](http://stackoverflow.com/questions/32802664/setonkeypressed-event-not-working-properly) StackOverflow answer.
 
-* ....
+* Syntactical corrections drawn from Oracle's Java documentation.
 
-Signed: Mary Jones (u2345678), Bob Smith (u3456789), and Sue Black (u0123456)
+Signed: Alex Smith (u5838800)
