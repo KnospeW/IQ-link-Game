@@ -3,6 +3,7 @@ package comp1110.ass2.gui;
 import comp1110.ass2.Pegs;
 import javafx.application.Application;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.*;
@@ -95,13 +96,19 @@ public class Board extends Application {
             });
 
             setOnScroll(e -> {
-                rotatePiece(1);                      // to update the piece's properties
-                setRotate(getRotate() + 60);
-                checkOverlap();
+                rotatePiece();
+               // rotatePiece(1);                      // to update the piece's properties
+               // setRotate(getRotate() + 60);
+                //checkOverlap();
             });
 
-        }
 
+    }
+
+        public void setPosition(int pos)
+        {
+            this.position=pos;
+        }
         private void findInitialPlacement() {
             int mod = id - 'A';
             if (mod < 4) {                                                  // row above the board
@@ -124,7 +131,11 @@ public class Board extends Application {
         private void rotatePiece(int modifier) {
 
         }
-
+        private void rotatePiece()
+        {
+            setRotate((getRotate() + 60) % 360);
+            snapGrid();
+        }
         // flip the selected piece
         private void flipPiece() {
 
@@ -153,13 +164,13 @@ public class Board extends Application {
             System.out.println("Nearest points: " + nearestX + ", " + nearestY);
             System.out.println("Nearest indexes: " + nearestXIndex + ", " + nearestYIndex);
             System.out.println(this);
-            if (isPlacementValid(this.toString())) {
-                setLayoutX(nearestX);
-                setLayoutY(nearestY);
-            } else {
-                setLayoutX(initX);
-                setLayoutY(initY);
-            }
+//            if (isPlacementValid(this.toString())) {
+//                setLayoutX(nearestX);
+//                setLayoutY(nearestY);
+//            } else {
+//                setLayoutX(initX);
+//                setLayoutY(initY);
+//            }
 
         }
 
@@ -188,13 +199,27 @@ public class Board extends Application {
 
             double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
             double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
+            this.position= nearestXIndex + nearestYIndex * 6;
 
-            if (!onGrid) {
+            if (onGrid&&isPlacementValid(this.toString())) {
+                String placement = "";
+                for(Node p : pieces.getChildren()) {
+                    if(!p.equals(""))
+                    placement += p.toString();
+                }
+               if( isPlacementValid(placement)) {
+                   setLayoutX(nearestX);
+                   setLayoutY(nearestY);
+               }
+               else{
+                   this.position=-1;
+                   setLayoutX(initX);
+                   setLayoutY(initY);
+               }
+            } else {
+                this.position=-1;
                 setLayoutX(initX);
                 setLayoutY(initY);
-            } else {
-                setLayoutX(nearestX);
-                setLayoutY(nearestY);
             }
         }
 
@@ -255,12 +280,10 @@ public class Board extends Application {
     private void makePieces() {
         pieces.getChildren().clear();
         for (char p = 'A'; p < 'L'; p++) {
-            FXPiece piece=new FXPiece(p);
+            FXPiece piece = new FXPiece(p);
             piece.setPosition(-1);
             pieces.getChildren().add(piece);
-        pieces.getChildren().clear();       // not sold on this line, because this removes any preplacements
-        for (char p = 'A'; p < 'L'; p++) {  // also, when the game's first run, there won't be anything to clear anyway
-            pieces.getChildren().add(new FXPiece(p));
+           // pieces.getChildren().clear();       // not sold on this line, because this removes any preplacements
         }
     }
 
