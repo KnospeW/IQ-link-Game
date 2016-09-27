@@ -106,10 +106,14 @@ public class Board extends Application {
 
     }
 
-        public void setPosition(int pos)
-        {
-            this.position=pos;
+        private void setPosition(int pos) {
+            this.position = pos;
         }
+
+        private int getPosition() {
+            return this.position;
+        }
+
         private void findInitialPlacement() {
             int mod = id - 'A';
             if (mod < 4) {                                                  // row above the board
@@ -135,12 +139,12 @@ public class Board extends Application {
         private void rotatePiece()
         {
             setRotate((getRotate() + 60) % 360);
-            snapGrid();
+//            snapGrid(); // enabling this here causes a bug where rotating a piece on the spot before moving it can cause it to snap to the grid, and isn't needed to do snapping on mouse release
         }
         // flip the selected piece
         private void flipPiece() {
             setScaleY(getScaleY() * -1);
-            snapGrid();
+//            snapGrid(); // same as rotatePiece
         }
 
         private void checkOverlap() {
@@ -179,21 +183,21 @@ public class Board extends Application {
         private void snapGrid() {
             boolean onGrid = true;
             int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
-            if (nearestYIndex < 0) {
+            if (nearestYIndex < 0) {    // bounce if placing outside the grid
                 nearestYIndex = 0;
                 onGrid = false;
-            }   // bounce if placing outside the grid
+            }
             if (nearestYIndex > 3) {
                 nearestYIndex = 3;
                 onGrid = false;
             }
-            int xOffset = 0;                                                // account for hexagonal placement
+            int xOffset = 0;            // account for hexagonal placement
             if (nearestYIndex % 2 != 0) xOffset += SQUARE_SIZE / 2;
             int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
-            if (nearestXIndex < 0) {
+            if (nearestXIndex < 0) {    // bounce again
                 nearestXIndex = 0;
                 onGrid = false;
-            }   // bounce again
+            }
             if (nearestXIndex > 5) {
                 nearestXIndex = 5;
                 onGrid = false;
@@ -201,27 +205,30 @@ public class Board extends Application {
 
             double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
             double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
-            this.position= nearestXIndex + nearestYIndex * 6;
-            if (onGrid&&isPlacementValid(this.toString())) {
+            setPosition(nearestXIndex + nearestYIndex * 6);
+            if (onGrid && isPlacementValid(this.toString())) {
                 String placement = "";
-                for(Node p : pieces.getChildren()) {
-                    if(!p.equals(""))
-                    placement += p.toString();
+                for (Node p : pieces.getChildren()) {
+                    if (!p.toString().equals(""))
+                        placement += p.toString();
                 }
-               if( isPlacementValid(placement)) {
+               if (isPlacementValid(placement)) {
                    setLayoutX(nearestX);
                    setLayoutY(nearestY);
                }
-               else{
-                   this.position=-1;
-                   setLayoutX(initX);
-                   setLayoutY(initY);
+               else {
+                   snapHome();
                }
             } else {
-                this.position=-1;
-                setLayoutX(initX);
-                setLayoutY(initY);
+                snapHome();
             }
+        }
+
+        // modularising the return home code
+        private void snapHome() {
+            setPosition(-1);
+            setLayoutX(initX);
+            setLayoutY(initY);
         }
 
         /// get PiecePlacement
@@ -229,7 +236,7 @@ public class Board extends Application {
             char orientation = (char) ('A' + (int) (getRotate() / 60));
             if(this.getScaleY()==-1)
                 orientation=(char)(orientation+6);
-            return this.position == -1 ? "" : "" + (char) ('A' + this.position) + id + orientation;
+            return (getPosition() == -1) ? "" : "" + (char) ('A' + getPosition()) + id + orientation;
         }
     }
 
@@ -275,22 +282,18 @@ public class Board extends Application {
         }
     }
 
-    // create each piece
-    public void drawPiece() {
-
-    }
-
     private void makePieces() {
         pieces.getChildren().clear();
         for (char p = 'A'; p < 'L'; p++) {
             FXPiece piece = new FXPiece(p);
             piece.setPosition(-1);
             pieces.getChildren().add(piece);
-           // pieces.getChildren().clear();       // not sold on this line, because this removes any preplacements
+           // pieces.getChildren().clear();
         }
     }
 
     private void loadHints() {
+        // TODO: Turn this into a visual representation, since players won't know what BAA means (I barely know what BAA means)
         int boxW = 470;
         int boxH = 27;
 
@@ -304,7 +307,7 @@ public class Board extends Application {
         hints.getChildren().addAll(box, sol);
     }
 
-    // if the placement is not well formed, retrun the warning
+    // if the placement is not well formed, return the warning
     public void invalidPlacement(String placement) {
 
     }
