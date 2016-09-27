@@ -81,18 +81,19 @@ public class Board extends Application {
             setOnKeyPressed(e -> {                  // due to limitations in the engine, pieces must first be dragged
 //                System.out.println(e.getCode());    // before they can be rotated or flipped
                 if (e.getCode() == KeyCode.E) {
-                    rotatePiece(-1);
-                    setRotate(getRotate() - 60);
+                    rotatePiece();
+//                    rotatePiece(-1);
+//                    setRotate(getRotate() - 60);
                 }
                 if (e.getCode() == KeyCode.R) {
-                    rotatePiece(1);
-                    setRotate(getRotate() + 60);
+                      rotatePiece();
+//                    rotatePiece(1);
+//                    setRotate(getRotate() + 60);
                 }
                 if (e.getCode() == KeyCode.F) {
                     flipPiece();
-                    setScaleY(getScaleY() * -1);
                 }
-                checkOverlap();
+     //           checkOverlap();
             });
 
             setOnScroll(e -> {
@@ -138,7 +139,8 @@ public class Board extends Application {
         }
         // flip the selected piece
         private void flipPiece() {
-
+            setScaleY(getScaleY() * -1);
+            snapGrid();
         }
 
         private void checkOverlap() {
@@ -200,7 +202,6 @@ public class Board extends Application {
             double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
             double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
             this.position= nearestXIndex + nearestYIndex * 6;
-
             if (onGrid&&isPlacementValid(this.toString())) {
                 String placement = "";
                 for(Node p : pieces.getChildren()) {
@@ -226,6 +227,8 @@ public class Board extends Application {
         /// get PiecePlacement
         public String toString() {
             char orientation = (char) ('A' + (int) (getRotate() / 60));
+            if(this.getScaleY()==-1)
+                orientation=(char)(orientation+6);
             return this.position == -1 ? "" : "" + (char) ('A' + this.position) + id + orientation;
         }
     }
