@@ -43,6 +43,8 @@ public class Board extends Application {
         char id;
         int initX, initY;
         double mouseX, mouseY;
+        int position;
+
         FXPiece(char id) throws IllegalArgumentException {
             if (id > 'L') throw new IllegalArgumentException("Invalid piece id: " + id);
             this.id = id;
@@ -158,12 +160,20 @@ public class Board extends Application {
             System.out.println("Nearest points: " + nearestX + ", " + nearestY);
             System.out.println("Nearest indexes: " + nearestXIndex + ", " + nearestYIndex);
 
-            setLayoutX(nearestX);
-            setLayoutY(nearestY);
+            this.position = nearestXIndex + nearestYIndex * 6;
+            System.out.println(this);
+           if( LinkGame.isPlacementValid(this.toString()))
+           {setLayoutX(nearestX);
+            setLayoutY(nearestY);}
+            else
+           {
+               setLayoutX(initX);
+               setLayoutY(initY);
+           }
+
         }
 
-        private void snapGrid() {
-            // FIXME: Strip that should be -1 is read as 0 and makes the piece snap to the board instead of home.
+        public void snapGrid() {
             boolean onGrid = true;
             int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
             if (nearestYIndex < 0) { nearestYIndex = 0; onGrid = false; }   // bounce if placing outside the grid
@@ -180,6 +190,12 @@ public class Board extends Application {
             if (!onGrid) { setLayoutX(initX);    setLayoutY(initY);    }
             else         { setLayoutX(nearestX); setLayoutY(nearestY); }
         }
+
+/// get PiecePlacement
+    public String toString() {
+        char orientation = (char) ('A' + (int) (getRotate() / 60));
+        return this.position == -1 ? "" : "" + (char) ('A' + this.position) + id + orientation;
+
     }
 
     private class preplacedPiece extends FXPiece {
@@ -227,6 +243,11 @@ public class Board extends Application {
     // create each piece
     public void drawPiece() {
 
+    private void makePieces() {
+        pieces.getChildren().clear();
+        for (char p = 'A'; p < 'L'; p++) {
+            pieces.getChildren().add(new FXPiece(p));
+        }
     }
 
     // while the game starts,show the pictures of 12 Pieces on both side of the board
@@ -262,8 +283,8 @@ public class Board extends Application {
         primaryStage.setTitle("IQ Link");
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
+        root.getChildren().add(pieces);     //change the order of pieces and pegs to make piece in the upper layer
         root.getChildren().add(controls);
-        root.getChildren().add(pieces);
 
         createBoard();
         loadHints();
@@ -279,6 +300,11 @@ public class Board extends Application {
         scene.setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.SLASH) root.getChildren().remove(hints);
         });
+        makePieces();
+//        root.getChildren().add(new FXPiece('A'));
+//        root.getChildren().add(new FXPiece('B'));
+//        root.getChildren().add(new FXPiece('G'));
+//        root.getChildren().add(new FXPiece('L'));
 
         primaryStage.setScene(scene);
         primaryStage.show();
