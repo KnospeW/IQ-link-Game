@@ -1,5 +1,6 @@
 package comp1110.ass2.gui;
 
+import comp1110.ass2.LinkGame;
 import comp1110.ass2.Pegs;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -126,8 +127,15 @@ public class Board extends Application {
 
             this.position = nearestXIndex + nearestYIndex * 6;
             System.out.println(this);
-            setLayoutX(nearestX);
-            setLayoutY(nearestY);
+           if( LinkGame.isPlacementValid(this.toString()))
+           {setLayoutX(nearestX);
+            setLayoutY(nearestY);}
+            else
+           {
+               setLayoutX(initX);
+               setLayoutY(initY);
+           }
+
         }
 
         public void snapGrid() {
@@ -176,7 +184,9 @@ public class Board extends Application {
 
     }
 
+
 }
+
 
 
         // visually rotate a piece and update its data
