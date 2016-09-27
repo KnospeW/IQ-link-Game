@@ -4,6 +4,7 @@ import comp1110.ass2.LinkGame;
 import comp1110.ass2.Pegs;
 import javafx.application.Application;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -93,6 +94,11 @@ public class Board extends Application {
                 rotatePiece();                      // to update the piece's properties
                 e.consume();
             });}
+        public void setPosition(int pos)
+        {
+            this.position=pos;
+
+        }
         private void rotatePiece() {
             setRotate((getRotate() + 60) % 360);
             grabLocation();
@@ -124,17 +130,34 @@ public class Board extends Application {
             System.out.println("Raw location: " + getLayoutX() + ", " + getLayoutY());
             System.out.println("Nearest points: " + nearestX + ", " + nearestY);
             System.out.println("Nearest indexes: " + nearestXIndex + ", " + nearestYIndex);
-
-            this.position = nearestXIndex + nearestYIndex * 6;
             System.out.println(this);
-           if( LinkGame.isPlacementValid(this.toString()))
-           {setLayoutX(nearestX);
-            setLayoutY(nearestY);}
+            this.position = nearestXIndex + nearestYIndex * 6;
+            if(LinkGame.isPlacementValid(this.toString()))
+            {
+                String placement = "";
+                for(Node p : pieces.getChildren()) {
+                    placement += p.toString();
+                }
+                if(LinkGame.isPlacementValid(placement))
+                {
+                    setLayoutX(nearestX);
+                    setLayoutY(nearestY);
+                }
+                else
+                    {
+                        this.position=-1;
+                        setLayoutX(initX);
+                        setLayoutY(initY);
+                    }
+            }
             else
-           {
-               setLayoutX(initX);
-               setLayoutY(initY);
-           }
+            {
+                this.position=-1;
+                setLayoutX(initX);
+                setLayoutY(initY);
+            }
+
+
 
         }
 
@@ -229,7 +252,9 @@ public class Board extends Application {
     private void makePieces() {
         pieces.getChildren().clear();
         for (char p = 'A'; p < 'L'; p++) {
-            pieces.getChildren().add(new FXPiece(p));
+            FXPiece piece=new FXPiece(p);
+            piece.setPosition(-1);
+            pieces.getChildren().add(piece);
         }
     }
 
