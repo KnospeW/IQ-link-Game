@@ -1,14 +1,11 @@
 package comp1110.ass2.gui;
 
-import comp1110.ass2.LinkGame;
 import comp1110.ass2.Pegs;
-import comp1110.ass2.Piece;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -27,8 +24,8 @@ public class Board extends Application {
     private static final String URI_BASE = "assets/";
 
     private final Group root = new Group();
-    private final Group pieces = new Group();
     private final Group pegs = new Group();
+    private final Group pieces = new Group();
     private final Group controls = new Group();
 
     private Pegs[] board = new Pegs[24];
@@ -45,33 +42,35 @@ public class Board extends Application {
         char id;
         int initX, initY;
         double mouseX, mouseY;
+        int position;
+
         FXPiece(char id) throws IllegalArgumentException {
             if (id > 'L') throw new IllegalArgumentException("Invalid piece id: " + id);
             this.id = id;
             setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
             setFitHeight(PIECE_IMAGE_SIZE);
-            setFitWidth (PIECE_IMAGE_SIZE);
-            if ( id - 'A' < 6) {                           // row above the board
+            setFitWidth(PIECE_IMAGE_SIZE);
+            if (id - 'A' < 6) {                           // row above the board
                 initX = (id - 'A') * SQUARE_SIZE + 50;
-                initY = 0;
-            }
-            else {
+                initY = BOARD_HEIGHT - SQUARE_SIZE * 4;   //change its postion to look better
+                //initY = 0;
+            } else {
                 initX = (id - 'A' - 6) * SQUARE_SIZE + 50;  // row below the board
-                initY = BOARD_HEIGHT - SQUARE_SIZE*2;
+                initY = BOARD_HEIGHT - SQUARE_SIZE * 2;
             }
             this.setLayoutX(initX);
             this.setLayoutY(initY);
 
             setOnMousePressed(e -> {
-                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE/2;
-                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE/2;
+                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2;
+                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2;
             });
 
             setOnMouseDragged(e -> {
                 setLayoutX(mouseX);
                 setLayoutY(mouseY);
-                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE/2;
-                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE/2;
+                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2;
+                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2;
                 e.consume();
             });
 
@@ -83,27 +82,21 @@ public class Board extends Application {
 
             setOnKeyPressed(e -> {                  // once I get this up and working, maybe use QWERTY/ASDFGH to set
                 System.out.println(e.getText());    // specific rotations, or try and get it working while dragging.
-                if(e.getText() == "R") {
+                if (e.getText() == "R" || e.getText() == "r") {
                     rotatePiece();
-                    setRotate(getRotate() + 60);
+                    e.consume();
                 }
             });
 
             setOnScroll(e -> {
                 rotatePiece();                      // to update the piece's properties
-                setRotate(getRotate() + 60);
-            });
+                e.consume();
+            });}
+        private void rotatePiece() {
+            setRotate((getRotate() + 60) % 360);
+            grabLocation();
 
         }
-
-        // visually rotate a piece and update its data
-        public void rotatePiece() {
-
-        }
-
-        private void checkOverlap() {
-        }
-
         private void grabLocation() { // debugging method for snapGrid
             // TODO: Copy this across to snapGrid and tweak border for maximum visibility, then arrange initial pieces
             /*  -50 should snap to 0
@@ -131,6 +124,8 @@ public class Board extends Application {
             System.out.println("Nearest points: " + nearestX + ", " + nearestY);
             System.out.println("Nearest indexes: " + nearestXIndex + ", " + nearestYIndex);
 
+            this.position = nearestXIndex + nearestYIndex * 6;
+            System.out.println(this);
             setLayoutX(nearestX);
             setLayoutY(nearestY);
         }
@@ -138,25 +133,59 @@ public class Board extends Application {
         public void snapGrid() {
             boolean onGrid = true;
             int nearestYIndex = (int) Math.round((getLayoutY() - 25) / ROW_HEIGHT);
-            if (nearestYIndex < 0) { nearestYIndex = 0; onGrid = false; }   // bounce if placing outside the grid
-            if (nearestYIndex > 3) { nearestYIndex = 3; onGrid = false; }
+            if (nearestYIndex < 0) {
+                nearestYIndex = 0;
+                onGrid = false;
+            }   // bounce if placing outside the grid
+            if (nearestYIndex > 3) {
+                nearestYIndex = 3;
+                onGrid = false;
+            }
             int xOffset = 25;                                               // account for hexagonal placement
             if (nearestYIndex % 2 == 1) xOffset += SQUARE_SIZE / 2;
             int nearestXIndex = (int) Math.round((getLayoutX() - xOffset) / SQUARE_SIZE);
-            if (nearestXIndex < 0) { nearestXIndex = 0; onGrid = false; }   // bounce again
-            if (nearestXIndex > 5) { nearestXIndex = 5; onGrid = false; }
+            if (nearestXIndex < 0) {
+                nearestXIndex = 0;
+                onGrid = false;
+            }   // bounce again
+            if (nearestXIndex > 5) {
+                nearestXIndex = 5;
+                onGrid = false;
+            }
 
-            double nearestY = nearestYIndex * ROW_HEIGHT  + 25;
+            double nearestY = nearestYIndex * ROW_HEIGHT + 25;
             double nearestX = nearestXIndex * SQUARE_SIZE + xOffset;
 //            System.out.println(nearestYIndex);
 //            System.out.println(nearestY);
 //            System.out.println(nearestXIndex);
 //            System.out.println(nearestX);
 
-            if (!onGrid) { setLayoutX(initX);    setLayoutY(initY);    }
-            else         { setLayoutX(nearestX); setLayoutY(nearestY); }
+            if (!onGrid) {
+                setLayoutX(initX);
+                setLayoutY(initY);
+            } else {
+                setLayoutX(nearestX);
+                setLayoutY(nearestY);
+            }
         }
+
+/// get PiecePlacement
+    public String toString() {
+        char orientation = (char) ('A' + (int) (getRotate() / 60));
+        return this.position == -1 ? "" : "" + (char) ('A' + this.position) + id + orientation;
+
     }
+
+}
+
+
+        // visually rotate a piece and update its data
+
+
+        private void checkOverlap() {
+        }
+
+
 //    class MoveFXPiece extends FXPiece {
 //
 //    }
@@ -185,10 +214,16 @@ public class Board extends Application {
             pegs.getChildren().add(a);
         }
     }
-    // create each piece
-    public void drawPiece() {
+    // create each piece in the beginning
 
+    private void makePieces() {
+        pieces.getChildren().clear();
+        for (char p = 'A'; p < 'L'; p++) {
+            pieces.getChildren().add(new FXPiece(p));
+        }
     }
+
+
 
     // flip the selected piece when a MouseEvent is captured
     public void flipPiece(MouseEvent e) {
@@ -222,15 +257,16 @@ public class Board extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("IQ Link");
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
-        root.getChildren().add(pieces);
         root.getChildren().add(pegs);
+        root.getChildren().add(pieces);     //change the order of pieces and pegs to make piece in the upper layer
         root.getChildren().add(controls);
 
         createBoard();
-        root.getChildren().add(new FXPiece('A'));
-        root.getChildren().add(new FXPiece('B'));
-        root.getChildren().add(new FXPiece('G'));
-        root.getChildren().add(new FXPiece('L'));
+        makePieces();
+//        root.getChildren().add(new FXPiece('A'));
+//        root.getChildren().add(new FXPiece('B'));
+//        root.getChildren().add(new FXPiece('G'));
+//        root.getChildren().add(new FXPiece('L'));
 
         primaryStage.setScene(scene);
         primaryStage.show();
