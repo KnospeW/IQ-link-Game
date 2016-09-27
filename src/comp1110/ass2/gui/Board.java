@@ -1,17 +1,17 @@
 package comp1110.ass2.gui;
 
-import comp1110.ass2.LinkGame;
 import comp1110.ass2.Pegs;
 import javafx.application.Application;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.text.*;
+import javafx.scene.image.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.*;
 import javafx.stage.Stage;
+
+import static comp1110.ass2.LinkGame.*;
 
 public class Board extends Application {
     private static final int BOARD_WIDTH = 933;
@@ -20,15 +20,16 @@ public class Board extends Application {
     private static final int CIRCLE_SIZE = (int) (SQUARE_SIZE * 0.3);
     private static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
     private static final double ROW_HEIGHT = SQUARE_SIZE * 0.8660254; // 60 degrees
-    private static final int X_BORDER = 150 - PIECE_IMAGE_SIZE / 2;
-    private static final int Y_BORDER = 150 - PIECE_IMAGE_SIZE / 2;
+    private static final int X_BORDER = 230 - PIECE_IMAGE_SIZE / 2;
+    private static final int Y_BORDER = 250 - PIECE_IMAGE_SIZE / 2;
 
     private static final String URI_BASE = "assets/";
 
     private final Group root = new Group();
-    private final Group pegs = new Group();
     private final Group pieces = new Group();
+    private final Group pegs = new Group();
     private final Group controls = new Group();
+    private final Group hints = new Group();
 
     private Pegs[] board = new Pegs[24];
 
@@ -40,7 +41,7 @@ public class Board extends Application {
 
     // FIXME Task 12: Generate interesting starting placements
 
-    class FXPiece extends ImageView {
+    private class FXPiece extends ImageView {
         char id;
         int initX, initY;
         double mouseX, mouseY;
@@ -52,20 +53,14 @@ public class Board extends Application {
             setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
             setFitHeight(PIECE_IMAGE_SIZE);
             setFitWidth(PIECE_IMAGE_SIZE);
-            if (id - 'A' < 6) {                           // row above the board
-                initX = (id - 'A') * SQUARE_SIZE + 50;
-                initY = BOARD_HEIGHT - SQUARE_SIZE * 4;   //change its postion to look better
-                //initY = 0;
-            } else {
-                initX = (id - 'A' - 6) * SQUARE_SIZE + 50;  // row below the board
-                initY = BOARD_HEIGHT - SQUARE_SIZE * 2;
-            }
-            this.setLayoutX(initX);
-            this.setLayoutY(initY);
+            findInitialPlacement();
+
+            setLayoutX(initX);
+            setLayoutY(initY);
 
             setOnMousePressed(e -> {
-                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2;
-                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2;
+                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2; // we want to manipulate from the centre of the piece,
+                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2; // not the corner (which is transparent)
             });
 
             setOnMouseDragged(e -> {
@@ -73,51 +68,78 @@ public class Board extends Application {
                 setLayoutY(mouseY);
                 mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2;
                 mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2;
-                e.consume();
+                requestFocus();
             });
 
             setOnMouseReleased(e -> {
-//                snapGrid();
-                grabLocation();
+//                grabLocation();                     // testing
+                snapGrid();
                 checkOverlap();
             });
 
-            setOnKeyPressed(e -> {                  // once I get this up and working, maybe use QWERTY/ASDFGH to set
-                System.out.println(e.getText());    // specific rotations, or try and get it working while dragging.
-                if (e.getText() == "R" || e.getText() == "r") {
-                    rotatePiece();
-                    e.consume();
+            setOnKeyPressed(e -> {                  // due to limitations in the engine, pieces must first be dragged
+//                System.out.println(e.getCode());    // before they can be rotated or flipped
+                if (e.getCode() == KeyCode.E) {
+                    rotatePiece(-1);
+                    setRotate(getRotate() - 60);
                 }
+                if (e.getCode() == KeyCode.R) {
+                    rotatePiece(1);
+                    setRotate(getRotate() + 60);
+                }
+                if (e.getCode() == KeyCode.F) {
+                    flipPiece();
+                    setScaleY(getScaleY() * -1);
+                }
+                checkOverlap();
             });
 
             setOnScroll(e -> {
-                rotatePiece();                      // to update the piece's properties
-                e.consume();
-            });}
-        public void setPosition(int pos)
-        {
-            this.position=pos;
+                rotatePiece(1);                      // to update the piece's properties
+                setRotate(getRotate() + 60);
+                checkOverlap();
+            });
 
         }
-        private void rotatePiece() {
-            setRotate((getRotate() + 60) % 360);
-            grabLocation();
+
+        private void findInitialPlacement() {
+            int mod = id - 'A';
+            if (mod < 4) {                                                  // row above the board
+                initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
+                if (mod % 2 != 0) initY = 40;
+                else initY = -40;
+            } else if (mod < 6) {                                             // left row
+                initX = 0;
+                initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 3);
+            } else if (mod < 8) {
+                initX = BOARD_WIDTH - PIECE_IMAGE_SIZE + SQUARE_SIZE / 3;   // right row
+                initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 5);
+            } else {
+                initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;  // row below the board
+                initY = BOARD_HEIGHT - SQUARE_SIZE * 5 / 2;
+            }
+        }
+
+        // visually rotate a piece and update its data
+        private void rotatePiece(int modifier) {
 
         }
+
+        // flip the selected piece
+        private void flipPiece() {
+
+        }
+
+        private void checkOverlap() {
+
+        }
+
         private void grabLocation() { // debugging method for snapGrid
-            // TODO: Copy this across to snapGrid and tweak border for maximum visibility, then arrange initial pieces
             /*  -50 should snap to 0
                 49 should snap to 0
                 50 should snap to 1
                 149 should snap to 1
              */
-//            int nearestYIndex = 0, nearestXIndex = 0;
-//            double temp = getLayoutY();
-//            int nearestYIndex = (int) Math.round((getLayoutY() ) / ROW_HEIGHT);
-//            while (temp > SQUARE_SIZE / 2) { temp -= SQUARE_SIZE / 2; nearestYIndex++; }
-//            int nearestXIndex = (int) Math.round(getLayoutX() - xOffset) / SQUARE_SIZE;
-//            temp = getLayoutX();
-//            while (temp > SQUARE_SIZE / 2 + xOffset) { temp -= SQUARE_SIZE / 2; nearestXIndex++; }
 
             int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
             int xOffset = 0;
@@ -125,45 +147,25 @@ public class Board extends Application {
             int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
 
             double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
-            double nearestX = nearestXIndex * SQUARE_SIZE + xOffset + X_BORDER;
+            double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
 
             System.out.println("Raw location: " + getLayoutX() + ", " + getLayoutY());
             System.out.println("Nearest points: " + nearestX + ", " + nearestY);
             System.out.println("Nearest indexes: " + nearestXIndex + ", " + nearestYIndex);
             System.out.println(this);
-            this.position = nearestXIndex + nearestYIndex * 6;
-            if(LinkGame.isPlacementValid(this.toString()))
-            {
-                String placement = "";
-                for(Node p : pieces.getChildren()) {
-                    placement += p.toString();
-                }
-                if(LinkGame.isPlacementValid(placement))
-                {
-                    setLayoutX(nearestX);
-                    setLayoutY(nearestY);
-                }
-                else
-                    {
-                        this.position=-1;
-                        setLayoutX(initX);
-                        setLayoutY(initY);
-                    }
-            }
-            else
-            {
-                this.position=-1;
+            if (isPlacementValid(this.toString())) {
+                setLayoutX(nearestX);
+                setLayoutY(nearestY);
+            } else {
                 setLayoutX(initX);
                 setLayoutY(initY);
             }
 
-
-
         }
 
-        public void snapGrid() {
+        private void snapGrid() {
             boolean onGrid = true;
-            int nearestYIndex = (int) Math.round((getLayoutY() - 25) / ROW_HEIGHT);
+            int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
             if (nearestYIndex < 0) {
                 nearestYIndex = 0;
                 onGrid = false;
@@ -172,9 +174,9 @@ public class Board extends Application {
                 nearestYIndex = 3;
                 onGrid = false;
             }
-            int xOffset = 25;                                               // account for hexagonal placement
-            if (nearestYIndex % 2 == 1) xOffset += SQUARE_SIZE / 2;
-            int nearestXIndex = (int) Math.round((getLayoutX() - xOffset) / SQUARE_SIZE);
+            int xOffset = 0;                                                // account for hexagonal placement
+            if (nearestYIndex % 2 != 0) xOffset += SQUARE_SIZE / 2;
+            int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
             if (nearestXIndex < 0) {
                 nearestXIndex = 0;
                 onGrid = false;
@@ -184,12 +186,8 @@ public class Board extends Application {
                 onGrid = false;
             }
 
-            double nearestY = nearestYIndex * ROW_HEIGHT + 25;
-            double nearestX = nearestXIndex * SQUARE_SIZE + xOffset;
-//            System.out.println(nearestYIndex);
-//            System.out.println(nearestY);
-//            System.out.println(nearestXIndex);
-//            System.out.println(nearestX);
+            double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
+            double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
 
             if (!onGrid) {
                 setLayoutX(initX);
@@ -200,33 +198,35 @@ public class Board extends Application {
             }
         }
 
-/// get PiecePlacement
-    public String toString() {
-        char orientation = (char) ('A' + (int) (getRotate() / 60));
-        return this.position == -1 ? "" : "" + (char) ('A' + this.position) + id + orientation;
-
+        /// get PiecePlacement
+        public String toString() {
+            char orientation = (char) ('A' + (int) (getRotate() / 60));
+            return this.position == -1 ? "" : "" + (char) ('A' + this.position) + id + orientation;
+        }
     }
 
+    private class preplacedPiece extends FXPiece {
+        preplacedPiece(char id, int xPeg, int yPeg) throws IllegalArgumentException {
+            super(id);
+            int xOffset = 0;
+            if (yPeg % 2 != 0) xOffset += SQUARE_SIZE / 2;
+            initY = (int) (yPeg * ROW_HEIGHT + Y_BORDER);
+            initX = xPeg * SQUARE_SIZE + X_BORDER + xOffset;
 
-}
+            setLayoutX(initX);
+            setLayoutY(initY);
 
-
-
-        // visually rotate a piece and update its data
-
-
-        private void checkOverlap() {
+            setOnMousePressed(e -> {});
+            setOnMouseDragged(e -> {});
+            setOnMouseReleased(e -> {});
+            setOnScroll(e -> {});
         }
-
-
-//    class MoveFXPiece extends FXPiece {
-//
-//    }
+    }
 
 
     //create our Board, have 12 grey circle backgrounds
     //it is the initial container, the center will be the solution area
-    public void createBoard()
+    private void createBoard()
     {
         int[] blank = {0,0,0,0,0,0};
         for (int i = 0; i < 24; i++) {
@@ -235,19 +235,22 @@ public class Board extends Application {
         }
 
         for (int i = 0; i < 24; i++) {
-            double xOffset = 0;
             int col = i / 6;
             int row = i % 6;
-            if (col % 2 != 0)
-                xOffset += SQUARE_SIZE / 2;
-            double x = (row * SQUARE_SIZE) + PIECE_IMAGE_SIZE/2 + xOffset + X_BORDER;
-            double y = (col * ROW_HEIGHT ) + PIECE_IMAGE_SIZE/2 + Y_BORDER;
+            double y = (col * ROW_HEIGHT ) + PIECE_IMAGE_SIZE / 2 + Y_BORDER;
+            int xOffset = 0;
+            if (col % 2 != 0) xOffset += SQUARE_SIZE / 2;
+            double x = (row * SQUARE_SIZE) + PIECE_IMAGE_SIZE / 2 + X_BORDER + xOffset;
 
             Circle a = new Circle(x, y, CIRCLE_SIZE, Color.GRAY);
             pegs.getChildren().add(a);
         }
     }
-    // create each piece in the beginning
+
+    // create each piece
+    public void drawPiece() {
+
+    }
 
     private void makePieces() {
         pieces.getChildren().clear();
@@ -255,32 +258,28 @@ public class Board extends Application {
             FXPiece piece=new FXPiece(p);
             piece.setPosition(-1);
             pieces.getChildren().add(piece);
+        pieces.getChildren().clear();       // not sold on this line, because this removes any preplacements
+        for (char p = 'A'; p < 'L'; p++) {  // also, when the game's first run, there won't be anything to clear anyway
+            pieces.getChildren().add(new FXPiece(p));
         }
     }
 
+    private void loadHints() {
+        int boxW = 470;
+        int boxH = 27;
 
+        Rectangle box = new Rectangle(10, BOARD_HEIGHT - boxH - 8, boxW, boxH);
+        box.setFill(Color.LIGHTGREY);
 
-    // flip the selected piece when a MouseEvent is captured
-    public void flipPiece(MouseEvent e) {
+        Text sol = new Text(15, BOARD_HEIGHT - 15, "BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ");
+        sol.setFill(Color.DARKRED);
+        sol.setFont(new Font(20));
 
-    }
-
-    //change the board when the user attempts to move the piece
-    public void movePiece(MouseEvent e) {
-
-    }
-
-    // while the game starts,show the pictures of 12 Pieces on both side of the board
-    public void createPieces() {
-
+        hints.getChildren().addAll(box, sol);
     }
 
     // if the placement is not well formed, retrun the warning
     public void invalidPlacement(String placement) {
-
-    }
-
-    private void snapHome() {
 
     }
 
@@ -293,15 +292,21 @@ public class Board extends Application {
         primaryStage.setTitle("IQ Link");
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
-        root.getChildren().add(pieces);     //change the order of pieces and pegs to make piece in the upper layer
+        root.getChildren().add(pieces);
         root.getChildren().add(controls);
 
         createBoard();
+        loadHints();
         makePieces();
-//        root.getChildren().add(new FXPiece('A'));
-//        root.getChildren().add(new FXPiece('B'));
-//        root.getChildren().add(new FXPiece('G'));
-//        root.getChildren().add(new FXPiece('L'));
+
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.SLASH && !root.getChildren().contains(hints))
+                root.getChildren().add(hints);
+        });
+
+        scene.setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.SLASH) root.getChildren().remove(hints);
+        });
 
         primaryStage.setScene(scene);
         primaryStage.show();
