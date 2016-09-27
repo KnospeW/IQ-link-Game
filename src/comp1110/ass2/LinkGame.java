@@ -302,7 +302,7 @@ public class LinkGame {
      * @return True if the placement is valid
      */
 
-     static boolean isPlacementValid(String placement) {
+     public static boolean isPlacementValid(String placement) {
         // FIXME Task 7: determine whether a placement is valid
         // first set all the pegs states is{0,0,0,0,0,0}
          int[] pegstates=new int[6];
