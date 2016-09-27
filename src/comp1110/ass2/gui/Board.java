@@ -11,6 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
 
+import static comp1110.ass2.LinkGame.*;
+
 public class Board extends Application {
     private static final int BOARD_WIDTH = 933;
     private static final int BOARD_HEIGHT = 700;
@@ -50,7 +52,7 @@ public class Board extends Application {
             this.id = id;
             setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
             setFitHeight(PIECE_IMAGE_SIZE);
-            setFitWidth (PIECE_IMAGE_SIZE);
+            setFitWidth(PIECE_IMAGE_SIZE);
             findInitialPlacement();
 
             setLayoutX(initX);
@@ -104,18 +106,15 @@ public class Board extends Application {
             int mod = id - 'A';
             if (mod < 4) {                                                  // row above the board
                 initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
-                if ( mod % 2 != 0) initY = 40;
+                if (mod % 2 != 0) initY = 40;
                 else initY = -40;
-            }
-            else if (mod < 6) {                                             // left row
+            } else if (mod < 6) {                                             // left row
                 initX = 0;
                 initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 3);
-            }
-            else if (mod < 8) {
+            } else if (mod < 8) {
                 initX = BOARD_WIDTH - PIECE_IMAGE_SIZE + SQUARE_SIZE / 3;   // right row
                 initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 5);
-            }
-            else {
+            } else {
                 initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;  // row below the board
                 initY = BOARD_HEIGHT - SQUARE_SIZE * 5 / 2;
             }
@@ -132,6 +131,7 @@ public class Board extends Application {
         }
 
         private void checkOverlap() {
+
         }
 
         private void grabLocation() { // debugging method for snapGrid
@@ -140,20 +140,13 @@ public class Board extends Application {
                 50 should snap to 1
                 149 should snap to 1
              */
-//            int nearestYIndex = 0, nearestXIndex = 0;
-//            double temp = getLayoutY();
-//            int nearestYIndex = (int) Math.round((getLayoutY() ) / ROW_HEIGHT);
-//            while (temp > SQUARE_SIZE / 2) { temp -= SQUARE_SIZE / 2; nearestYIndex++; }
-//            int nearestXIndex = (int) Math.round(getLayoutX() - xOffset) / SQUARE_SIZE;
-//            temp = getLayoutX();
-//            while (temp > SQUARE_SIZE / 2 + xOffset) { temp -= SQUARE_SIZE / 2; nearestXIndex++; }
 
             int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
             int xOffset = 0;
             if (nearestYIndex % 2 == 1) xOffset += SQUARE_SIZE / 2;
             int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
 
-            double nearestY = nearestYIndex * ROW_HEIGHT  + Y_BORDER;
+            double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
             double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
 
             System.out.println("Raw location: " + getLayoutX() + ", " + getLayoutY());
@@ -162,40 +155,56 @@ public class Board extends Application {
 
             this.position = nearestXIndex + nearestYIndex * 6;
             System.out.println(this);
-           if( LinkGame.isPlacementValid(this.toString()))
-           {setLayoutX(nearestX);
-            setLayoutY(nearestY);}
-            else
-           {
-               setLayoutX(initX);
-               setLayoutY(initY);
-           }
+            if (isPlacementValid(this.toString())) {
+                setLayoutX(nearestX);
+                setLayoutY(nearestY);
+            } else {
+                setLayoutX(initX);
+                setLayoutY(initY);
+            }
 
         }
 
-        public void snapGrid() {
+        private void snapGrid() {
             boolean onGrid = true;
             int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
-            if (nearestYIndex < 0) { nearestYIndex = 0; onGrid = false; }   // bounce if placing outside the grid
-            if (nearestYIndex > 3) { nearestYIndex = 3; onGrid = false; }
+            if (nearestYIndex < 0) {
+                nearestYIndex = 0;
+                onGrid = false;
+            }   // bounce if placing outside the grid
+            if (nearestYIndex > 3) {
+                nearestYIndex = 3;
+                onGrid = false;
+            }
             int xOffset = 0;                                                // account for hexagonal placement
             if (nearestYIndex % 2 != 0) xOffset += SQUARE_SIZE / 2;
             int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
-            if (nearestXIndex < 0) { nearestXIndex = 0; onGrid = false; }   // bounce again
-            if (nearestXIndex > 5) { nearestXIndex = 5; onGrid = false; }
+            if (nearestXIndex < 0) {
+                nearestXIndex = 0;
+                onGrid = false;
+            }   // bounce again
+            if (nearestXIndex > 5) {
+                nearestXIndex = 5;
+                onGrid = false;
+            }
 
-            double nearestY = nearestYIndex * ROW_HEIGHT  + Y_BORDER;
+            double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
             double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
 
-            if (!onGrid) { setLayoutX(initX);    setLayoutY(initY);    }
-            else         { setLayoutX(nearestX); setLayoutY(nearestY); }
+            if (!onGrid) {
+                setLayoutX(initX);
+                setLayoutY(initY);
+            } else {
+                setLayoutX(nearestX);
+                setLayoutY(nearestY);
+            }
         }
 
-/// get PiecePlacement
-    public String toString() {
-        char orientation = (char) ('A' + (int) (getRotate() / 60));
-        return this.position == -1 ? "" : "" + (char) ('A' + this.position) + id + orientation;
-
+        /// get PiecePlacement
+        public String toString() {
+            char orientation = (char) ('A' + (int) (getRotate() / 60));
+            return this.position == -1 ? "" : "" + (char) ('A' + this.position) + id + orientation;
+        }
     }
 
     private class preplacedPiece extends FXPiece {
@@ -243,16 +252,13 @@ public class Board extends Application {
     // create each piece
     public void drawPiece() {
 
-    private void makePieces() {
-        pieces.getChildren().clear();
-        for (char p = 'A'; p < 'L'; p++) {
-            pieces.getChildren().add(new FXPiece(p));
-        }
     }
 
-    // while the game starts,show the pictures of 12 Pieces on both side of the board
-    public void createPieces() {
-
+    private void makePieces() {
+        pieces.getChildren().clear();       // not sold on this line, because this removes any preplacements
+        for (char p = 'A'; p < 'L'; p++) {  // also, when the game's first run, there won't be anything to clear anyway
+            pieces.getChildren().add(new FXPiece(p));
+        }
     }
 
     private void loadHints() {
@@ -283,14 +289,12 @@ public class Board extends Application {
         primaryStage.setTitle("IQ Link");
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
-        root.getChildren().add(pieces);     //change the order of pieces and pegs to make piece in the upper layer
+        root.getChildren().add(pieces);
         root.getChildren().add(controls);
 
         createBoard();
         loadHints();
-        for (char n = 'A'; n < 'M'; n++) {
-            pieces.getChildren().add(new FXPiece(n));
-        }
+        makePieces();
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SLASH && !root.getChildren().contains(hints))
@@ -300,11 +304,6 @@ public class Board extends Application {
         scene.setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.SLASH) root.getChildren().remove(hints);
         });
-        makePieces();
-//        root.getChildren().add(new FXPiece('A'));
-//        root.getChildren().add(new FXPiece('B'));
-//        root.getChildren().add(new FXPiece('G'));
-//        root.getChildren().add(new FXPiece('L'));
 
         primaryStage.setScene(scene);
         primaryStage.show();
