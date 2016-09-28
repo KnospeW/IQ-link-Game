@@ -33,6 +33,7 @@ public class Board extends Application {
     private final Group hints = new Group();
 
     private Pegs[] board = new Pegs[24];
+    private boolean hovering;
 
     // FIXME Task 8: Implement a basic playable Link Game in JavaFX that only allows pieces to be placed in valid places
 
@@ -41,6 +42,11 @@ public class Board extends Application {
     // FIXME Task 11: Implement hints
 
     // FIXME Task 12: Generate interesting starting placements
+
+    // FIXME Stop pieces snapping home while being held and rotating
+    // FIXME Remove bug on snapping to grid while placing at Y index -1
+    // TODO Implement controls
+    // TODO Reimplement hints (i.e., visual overlay)
 
     private class FXPiece extends ImageView {
         char id;
@@ -62,6 +68,7 @@ public class Board extends Application {
             setOnMousePressed(e -> {
                 mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2; // we want to manipulate from the centre of the piece,
                 mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2; // not the corner (which is transparent)
+//                hovering = true;
             });
 
             setOnMouseDragged(e -> {
@@ -69,11 +76,13 @@ public class Board extends Application {
                 setLayoutY(mouseY);
                 mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2;
                 mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2;
+//                hovering = true;
                 requestFocus();
             });
 
             setOnMouseReleased(e -> {
 //                grabLocation();                     // testing
+//                hovering = false;
                 snapGrid();
                 checkOverlap();
             });
@@ -94,6 +103,7 @@ public class Board extends Application {
                     flipPiece();
                 }
      //           checkOverlap();
+                System.out.println(hovering);
             });
 
             setOnScroll(e -> {
@@ -144,7 +154,7 @@ public class Board extends Application {
         // flip the selected piece
         private void flipPiece() {
             setScaleY(getScaleY() * -1);
-//            snapGrid(); // same as rotatePiece
+            snapGrid(); // same as rotatePiece
         }
 
         private void checkOverlap() {
