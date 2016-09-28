@@ -6,4 +6,4 @@ We declare that the work we have submitted for Stage F of this assignment and al
 
 * Syntactical corrections drawn from Oracle's Java documentation.
 
-Signed: Alex Smith (u5838800)
+Signed: Alex Smith (u5838800) Yicong Du(u6127601)

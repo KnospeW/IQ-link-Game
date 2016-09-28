@@ -3,5 +3,5 @@ We declare that the work toward our submission of Stage F was distributed among 
 * u5838800 70
 * u6127601 30
 
-Signed: Alex Smith (u5838800)
+Signed: Alex Smith (u5838800) Yicong Du(u6127601)
 
