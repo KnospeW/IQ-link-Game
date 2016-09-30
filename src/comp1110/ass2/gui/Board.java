@@ -5,14 +5,20 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.text.*;
-import javafx.scene.image.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import static comp1110.ass2.LinkGame.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static comp1110.ass2.LinkGame.isPlacementValid;
 
 public class Board extends Application {
     private static final int BOARD_WIDTH = 933;
@@ -34,6 +40,7 @@ public class Board extends Application {
 
     private Pegs[] board = new Pegs[24];
     private boolean hovering;
+    private String placement="";
 
     // FIXME Task 8: Implement a basic playable Link Game in JavaFX that only allows pieces to be placed in valid places
 
@@ -116,11 +123,11 @@ public class Board extends Application {
 
     }
 
-        private void setPosition(int pos) {
+        public void setPosition(int pos) {
             this.position = pos;
         }
 
-        private int getPosition() {
+        public int getPosition() {
             return this.position;
         }
 
@@ -251,7 +258,7 @@ public class Board extends Application {
     }
 
     private class preplacedPiece extends FXPiece {
-        preplacedPiece(char id, int xPeg, int yPeg) throws IllegalArgumentException {
+        preplacedPiece(char id, int xPeg, int yPeg,int rotate,int flip) throws IllegalArgumentException {
             super(id);
             int xOffset = 0;
             if (yPeg % 2 != 0) xOffset += SQUARE_SIZE / 2;
@@ -260,11 +267,8 @@ public class Board extends Application {
 
             setLayoutX(initX);
             setLayoutY(initY);
-
-            setOnMousePressed(e -> {});
-            setOnMouseDragged(e -> {});
-            setOnMouseReleased(e -> {});
-            setOnScroll(e -> {});
+            setRotate(rotate*60);
+            setScaleY(flip);
         }
     }
 
@@ -287,17 +291,38 @@ public class Board extends Application {
             if (col % 2 != 0) xOffset += SQUARE_SIZE / 2;
             double x = (row * SQUARE_SIZE) + PIECE_IMAGE_SIZE / 2 + X_BORDER + xOffset;
 
-            Circle a = new Circle(x, y, CIRCLE_SIZE, Color.GRAY);
+            Circle a = new Circle(x, y, CIRCLE_SIZE, Color.LIGHTGRAY);
             pegs.getChildren().add(a);
         }
     }
 
-    private void makePieces() {
+
+    private void makePieces(String placement) {
         pieces.getChildren().clear();
-        for (char p = 'A'; p < 'L'; p++) {
-            FXPiece piece = new FXPiece(p);
-            piece.setPosition(-1);
-            pieces.getChildren().add(piece);
+        Map<Character,String> prePieces= new HashMap<Character,String>();  // the piece as key, pieceplacement as value
+        for (int i=0;i<placement.length()/3;i++)
+        {
+            prePieces.put(placement.charAt(3*i+1),placement.substring(3*i,3*i+3));
+        }
+        for (char p = 'A'; p <= 'L'; p++) {
+            if(prePieces.containsKey(p))               //if it is in the starting placement
+            {
+                String piecePlacement=prePieces.get(p);
+                int location = piecePlacement.charAt(0)-'A';                           // pulls the location char
+                int rotation = piecePlacement.charAt(2)-'A';
+                int flip=rotation>5?-1:1;
+                int xpeg=location%6;
+                int ypeg=location/6;
+                preplacedPiece piece= new preplacedPiece(p,xpeg,ypeg,rotation%6,flip);
+                piece.setPosition(location);
+                pieces.getChildren().add(piece);
+            }
+            else {
+                FXPiece piece = new FXPiece(p);
+                piece.setPosition(-1);
+                pieces.getChildren().add(piece);
+            }
+
            // pieces.getChildren().clear();
         }
     }
@@ -336,7 +361,8 @@ public class Board extends Application {
 
         createBoard();
         loadHints();
-        makePieces();
+        placement="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
+        makePieces(placement);
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SLASH && !root.getChildren().contains(hints))
