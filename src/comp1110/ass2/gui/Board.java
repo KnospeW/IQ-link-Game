@@ -53,7 +53,7 @@ public class Board extends Application {
 
     // FIXME Task 8: Implement a basic playable Link Game in JavaFX that only allows pieces to be placed in valid places
 
-    // FIXME Task 9: Implement starting placements
+
 
     // FIXME Task 11: Implement hints
 
@@ -305,6 +305,9 @@ public class Board extends Application {
         }
     }
 
+    ///to make pieces with the start placement
+    //if it is in the placement,make it to the rignt pegs
+    //else make it around the pegs
 
     private void makePieces(String placement) {
         pieces.getChildren().clear();
@@ -338,8 +341,8 @@ public class Board extends Application {
     //if the player want to restart, click on the button and it will direct the player
     private void makeControls() {
         Button button = new Button("Restart");
-        button.setLayoutX(6*SQUARE_SIZE);
-        button.setLayoutY(5.5*SQUARE_SIZE);
+        button.setLayoutX(850);
+        button.setLayoutY(680);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 Scene startscene=SetwelcomePage();
@@ -369,12 +372,16 @@ public class Board extends Application {
     public void invalidPlacement(String placement) {
 
     }
+    // FIXME Task 9: Implement starting placements
 
+    //this method is to take the number of pieces that is already on the right pegs
+    //pick pieces randomly from the solution
+    //return the placement string
     private String getInitPlacement(int num)
     {
         String solution1="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
         String InitPlacement="";
-        List<String> so1=new ArrayList<String>();
+        List<String> so1=new ArrayList<String>();   //so1 contains 12 different piece placement in order
         List<Boolean> state=new ArrayList<Boolean>();  //if it used,then it is true;
         Random r=new Random();
         int order;
@@ -386,10 +393,10 @@ public class Board extends Application {
         for (int j=0;j<num;j++)
         {
             do{
-                order=r.nextInt(12);
+                order=r.nextInt(12);                //pick 6 pieces randomly
             }while(state.get(order));
             state.set(order,true);
-            InitPlacement+=so1.get(order).toString();
+            InitPlacement+=so1.get(order).toString();      //get the placement
         }
         return InitPlacement;
     }
@@ -398,8 +405,18 @@ public class Board extends Application {
     {
         Group start= new Group();
         Scene startscene = new Scene(start, BOARD_WIDTH, BOARD_HEIGHT);
-        Button btEasy = new Button("Easy");
-        btEasy.setLayoutX(200);
+
+        //add background Image
+        Image background=new Image(Board.class.getResource("background.jpg").toString());
+        start.getChildren().add(new ImageView(background));
+
+
+        //add button easy , when click, there are 9 pieces already on board
+        Image easy=new Image(Board.class.getResource(URI_BASE+"1.png").toString());
+        Button btEasy = new Button();
+        btEasy.setGraphic(new ImageView(easy));
+        btEasy.setStyle("-fx-background-color: transparent;");
+        btEasy.setLayoutX(100);
         btEasy.setLayoutY(450);
         btEasy.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
@@ -410,8 +427,12 @@ public class Board extends Application {
         });
         start.getChildren().add(btEasy);
 
-        Button btHard = new Button("Hard");
-        btHard.setLayoutX(400);
+        ////add button hard , when click, there are 6 pieces already on board
+        Image hard=new Image(Board.class.getResource(URI_BASE+"2.png").toString());
+        Button btHard = new Button();
+        btHard.setGraphic(new ImageView(hard));
+        btHard.setStyle("-fx-background-color: transparent;");
+        btHard.setLayoutX(300);
         btHard.setLayoutY(450);
         btHard.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
@@ -422,8 +443,12 @@ public class Board extends Application {
         });
         start.getChildren().add(btHard);
 
-        Button btExpert = new Button("Expert");
-        btExpert.setLayoutX(600);
+        ////add button hard , when click, there are 9 pieces already on board
+        Image expert=new Image(Board.class.getResource(URI_BASE+"3.png").toString());
+        Button btExpert = new Button();
+        btExpert.setGraphic(new ImageView(expert));
+        btExpert.setStyle("-fx-background-color: transparent;");
+        btExpert.setLayoutX(500);
         btExpert.setLayoutY(450);
         btExpert.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
@@ -434,7 +459,11 @@ public class Board extends Application {
         });
         start.getChildren().add(btExpert);
 
-        Button btsuper = new Button("Most Challenging");
+        ////this button represents brand new game
+        Image superim=new Image(Board.class.getResource(URI_BASE+"4.png").toString());
+        Button btsuper= new Button();
+        btsuper.setGraphic(new ImageView(superim));
+        btsuper.setStyle("-fx-background-color: transparent;");
         btsuper.setLayoutX(700);
         btsuper.setLayoutY(450);
         btsuper.setOnAction(new EventHandler<ActionEvent>() {
@@ -445,6 +474,13 @@ public class Board extends Application {
             }
         });
         start.getChildren().add(btsuper);
+
+        // some hints for the player to click on the button to enter the game
+        ImageView title=new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
+        title.setLayoutX(0);
+        title.setLayoutY(550);
+        start.getChildren().add(title);
+
         this.startScene=startscene;
         return startscene;
     }
@@ -478,6 +514,7 @@ public class Board extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
