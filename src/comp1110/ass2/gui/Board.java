@@ -2,9 +2,12 @@ package comp1110.ass2.gui;
 
 import comp1110.ass2.Pegs;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -15,8 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static comp1110.ass2.LinkGame.isPlacementValid;
 
@@ -41,6 +43,13 @@ public class Board extends Application {
     private Pegs[] board = new Pegs[24];
     private boolean hovering;
     private String placement="";
+
+    private static Stage primaryStage;
+    private Scene startScene;
+    private Scene mainScene;
+
+    private final ArrayList<String> easy= new ArrayList(Arrays.asList("BAA","BAAHBA","BAAHBAWEB",""));
+
 
     // FIXME Task 8: Implement a basic playable Link Game in JavaFX that only allows pieces to be placed in valid places
 
@@ -326,6 +335,20 @@ public class Board extends Application {
            // pieces.getChildren().clear();
         }
     }
+    //if the player want to restart, click on the button and it will direct the player
+    private void makeControls() {
+        Button button = new Button("Restart");
+        button.setLayoutX(6*SQUARE_SIZE);
+        button.setLayoutY(5.5*SQUARE_SIZE);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                Scene startscene=SetwelcomePage();
+                 primaryStage.setScene(startscene);   // if the restart button is clicked, goes to the main
+            }
+        });
+        controls.getChildren().add(button);
+
+    }
 
     private void loadHints() {
         // TODO: Turn this into a visual representation, since players won't know what BAA means (I barely know what BAA means)
@@ -347,13 +370,88 @@ public class Board extends Application {
 
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private String getInitPlacement(int num)
+    {
+        String solution1="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
+        String InitPlacement="";
+        List<String> so1=new ArrayList<String>();
+        List<Boolean> state=new ArrayList<Boolean>();  //if it used,then it is true;
+        Random r=new Random();
+        int order;
+        for (int i=0;i<solution1.length()/3;i++)
+        {
+            so1.add(solution1.substring(3*i,3*i+3));
+            state.add(false);
+        }
+        for (int j=0;j<num;j++)
+        {
+            do{
+                order=r.nextInt(12);
+            }while(state.get(order));
+            state.set(order,true);
+            InitPlacement+=so1.get(order).toString();
+        }
+        return InitPlacement;
+    }
+    //this method is to create the welcome page
+    private Scene SetwelcomePage()
+    {
+        Group start= new Group();
+        Scene startscene = new Scene(start, BOARD_WIDTH, BOARD_HEIGHT);
+        Button btEasy = new Button("Easy");
+        btEasy.setLayoutX(200);
+        btEasy.setLayoutY(450);
+        btEasy.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                primaryStage.setScene(mainScene);
+                placement=getInitPlacement(9);
+                makePieces(placement);
+            }
+        });
+        start.getChildren().add(btEasy);
+
+        Button btHard = new Button("Hard");
+        btHard.setLayoutX(400);
+        btHard.setLayoutY(450);
+        btHard.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                primaryStage.setScene(mainScene);
+                placement=getInitPlacement(6);
+                makePieces(placement);
+            }
+        });
+        start.getChildren().add(btHard);
+
+        Button btExpert = new Button("Expert");
+        btExpert.setLayoutX(600);
+        btExpert.setLayoutY(450);
+        btExpert.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                primaryStage.setScene(mainScene);
+                placement=getInitPlacement(3);
+                makePieces(placement);
+            }
+        });
+        start.getChildren().add(btExpert);
+
+        Button btsuper = new Button("Most Challenging");
+        btsuper.setLayoutX(700);
+        btsuper.setLayoutY(450);
+        btsuper.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                primaryStage.setScene(mainScene);
+                placement="";
+                makePieces(placement);
+            }
+        });
+        start.getChildren().add(btsuper);
+        this.startScene=startscene;
+        return startscene;
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("IQ Link");
+    ///this method is to create the main game scene
+    public void SetmainPage()
+    {
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
         root.getChildren().add(pieces);
@@ -361,8 +459,9 @@ public class Board extends Application {
 
         createBoard();
         loadHints();
-        placement="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
-        makePieces(placement);
+        makeControls();
+        //placement="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
+        //makePieces(placement);
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SLASH && !root.getChildren().contains(hints))
@@ -373,7 +472,20 @@ public class Board extends Application {
             if (e.getCode() == KeyCode.SLASH) root.getChildren().remove(hints);
         });
 
-        primaryStage.setScene(scene);
+       this.mainScene=scene;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        this.primaryStage=primaryStage;
+        primaryStage.setTitle("IQ Link");
+        SetwelcomePage();
+        SetmainPage();
+        primaryStage.setScene(startScene);
         primaryStage.show();
     }
 }
