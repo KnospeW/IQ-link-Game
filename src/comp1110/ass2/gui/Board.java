@@ -39,10 +39,12 @@ public class Board extends Application {
     private final Group pegs = new Group();
     private final Group controls = new Group();
     private final Group hints = new Group();
+    private final Group warnings = new Group();
 
     private Pegs[] board = new Pegs[24];
     private boolean hovering;
-    private String placement="";
+    public  String placement="";
+    private String startPlacement="";
 
     private static Stage primaryStage;
     private Scene startScene;
@@ -158,22 +160,54 @@ public class Board extends Application {
             }
         }
 
-        // visually rotate a piece and update its data
-        private void rotatePiece(int modifier) {
-
-        }
         private void rotatePiece()
         {
+            warnings.getChildren().clear();
             setRotate((getRotate() + 60) % 360);
+            if(checkOverlap())
+            {
+                setWarning();
+            }
+            else
+            {
+                placement=placement+this.toString();
+            }
 //            snapGrid(); // enabling this here causes a bug where rotating a piece on the spot before moving it can cause it to snap to the grid, and isn't needed to do snapping on mouse release
         }
         // flip the selected piece
         private void flipPiece() {
+            warnings.getChildren().clear();
             setScaleY(getScaleY() * -1);
-            snapGrid(); // same as rotatePiece
+            if(checkOverlap())
+            {
+               setWarning();
+            }
+            else
+            {
+                placement=placement+this.toString();
+            }
+         //   snapGrid(); // same as rotatePiece
         }
+        private void setWarning()
+        {
+            ImageView warning=new ImageView(new Image(Board.class.getResource(URI_BASE+"warning.jpg").toString()));
+            warning.setLayoutX(380);
+            warning.setLayoutY(0);
+            warnings.getChildren().add(warning);
 
-        private void checkOverlap() {
+        }
+        private boolean checkOverlap() {
+            String currplacement = "";
+            for (Node p : pieces.getChildren()) {
+                if (!p.toString().equals(""))
+                    currplacement += p.toString();
+            }
+            if(isPlacementValid(currplacement))
+            {
+                placement=currplacement;
+                return false;
+            }
+            return true;
 
         }
 
@@ -233,19 +267,15 @@ public class Board extends Application {
             double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
             setPosition(nearestXIndex + nearestYIndex * 6);
             if (onGrid && isPlacementValid(this.toString())) {
-                String placement = "";
-                for (Node p : pieces.getChildren()) {
-                    if (!p.toString().equals(""))
-                        placement += p.toString();
-                }
-               if (isPlacementValid(placement)) {
-                   setLayoutX(nearestX);
-                   setLayoutY(nearestY);
-               }
-               else {
-                   snapHome();
-               }
-            } else {
+                 if(!checkOverlap())
+                 {
+                      setLayoutX(nearestX);
+                      setLayoutY(nearestY);
+                 }
+                 else { snapHome();}
+
+            }
+            else {
                 snapHome();
             }
         }
@@ -340,16 +370,26 @@ public class Board extends Application {
     }
     //if the player want to restart, click on the button and it will direct the player
     private void makeControls() {
-        Button button = new Button("Restart");
-        button.setLayoutX(850);
-        button.setLayoutY(680);
-        button.setOnAction(new EventHandler<ActionEvent>() {
+        Button button1 = new Button("New Game");
+        button1.setLayoutX(850);
+        button1.setLayoutY(680);
+        button1.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 Scene startscene=SetwelcomePage();
                  primaryStage.setScene(startscene);   // if the restart button is clicked, goes to the main
             }
         });
-        controls.getChildren().add(button);
+        controls.getChildren().add(button1);
+        Button button2 = new Button("Restart");
+        button2.setLayoutX(850);
+        button2.setLayoutY(600);
+        button2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                placement=startPlacement;
+                makePieces(startPlacement);
+            }
+        });
+        controls.getChildren().add(button2);
 
     }
 
@@ -368,10 +408,12 @@ public class Board extends Application {
         hints.getChildren().addAll(box, sol);
     }
 
+
     // if the placement is not well formed, return the warning
     public void invalidPlacement(String placement) {
 
     }
+
     // FIXME Task 9: Implement starting placements
 
     //this method is to take the number of pieces that is already on the right pegs
@@ -398,8 +440,11 @@ public class Board extends Application {
             state.set(order,true);
             InitPlacement+=so1.get(order).toString();      //get the placement
         }
+        startPlacement=InitPlacement;
         return InitPlacement;
     }
+
+
     //this method is to create the welcome page
     private Scene SetwelcomePage()
     {
@@ -492,6 +537,7 @@ public class Board extends Application {
         root.getChildren().add(pegs);
         root.getChildren().add(pieces);
         root.getChildren().add(controls);
+        root.getChildren().add(warnings);
 
         createBoard();
         loadHints();
