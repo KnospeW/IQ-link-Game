@@ -40,6 +40,7 @@ public class Board extends Application {
     private final Group controls = new Group();
     private final Group hints = new Group();
     private final Group warnings = new Group();
+    private final Group instructions = new Group();
 
     private Pegs[] board = new Pegs[24];
     private boolean hovering;
@@ -372,7 +373,7 @@ public class Board extends Application {
     private void makeControls() {
         Button button1 = new Button("New Game");
         button1.setLayoutX(850);
-        button1.setLayoutY(680);
+        button1.setLayoutY(640);
         button1.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 Scene startscene=SetwelcomePage();
@@ -393,6 +394,11 @@ public class Board extends Application {
 
     }
 
+    private void loadInstruction()
+    {
+        ImageView instruction=new ImageView(new Image(Board.class.getResource(URI_BASE+"instruction.jpg").toString()));
+        instructions.getChildren().add(instruction);
+    }
     private void loadHints() {
         // TODO: Turn this into a visual representation, since players won't know what BAA means (I barely know what BAA means)
         int boxW = 470;
@@ -438,7 +444,7 @@ public class Board extends Application {
                 order=r.nextInt(12);                //pick 6 pieces randomly
             }while(state.get(order));
             state.set(order,true);
-            InitPlacement+=so1.get(order).toString();      //get the placement
+            InitPlacement+=so1.get(order);      //get the placement
         }
         startPlacement=InitPlacement;
         return InitPlacement;
@@ -541,18 +547,29 @@ public class Board extends Application {
 
         createBoard();
         loadHints();
+        loadInstruction();
         makeControls();
+
+        Text ins = new Text(20, 30, "Press 'I' for Instructions");
+        ins.setFill(Color.DARKBLUE);
+        ins.setFont(new Font(20));
+        root.getChildren().add(ins);
         //placement="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
         //makePieces(placement);
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SLASH && !root.getChildren().contains(hints))
                 root.getChildren().add(hints);
+            if (e.getCode() == KeyCode.I && !root.getChildren().contains(instructions))
+                root.getChildren().add(instructions);
         });
 
         scene.setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.SLASH) root.getChildren().remove(hints);
+            if (e.getCode() == KeyCode.I) root.getChildren().remove(instructions);
         });
+
+
 
        this.mainScene=scene;
     }
