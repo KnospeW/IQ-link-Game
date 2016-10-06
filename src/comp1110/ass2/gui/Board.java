@@ -12,6 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 import static comp1110.ass2.LinkGame.*;
 
 public class Board extends Application {
@@ -34,6 +36,7 @@ public class Board extends Application {
 
     private Pegs[] board = new Pegs[24];
     private boolean hovering;
+    private ArrayList<Circle> pegList = new ArrayList<>();
 
     // FIXME Task 8: Implement a basic playable Link Game in JavaFX that only allows pieces to be placed in valid places
 
@@ -83,19 +86,19 @@ public class Board extends Application {
             setOnMouseReleased(e -> {
 //                grabLocation();                     // testing
 //                hovering = false;
-                snapGrid();
-                checkOverlap();
+                snapPeg();
+//                checkOverlap();
             });
 
             setOnKeyPressed(e -> {                  // due to limitations in the engine, pieces must first be dragged
 //                System.out.println(e.getCode());    // before they can be rotated or flipped
                 if (e.getCode() == KeyCode.E) {
-                    rotatePiece();
+                    rotatePiece(-1);
 //                    rotatePiece(-1);
 //                    setRotate(getRotate() - 60);
                 }
                 if (e.getCode() == KeyCode.R) {
-                      rotatePiece();
+                      rotatePiece(1);
 //                    rotatePiece(1);
 //                    setRotate(getRotate() + 60);
                 }
@@ -107,9 +110,8 @@ public class Board extends Application {
             });
 
             setOnScroll(e -> {
-                rotatePiece();
-               // rotatePiece(1);                      // to update the piece's properties
-               // setRotate(getRotate() + 60);
+                rotatePiece(1);                     // to update the piece's properties
+                // setRotate(getRotate() + 60);
                 //checkOverlap();
             });
 
@@ -142,19 +144,55 @@ public class Board extends Application {
             }
         }
 
-        // visually rotate a piece and update its data
         private void rotatePiece(int modifier) {
-
-        }
-        private void rotatePiece()
-        {
-            setRotate((getRotate() + 60) % 360);
+            setRotate((getRotate() + 60 * modifier) % 360);
 //            snapGrid(); // enabling this here causes a bug where rotating a piece on the spot before moving it can cause it to snap to the grid, and isn't needed to do snapping on mouse release
         }
+
         // flip the selected piece
         private void flipPiece() {
             setScaleY(getScaleY() * -1);
-            snapGrid(); // same as rotatePiece
+//            snapGrid(); // same as rotatePiece
+        }
+
+        private double getDistanceTo(double x, double y) {
+            x -= PIECE_IMAGE_SIZE / 2;
+            y -= PIECE_IMAGE_SIZE / 2;
+            return Math.sqrt( (x - getLayoutX())*(x - getLayoutX()) + (y - getLayoutY())*(y - getLayoutY()));
+        }
+
+        private double getDistanceTo(Circle c) {
+            double x = c.getLayoutY();
+            double y = c.getCenterY();
+            return Math.sqrt( (x - getLayoutX())*(x - getLayoutX()) + (y - getLayoutY())*(y - getLayoutY()));
+        }
+
+        private Circle getNearestPeg() {
+            Circle n = null;
+            double d = 1000;
+            for (Circle c : pegList) {
+                double distance = getDistanceTo(c.getLayoutX(), c.getLayoutY());
+//                System.out.println(distance);
+                if ( distance < d) {
+                    d = distance;
+                    n = c;
+                }
+            }
+            System.out.println("x: " + n.getLayoutX() + ", y: " + n.getLayoutY());
+            return n;
+        }
+
+        private void checkLocation() {
+            for (Circle c : pegList ) {
+                double d = getDistanceTo(c);
+            }
+        }
+
+        private void snapPeg() {
+            Circle n = getNearestPeg();
+
+            setLayoutX(n.getLayoutX() - PIECE_IMAGE_SIZE / 2);
+            setLayoutY(n.getLayoutY() - PIECE_IMAGE_SIZE / 2);
         }
 
         private void checkOverlap() {
@@ -279,16 +317,19 @@ public class Board extends Application {
             board[i].updateStates(blank);
         }
 
-        for (int i = 0; i < 24; i++) {
-            int col = i / 6;
-            int row = i % 6;
-            double y = (col * ROW_HEIGHT ) + PIECE_IMAGE_SIZE / 2 + Y_BORDER;
-            int xOffset = 0;
-            if (col % 2 != 0) xOffset += SQUARE_SIZE / 2;
-            double x = (row * SQUARE_SIZE) + PIECE_IMAGE_SIZE / 2 + X_BORDER + xOffset;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 4; j++) {
+                double y = (j * ROW_HEIGHT ) + PIECE_IMAGE_SIZE / 2 + Y_BORDER;
+                int xOffset = 0;
+                if (j % 2 != 0) xOffset += SQUARE_SIZE / 2;
+                double x = (i * SQUARE_SIZE) + PIECE_IMAGE_SIZE / 2 + X_BORDER + xOffset;
 
-            Circle a = new Circle(x, y, CIRCLE_SIZE, Color.GRAY);
-            pegs.getChildren().add(a);
+                Circle a = new Circle(0, 0, CIRCLE_SIZE, Color.GRAY);
+                a.setLayoutX(x);
+                a.setLayoutY(y);
+                pegs.getChildren().add(a);
+                pegList.add(a);
+            }
         }
     }
 
