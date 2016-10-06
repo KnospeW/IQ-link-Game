@@ -6,6 +6,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.*;
 import javafx.scene.image.*;
@@ -49,19 +50,9 @@ public class Board extends Application {
 
 //    private final ArrayList<String> easy= new ArrayList(Arrays.asList("BAA","BAAHBA","BAAHBAWEB",""));
 
-
     // FIXME Task 8: Implement a basic playable Link Game in JavaFX that only allows pieces to be placed in valid places
-
-
-
     // FIXME Task 11: Implement hints
-
     // FIXME Task 12: Generate interesting starting placements
-
-    // FIXME Stop pieces snapping home while being held and rotating
-    // FIXME Remove bug on snapping to grid while placing at Y index -1
-    // TODO Implement controls
-    // TODO Reimplement hints (i.e., visual overlay)
 
     /**
      * The driving class behind the game. Contains anything to do with manipulating or querying a piece.
@@ -187,15 +178,25 @@ public class Board extends Application {
         }
 
         /**
-         * Method to find the distance from a piece to a circle/peg. Previously found distance to a point, until it was
-         *  realised that the method was being fed the peg's coordinates anyway.
+         * Method to find the distance from a piece to a circle/peg.
          * @param c The circle to find the distance to.
          * @return Geometric distance.
          */
-
         private double getDistanceTo(Circle c) {
             double x = c.getLayoutY();
             double y = c.getCenterY();
+            return Math.sqrt( (x - getLayoutX())*(x - getLayoutX()) + (y - getLayoutY())*(y - getLayoutY()));
+        }
+
+        /**
+         * Alternate method to find distance from a piece to a point.
+         * @param x X coordinate of the location to be measured to.
+         * @param y Matching Y coordinate.
+         * @return Geometric distance to the point.
+         */
+        private double getDistanceTo(double x, double y) {
+            x -= PIECE_IMAGE_SIZE / 2;
+            y -= PIECE_IMAGE_SIZE / 2;
             return Math.sqrt( (x - getLayoutX())*(x - getLayoutX()) + (y - getLayoutY())*(y - getLayoutY()));
         }
 
@@ -207,7 +208,7 @@ public class Board extends Application {
             Circle n = null;
             double d = 1000;
             for (Circle c : pegList) {
-                double distance = getDistanceTo(c);
+                double distance = getDistanceTo(c.getLayoutX(), c.getLayoutY());
 //                System.out.println(distance);
                 if ( distance < d) {
                     d = distance;
@@ -409,6 +410,7 @@ public class Board extends Application {
      * Written by Yicong.
      * @param placement
      * TODO: Merge this and makeInitialPlacement
+     * TODO: Split this into another sub-method (createPiece?) to use with the hints
      */
     private void makePieces(String placement) {
         pieces.getChildren().clear();
@@ -471,20 +473,40 @@ public class Board extends Application {
 
     /**
      * Creates a text box containing the solution string.
-     * TODO: Turn this into a visual representation, since players won't know what BAA means (I barely know what BAA means)
      */
     private void loadHints() {
-        int boxW = 470;
-        int boxH = 27;
+//    private void loadHints(String solution) {
+        String solution = "BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
+        Map<Character,String> solutionMap = new HashMap<>();
+        for (int i = 0; i < solution.length() / 3; i++)
+            solutionMap.put(solution.charAt(3*i+1), solution.substring(3*i,3*i+3));
 
-        Rectangle box = new Rectangle(10, BOARD_HEIGHT - boxH - 8, boxW, boxH);
-        box.setFill(Color.LIGHTGREY);
+        for (char p = 'A'; p <= 'L'; p++) {
+            if (solutionMap.containsKey(p)) {
+                String pieces = solutionMap.get(p);
+                int location = pieces.charAt(0) - 'A';
+                int rotation = pieces.charAt(2) - 'A';
+                int flip = rotation > 5 ? -1 : 1;
+                int yPeg = location / 6;
+                int xPeg = location % 6;
 
-        Text sol = new Text(15, BOARD_HEIGHT - 15, "BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ");
-        sol.setFill(Color.DARKRED);
-        sol.setFont(new Font(20));
-
-        hints.getChildren().addAll(box, sol);
+                LockedPiece piece = new LockedPiece(p, xPeg, yPeg, rotation % 6, flip);
+                piece.setPosition(location);
+                piece.setOpacity(0.2);
+                hints.getChildren().add(piece);
+            }
+        }
+//        int boxW = 470;
+//        int boxH = 27;
+//
+//        Rectangle box = new Rectangle(10, BOARD_HEIGHT - boxH - 8, boxW, boxH);
+//        box.setFill(Color.LIGHTGREY);
+//
+//        Text sol = new Text(15, BOARD_HEIGHT - 15, "BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ");
+//        sol.setFill(Color.DARKRED);
+//        sol.setFont(new Font(20));
+//
+//        hints.getChildren().addAll(box, sol);
     }
 
     // if the placement is not well formed, return the warning
