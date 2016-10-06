@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # COMP1110 Assignment 2
 
 *This assignment is only for those enrolled in COMP1110, COMP1510, or COMP6710. COMP1140 students should look [here](https://gitlab.cecs.anu.edu.au/comp1110/comp1140-ass2).*
