@@ -187,15 +187,25 @@ public class Board extends Application {
         }
 
         /**
-         * Method to find the distance from a piece to a circle/peg. Previously found distance to a point, until it was
-         *  realised that the method was being fed the peg's coordinates anyway.
+         * Method to find the distance from a piece to a circle/peg.
          * @param c The circle to find the distance to.
          * @return Geometric distance.
          */
-
         private double getDistanceTo(Circle c) {
             double x = c.getLayoutY();
             double y = c.getCenterY();
+            return Math.sqrt( (x - getLayoutX())*(x - getLayoutX()) + (y - getLayoutY())*(y - getLayoutY()));
+        }
+
+        /**
+         * Alternate method to find distance from a piece to a point.
+         * @param x X coordinate of the location to be measured to.
+         * @param y Matching Y coordinate.
+         * @return Geometric distance to the point.
+         */
+        private double getDistanceTo(double x, double y) {
+            x -= PIECE_IMAGE_SIZE / 2;
+            y -= PIECE_IMAGE_SIZE / 2;
             return Math.sqrt( (x - getLayoutX())*(x - getLayoutX()) + (y - getLayoutY())*(y - getLayoutY()));
         }
 
@@ -207,7 +217,7 @@ public class Board extends Application {
             Circle n = null;
             double d = 1000;
             for (Circle c : pegList) {
-                double distance = getDistanceTo(c);
+                double distance = getDistanceTo(c.getLayoutX(), c.getLayoutY());
 //                System.out.println(distance);
                 if ( distance < d) {
                     d = distance;
