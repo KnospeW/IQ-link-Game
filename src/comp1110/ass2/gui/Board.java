@@ -65,13 +65,23 @@ public class Board extends Application {
     // TODO Implement controls
     // TODO Reimplement hints (i.e., visual overlay)
 
+    /**
+     * The driving class behind the game. Contains anything to do with manipulating or querying a piece.
+     * Written by Alex, except where noted.
+     * Initial inspiration for event methods taken from Steve Blackburn.
+     */
     private class FXPiece extends ImageView {
         char id;
         int initX, initY;
         double mouseX, mouseY;
         int position;
 
-        FXPiece(char id) throws IllegalArgumentException {
+        /**
+         * Instantiates a piece.
+         * @param id A character ID between A and L inclusive, corresponding to the piece.
+         * @throws IllegalArgumentException Given an ID greater than L.
+         */
+        FXPiece(char id) {
             if (id > 'L') throw new IllegalArgumentException("Invalid piece id: " + id);
             this.id = id;
             setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
@@ -83,8 +93,8 @@ public class Board extends Application {
             setLayoutY(initY);
 
             setOnMousePressed(e -> {
-                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2; // we want to manipulate from the centre of the piece,
-                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2; // not the corner (which is transparent)
+                mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2;  // we want to manipulate from the centre of the piece,
+                mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2;  // not the corner (which is transparent)
             });
 
             setOnMouseDragged(e -> {
@@ -92,62 +102,75 @@ public class Board extends Application {
                 setLayoutY(mouseY);
                 mouseX = e.getSceneX() - PIECE_IMAGE_SIZE / 2;
                 mouseY = e.getSceneY() - PIECE_IMAGE_SIZE / 2;
+                warnings.getChildren().clear();                 // no point warning someone about something that doesn't matter
                 requestFocus();
             });
 
             setOnMouseReleased(e -> {
-//                grabLocation();                     // testing
+//                grabLocation();                                 // testing
                 snapPeg();
             });
 
-            setOnKeyPressed(e -> {                  // due to limitations in the engine, pieces must first be dragged
-                if (e.getCode() == KeyCode.E) {     // before they can be rotated or flipped
+            setOnKeyPressed(e -> {                              // due to limitations in the engine, pieces must first be dragged
+                if (e.getCode() == KeyCode.E)                   // before they can be rotated or flipped
                     rotatePiece(-1);
-                }
-                if (e.getCode() == KeyCode.R) {
-                      rotatePiece(1);
-                }
-                if (e.getCode() == KeyCode.F) {
+                if (e.getCode() == KeyCode.R)
+                    rotatePiece(1);
+                if (e.getCode() == KeyCode.F)
                     flipPiece();
-                }
                 System.out.println(hovering);
             });
 
-            setOnScroll(e -> {
-                rotatePiece(1);                     // to update the piece's properties
-            });
+            setOnScroll(e -> rotatePiece(1) );                  // alternate control to rotate piece
         }
 
+        /**
+         * Querying methods.
+         */
+        int getPosition() { return this.position; }
+        boolean isFlipped() { return getScaleY() == -1; }
+        String getPieceString() { return this.toString(); }
+
+        /**
+         * Sets the position component of the piece's data. Numbered 1 to 24, starting from the top left and working
+         *  left to right, top to bottom. -1 is off the board.
+         * @param pos The position integer.
+         */
         void setPosition(int pos) {
-            this.position = pos;
+            if (pos > 24) throw new IndexOutOfBoundsException("Invalid position coordinate.");
+            else
+                this.position = pos;
         }
 
-        int getPosition() {
-            return this.position;
-        }
-
-        String getPieceString() {
-            return this.toString();
-        }
-
+        /**
+         * Fetch method for the initial placement of a piece. Four pieces along the top and bottom, and two
+         *  on either side.
+         * TODO: Dyanamicise location?
+         */
         private void findInitialPlacement() {
             int mod = id - 'A';
-            if (mod < 4) {                                                  // row above the board
+            if (mod < 4) {
                 initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
                 if (mod % 2 != 0) initY = 40;
                 else initY = -40;
-            } else if (mod < 6) {                                             // left row
+            } else if (mod < 6) {
                 initX = 0;
                 initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 3);
             } else if (mod < 8) {
-                initX = BOARD_WIDTH - PIECE_IMAGE_SIZE + SQUARE_SIZE / 3;   // right row
+                initX = BOARD_WIDTH - PIECE_IMAGE_SIZE + SQUARE_SIZE / 3;
                 initY = PIECE_IMAGE_SIZE * 2 / 3 * (mod - 5);
             } else {
-                initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;  // row below the board
+                initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
                 initY = BOARD_HEIGHT - SQUARE_SIZE * 5 / 2;
             }
         }
 
+        /**
+         * Visually rotates a piece and adds its info to the placement string. Visualises a warning on an incorrect
+         *  placement.
+         * @param modifier Index to rotate piece by. Will rotate the piece clockwise by 60 degrees multiplied by the
+         *                 modifier. Can be negative.
+         */
         private void rotatePiece(int modifier) {
             warnings.getChildren().clear();
             setRotate((getRotate() + 60 * modifier) % 360);
@@ -157,21 +180,20 @@ public class Board extends Application {
                 placement += getPieceString();
         }
 
-        // flip the selected piece
+        /**
+         * Visually flips a piece and clears any warnings.
+         */
         private void flipPiece() {
             warnings.getChildren().clear();
             setScaleY(getScaleY() * -1);
         }
 
-        boolean isFlipped() {
-            return getScaleY() == -1;
-        }
-
-        private double getDistanceTo(double x, double y) {
-            x -= PIECE_IMAGE_SIZE / 2;
-            y -= PIECE_IMAGE_SIZE / 2;
-            return Math.sqrt( (x - getLayoutX())*(x - getLayoutX()) + (y - getLayoutY())*(y - getLayoutY()));
-        }
+        /**
+         * Method to find the distance from a piece to a circle/peg. Previously found distance to a point, until it was
+         *  realised that the method was being fed the peg's coordinates anyway.
+         * @param c The circle to find the distance to.
+         * @return Geometric distance.
+         */
 
         private double getDistanceTo(Circle c) {
             double x = c.getLayoutY();
@@ -179,18 +201,22 @@ public class Board extends Application {
             return Math.sqrt( (x - getLayoutX())*(x - getLayoutX()) + (y - getLayoutY())*(y - getLayoutY()));
         }
 
+        /**
+         * Finds the nearest peg to use with snapping a piece.
+         * @return The closest circle.
+         */
         private Circle getNearestPeg() {
             Circle n = null;
             double d = 1000;
             for (Circle c : pegList) {
-                double distance = getDistanceTo(c.getLayoutX(), c.getLayoutY());
+                double distance = getDistanceTo(c);
 //                System.out.println(distance);
                 if ( distance < d) {
                     d = distance;
                     n = c;
                 }
             }
-            System.out.println("x: " + n.getLayoutX() + ", y: " + n.getLayoutY());
+//            System.out.println("x: " + n.getLayoutX() + ", y: " + n.getLayoutY()); // debugging
             return n;
         }
 
@@ -200,6 +226,10 @@ public class Board extends Application {
             }
         }
 
+        /**
+         * Places a piece centred on a peg rather than where the player lets go of the piece.
+         * TODO: Implement bounce home.
+         */
         private void snapPeg() {
             Circle n = getNearestPeg();
 
@@ -211,6 +241,10 @@ public class Board extends Application {
                 placement += getPieceString();
         }
 
+        /**
+         * Draw a warning image if the player places an incorrect piece.
+         * Written by Yicong.
+         */
         private void setWarning()
         {
             ImageView warning=new ImageView(new Image(Board.class.getResource(URI_BASE+"warning.jpg").toString()));
@@ -220,6 +254,10 @@ public class Board extends Application {
 
         }
 
+        /**
+         * Checks whether or not a placed piece overlaps a piece that is already placed.
+         * @return True if the piece is invalid, false otherwise.
+         */
         private boolean pieceOverlaps() {
             String currPlacement = "";
             for (Node p : pieces.getChildren()) {
@@ -233,7 +271,10 @@ public class Board extends Application {
             return true;
         }
 
-        private void grabLocation() { // debugging method for snapGrid
+        /**
+         * Deprecated debugging method for snapGrid.
+         */
+        private void grabLocation() {
             int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
             int xOffset = 0;
             if (nearestYIndex % 2 == 1) xOffset += SQUARE_SIZE / 2;
@@ -249,6 +290,9 @@ public class Board extends Application {
 
         }
 
+        /**
+         * Snapping method made deprecated by the introduction of using the pegs' locations in snapPeg.
+         */
         private void snapGrid() {
             boolean onGrid = true;
             int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
@@ -286,22 +330,32 @@ public class Board extends Application {
                 snapHome();
         }
 
-        // modularising the return home code
+        /**
+         * Modularising the returning home mechanic used in snapGrid and snapPeg.
+         */
         private void snapHome() {
             setPosition(-1);
             setLayoutX(initX);
             setLayoutY(initY);
         }
 
-        /// get PiecePlacement
+        /**
+         * Converts a piece to a string.
+         * Written by Yicong.
+         * @return The three-character string that a piece is referred to by in LinkGame's arguments.
+         */
         public String toString() {
             char orientation = (char) ('A' + (int) (getRotate() / 60));
-            if(this.getScaleY()==-1)
-                orientation=(char)(orientation+6);
+            if (isFlipped())
+                orientation = (char) (orientation + 6);
             return (getPosition() == -1) ? "" : "" + (char) ('A' + getPosition()) + id + orientation;
         }
     }
 
+    /**
+     * A subclass of FXPiece that disables any movement commands on the piece. Used for initial placements.
+     * Written by Alex.
+     */
     private class LockedPiece extends FXPiece {
         LockedPiece(char id, int xPeg, int yPeg, int rotate, int flip) throws IllegalArgumentException {
             super(id);
@@ -322,9 +376,10 @@ public class Board extends Application {
         }
     }
 
-
-    //create our Board, have 12 grey circle backgrounds
-    //it is the initial container, the center will be the solution area
+    /**
+     * Creates the board for playing on. Draws 24 circles and initialises the board container.
+     * Written by Yicong, optimised by Alex for readability and dynamicity.
+     */
     private void createBoard()
     {
         int[] blank = {0,0,0,0,0,0};
@@ -349,10 +404,13 @@ public class Board extends Application {
         }
     }
 
-    ///to make pieces with the start placement
-    //if it is in the placement,make it to the right pegs
-    //else make it around the pegs
-
+    /**
+     * Creates a set of pieces on the board given a placement string. Any pieces not contained in the
+     *  placement string are created in their intial locations.
+     * Written by Yicong.
+     * @param placement
+     * TODO: Merge this and makeInitialPlacement
+     */
     private void makePieces(String placement) {
         pieces.getChildren().clear();
         Map<Character,String> prePieces= new HashMap<>();  // the piece as key, pieceplacement as value
@@ -368,6 +426,7 @@ public class Board extends Application {
                 int flip = rotation > 5 ? - 1 : 1;
                 int xPeg = location % 6;
                 int yPeg = location / 6;
+
                 LockedPiece piece= new LockedPiece(p,xPeg,yPeg,rotation%6,flip);
                 piece.setPosition(location);
                 pieces.getChildren().add(piece);
@@ -380,7 +439,10 @@ public class Board extends Application {
         }
     }
 
-    //if the player want to restart, click on the button and it will direct the player
+    /**
+     * Creates the button controls (restart and new game) present in the bottom right corner of the game screen.
+     * TODO: Make the placement location dynamic
+     */
     private void makeControls() {
         Button button1 = new Button("New Game");
         button1.setLayoutX(850);
@@ -400,13 +462,19 @@ public class Board extends Application {
         controls.getChildren().add(button2);
     }
 
+    /**
+     * Creates the instruction image.
+     */
     private void loadInstruction() {
         ImageView instruction=new ImageView(new Image(Board.class.getResource(URI_BASE+"instruction.jpg").toString()));
         instructions.getChildren().add(instruction);
     }
 
+    /**
+     * Creates a text box containing the solution string.
+     * TODO: Turn this into a visual representation, since players won't know what BAA means (I barely know what BAA means)
+     */
     private void loadHints() {
-        // TODO: Turn this into a visual representation, since players won't know what BAA means (I barely know what BAA means)
         int boxW = 470;
         int boxH = 27;
 
@@ -425,11 +493,14 @@ public class Board extends Application {
 
     }
 
-    // FIXME Task 9: Implement starting placements
-
-    //this method is to take the number of pieces that is already on the right pegs
-    //pick pieces randomly from the solution
-    //return the placement string
+    /**
+     * Using a solution string, it breaks it down into each piece's data and returns a given number of them
+     *  for an initial placement.
+     * Written by Yicong.
+     * @param num Number of pieces to return.
+     * @return Partially complete solution string of multiple pieces.
+     * FIXME Task 9: Implement starting placements
+     */
     private String getInitPlacement(int num) {
         String solution1="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
         String InitPlacement="";
@@ -455,88 +526,76 @@ public class Board extends Application {
     }
 
 
-    //this method is to create the welcome page
+    /**
+     * Creates the welcoming scene.
+     * Created by Yicong, modularised and tidied by Alex.
+     * @return The opening splash screen.
+     * TODO: make placement location dynamic
+     */
     private Scene SetWelcomePage() {
         Group start= new Group();
         Scene startScene = new Scene(start, BOARD_WIDTH, BOARD_HEIGHT);
 
         //add background Image
         Image background=new Image(Board.class.getResource("background.jpg").toString());
-        start.getChildren().add(new ImageView(background));
-
 
         //add button easy , when click, there are 9 pieces already on board
-        Image easy=new Image(Board.class.getResource(URI_BASE+"1.png").toString());
-        Button btEasy = new Button();
-        btEasy.setGraphic(new ImageView(easy));
-        btEasy.setStyle("-fx-background-color: transparent;");
-        btEasy.setLayoutX(100);
-        btEasy.setLayoutY(450);
-        btEasy.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                primaryStage.setScene(mainScene);
-                placement=getInitPlacement(9);
-                makePieces(placement);
-            }
-        });
-        start.getChildren().add(btEasy);
+        ActionButton easyMode = new ActionButton(1, 100, 450);
+        easyMode.setOnMouseReleased(e -> makeInitialPlacement(9));
 
-        ////add button hard , when click, there are 6 pieces already on board
-        Image hard=new Image(Board.class.getResource(URI_BASE+"2.png").toString());
-        Button btHard = new Button();
-        btHard.setGraphic(new ImageView(hard));
-        btHard.setStyle("-fx-background-color: transparent;");
-        btHard.setLayoutX(300);
-        btHard.setLayoutY(450);
-        btHard.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                primaryStage.setScene(mainScene);
-                placement=getInitPlacement(6);
-                makePieces(placement);
-            }
-        });
-        start.getChildren().add(btHard);
+        //add button hard , when click, there are 6 pieces already on board
+        ActionButton hardMode = new ActionButton(2, 300, 450);
+        hardMode.setOnMouseReleased(e -> makeInitialPlacement(6));
 
-        ////add button hard , when click, there are 9 pieces already on board
-        Image expert=new Image(Board.class.getResource(URI_BASE+"3.png").toString());
-        Button btExpert = new Button();
-        btExpert.setGraphic(new ImageView(expert));
-        btExpert.setStyle("-fx-background-color: transparent;");
-        btExpert.setLayoutX(500);
-        btExpert.setLayoutY(450);
-        btExpert.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                primaryStage.setScene(mainScene);
-                placement=getInitPlacement(3);
-                makePieces(placement);
-            }
-        });
-        start.getChildren().add(btExpert);
+        //add button hard , when click, there are 9 pieces already on board
+        ActionButton expertMode = new ActionButton(3, 500, 450);
+        expertMode.setOnMouseReleased(e -> makeInitialPlacement(3));
 
-        ////this button represents brand new game
-        Image superim=new Image(Board.class.getResource(URI_BASE+"4.png").toString());
-        Button btsuper= new Button();
-        btsuper.setGraphic(new ImageView(superim));
-        btsuper.setStyle("-fx-background-color: transparent;");
-        btsuper.setLayoutX(700);
-        btsuper.setLayoutY(450);
-        btsuper.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                primaryStage.setScene(mainScene);
-                placement="";
-                makePieces(placement);
-            }
-        });
-        start.getChildren().add(btsuper);
+        //this button represents brand new game
+        ActionButton normalMode = new ActionButton(4, 700, 450);
+        normalMode.setOnMousePressed(e -> makeInitialPlacement(0));
 
         // some hints for the player to click on the button to enter the game
         ImageView title=new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
         title.setLayoutX(0);
         title.setLayoutY(550);
+
+        start.getChildren().add(new ImageView(background));
+        start.getChildren().add(easyMode);
+        start.getChildren().add(hardMode);
+        start.getChildren().add(expertMode);
+        start.getChildren().add(normalMode);
         start.getChildren().add(title);
 
         this.startScene=startScene;
         return startScene;
+    }
+
+    /**
+     * Modular class to create a button in SetWelcomePage.
+     * Written by Alex.
+     */
+    private class ActionButton extends ImageView {
+        ActionButton(int imageIndex, double x, double y) {
+            setImage(new Image(Board.class.getResource(URI_BASE+imageIndex+".png").toString()));
+            setStyle("-fx-background-color: transparent;");
+            setLayoutX(x);
+            setLayoutY(y);
+        }
+    }
+
+    /**
+     * Helper method for SetWelcomePage.
+     * Written by Alex.
+     * @param n Number of pieces to place.
+     */
+    private void makeInitialPlacement(int n) {
+        primaryStage.setScene(mainScene);
+        if (n == 0)
+            placement = "";
+        else
+            placement = getInitPlacement(n);
+        makePieces(placement);
     }
 
     ///this method is to create the main game scene
