@@ -67,7 +67,7 @@ public class LinkGame {
      */
     static boolean isPlacementWellFormed(String placement) {
         // FIXME Task 4: determine whether a placement is well-formed
-        if (placement.equals("") || placement.length() % 3 != 0)
+        if (placement==null||placement.equals("") || placement.length() % 3 != 0)
             return false;
 
         String[] s = new String[placement.length() / 3];  //divide the string placement into sets of 3 characters
