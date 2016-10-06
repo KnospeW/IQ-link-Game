@@ -37,17 +37,17 @@ public class Board extends Application {
     private final Group warnings = new Group();
     private final Group instructions = new Group();
 
-    private Pegs[] board = new Pegs[24];
+    private final Pegs[] board = new Pegs[24];
+    private final ArrayList<Circle> pegList = new ArrayList<>();
     private boolean hovering;
-    private ArrayList<Circle> pegList = new ArrayList<>();
-    public  String placement="";
+    private String placement="";
     private String startPlacement="";
 
     private static Stage primaryStage;
     private Scene startScene;
     private Scene mainScene;
 
-    private final ArrayList<String> easy= new ArrayList(Arrays.asList("BAA","BAAHBA","BAAHBAWEB",""));
+//    private final ArrayList<String> easy= new ArrayList(Arrays.asList("BAA","BAAHBA","BAAHBAWEB",""));
 
 
     // FIXME Task 8: Implement a basic playable Link Game in JavaFX that only allows pieces to be placed in valid places
@@ -143,7 +143,7 @@ public class Board extends Application {
         /**
          * Fetch method for the initial placement of a piece. Four pieces along the top and bottom, and two
          *  on either side.
-         * TODO: Dyanamicise location?
+         * TODO: Make location dynamic?
          */
         private void findInitialPlacement() {
             int mod = id - 'A';
@@ -218,6 +218,7 @@ public class Board extends Application {
             return n;
         }
 
+        // TODO: Remember what this was for and use it
         private void checkLocation() {
             for (Circle c : pegList ) {
                 double d = getDistanceTo(c);
@@ -404,14 +405,14 @@ public class Board extends Application {
 
     /**
      * Creates a set of pieces on the board given a placement string. Any pieces not contained in the
-     *  placement string are created in their intial locations.
+     *  placement string are created in their initial locations.
      * Written by Yicong.
      * @param placement
      * TODO: Merge this and makeInitialPlacement
      */
     private void makePieces(String placement) {
         pieces.getChildren().clear();
-        Map<Character,String> prePieces= new HashMap<>();  // the piece as key, pieceplacement as value
+        Map<Character,String> prePieces= new HashMap<>();  // the piece as key, piecePlacement as value
         for (int i = 0; i < placement.length() / 3; i++)
             prePieces.put(placement.charAt(3*i+1),placement.substring(3*i,3*i+3));
 
@@ -487,6 +488,7 @@ public class Board extends Application {
     }
 
     // if the placement is not well formed, return the warning
+    // TODO: Implement or remove this if unneeded
     public void invalidPlacement(String placement) {
 
     }
@@ -538,19 +540,19 @@ public class Board extends Application {
         Image background=new Image(Board.class.getResource("background.jpg").toString());
 
         //add button easy , when click, there are 9 pieces already on board
-        ActionButton easyMode = new ActionButton(1, 100, 450);
+        ActionButton easyMode = new ActionButton(1, 100);
         easyMode.setOnMouseReleased(e -> makeInitialPlacement(9));
 
         //add button hard , when click, there are 6 pieces already on board
-        ActionButton hardMode = new ActionButton(2, 300, 450);
+        ActionButton hardMode = new ActionButton(2, 300);
         hardMode.setOnMouseReleased(e -> makeInitialPlacement(6));
 
         //add button hard , when click, there are 9 pieces already on board
-        ActionButton expertMode = new ActionButton(3, 500, 450);
+        ActionButton expertMode = new ActionButton(3, 500);
         expertMode.setOnMouseReleased(e -> makeInitialPlacement(3));
 
         //this button represents brand new game
-        ActionButton normalMode = new ActionButton(4, 700, 450);
+        ActionButton normalMode = new ActionButton(4, 700);
         normalMode.setOnMousePressed(e -> makeInitialPlacement(0));
 
         // some hints for the player to click on the button to enter the game
@@ -579,6 +581,14 @@ public class Board extends Application {
             setStyle("-fx-background-color: transparent;");
             setLayoutX(x);
             setLayoutY(y);
+        }
+
+        // Alternate constructor, given the pieces are created on the same y coordinate.
+        ActionButton(int imageIndex, double x) {
+            setImage(new Image(Board.class.getResource(URI_BASE+imageIndex+".png").toString()));
+            setStyle("-fx-background-color: transparent;");
+            setLayoutX(x);
+            setLayoutY(450);
         }
     }
 
