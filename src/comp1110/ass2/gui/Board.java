@@ -6,12 +6,13 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.effect.BlendMode;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.text.*;
-import javafx.scene.image.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.*;
@@ -107,7 +108,8 @@ public class Board extends Application {
                     rotatePiece(1);
                 if (e.getCode() == KeyCode.F)
                     flipPiece();
-                System.out.println(hovering);
+
+                //System.out.println(hovering);
             });
 
             setOnScroll(e -> rotatePiece(1) );                  // alternate control to rotate piece
@@ -165,8 +167,6 @@ public class Board extends Application {
             setRotate((getRotate() + 60 * modifier) % 360);
             if (pieceOverlaps())
                 setWarning();
-            else
-                placement += getPieceString();
         }
 
         /**
@@ -175,6 +175,8 @@ public class Board extends Application {
         private void flipPiece() {
             warnings.getChildren().clear();
             setScaleY(getScaleY() * -1);
+            if (pieceOverlaps())
+                setWarning();
         }
 
         /**
@@ -207,13 +209,16 @@ public class Board extends Application {
         private Circle getNearestPeg() {
             Circle n = null;
             double d = 1000;
+            int i=0;
             for (Circle c : pegList) {
                 double distance = getDistanceTo(c.getLayoutX(), c.getLayoutY());
 //                System.out.println(distance);
                 if ( distance < d) {
                     d = distance;
                     n = c;
+                    this.position=i;
                 }
+                i=i+1;
             }
 //            System.out.println("x: " + n.getLayoutX() + ", y: " + n.getLayoutY()); // debugging
             return n;
@@ -235,8 +240,10 @@ public class Board extends Application {
 
             setLayoutX(n.getLayoutX() - PIECE_IMAGE_SIZE / 2);
             setLayoutY(n.getLayoutY() - PIECE_IMAGE_SIZE / 2);
+
             if (pieceOverlaps())
-               setWarning();
+               //setWarning();
+                snapHome();
             else
                 placement += getPieceString();
         }
@@ -264,11 +271,13 @@ public class Board extends Application {
                 if (!p.toString().equals(""))
                     currPlacement += p.toString();
             }
+            System.out.println(currPlacement);
             if (isPlacementValid(currPlacement)) {
                 placement = currPlacement;
                 return false;
             }
-            return true;
+            else{return true;}
+
         }
 
         /**
@@ -283,10 +292,10 @@ public class Board extends Application {
             double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
             double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
 
-            System.out.println("Raw location: " + getLayoutX() + ", " + getLayoutY());
+           /* System.out.println("Raw location: " + getLayoutX() + ", " + getLayoutY());
             System.out.println("Nearest points: " + nearestX + ", " + nearestY);
             System.out.println("Nearest indexes: " + nearestXIndex + ", " + nearestYIndex);
-            System.out.println(this);
+            System.out.println(this);*/
 
         }
 
@@ -340,12 +349,23 @@ public class Board extends Application {
         }
 
         /**
+         * Return a positive angle
+         * Written by Yicong.
+         * @return if angle<0, then make it a positive angle for mode calculation.
+         */
+        private double positiveOrientation(double angle)
+        {
+            while(angle<0)
+                angle+=360;
+            return angle;
+        }
+        /**
          * Converts a piece to a string.
          * Written by Yicong.
          * @return The three-character string that a piece is referred to by in LinkGame's arguments.
          */
         public String toString() {
-            char orientation = (char) ('A' + (int) (getRotate() / 60));
+            char orientation = (char) ('A' + (int)( (positiveOrientation(getRotate())/ 60)%6));
             if (isFlipped())
                 orientation = (char) (orientation + 6);
             return (getPosition() == -1) ? "" : "" + (char) ('A' + getPosition()) + id + orientation;
@@ -388,12 +408,12 @@ public class Board extends Application {
             board[i].updateStates(blank);
         }
 
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 4; j++) {
-                double y = (j * ROW_HEIGHT ) + PIECE_IMAGE_SIZE / 2 + Y_BORDER;
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 6; col++) {
+                double y = (row * ROW_HEIGHT ) + PIECE_IMAGE_SIZE / 2 + Y_BORDER;
                 int xOffset = 0;
-                if (j % 2 != 0) xOffset += SQUARE_SIZE / 2;
-                double x = (i * SQUARE_SIZE) + PIECE_IMAGE_SIZE / 2 + X_BORDER + xOffset;
+                if (row % 2 != 0) xOffset += SQUARE_SIZE / 2;
+                double x = (col * SQUARE_SIZE) + PIECE_IMAGE_SIZE / 2 + X_BORDER + xOffset;
 
                 Circle a = new Circle(0, 0, CIRCLE_SIZE, Color.LIGHTGRAY);
                 a.setLayoutX(x);
