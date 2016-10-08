@@ -9,28 +9,6 @@ import java.util.*;
  * (http://www.smartgames.eu/en/smartgames/iq-link)
  */
 public class LinkGame {
-
-
-
-    static List<String> board = new ArrayList<>();
-    static String pieceSequence = "";
-
-    // Converts a piece's data with thee placement location into a placement string.
-    static String getPlacement(Piece piece, int placementLocation) {
-        return "";
-    }
-
-    // Find openings in a peg to determine valid placement
-    static String breakPlacement(Pegs pegs) {
-        return "";
-    }
-
-    // Update the board after a placement
-    static void updateBoard(String placementString) {
-    }
-
-    //long string into several arrays of 3-char string
-
     /**
      * Determine whether a piece placement is well-formed according to the following:
      * - it consists of exactly three characters
@@ -43,17 +21,22 @@ public class LinkGame {
      * @return True if the piece placement is well-formed
      */
 
-    // FIXME Task 3: determine whether a piece placement is well-formed
     static boolean isPiecePlacementWellFormed(String piecePlacement) {
         int len = piecePlacement.length();
         char[] chars = piecePlacement.toCharArray();
-        if (len == 3) {
-            //judge the range of each character and for the third character has two different situations
-            return (int) chars[0] > 64 && (int) chars[0] < 89 && (int) chars[1] > 64 && (int) chars[1] < 77 && (((int) chars[2] > 64 && (int) chars[2] < 77 && chars[1] != 'A') || ((int) chars[2] > 64 && (int) chars[2] < 71 && chars[1] == 'A'));
-
-        } else {
-            return false;
-        }
+        //judge the range of each character and for the third character has two different situations
+        return len == 3
+            && chars[0] >= 'A'
+            && chars[0] <= 'X'
+            && chars[1] >= 'A'
+            && chars[1] <= 'L'
+            && ((chars[2] >= 'A'
+                    && chars[2] <= 'L'
+                    && chars[1] != 'A')
+                || (chars[2] >= 'A'
+                    && chars[2] <= 'F'
+                    && chars[1] == 'A')
+        );
     }
 
     /**
@@ -290,10 +273,6 @@ public class LinkGame {
         return threestates;
     }
 
-//    public static void main(String[] args) {
-//        updatePegsPiecePlacement("CGL");
-//   }
-
     /**
      * Determine whether a placement is valid.  To be valid, the placement must be well-formed
      * and each piece must correctly connect with each other.
@@ -301,7 +280,6 @@ public class LinkGame {
      * @param placement A placement string
      * @return True if the placement is valid
      */
-
     public static boolean isPlacementValid(String placement) {
         // FIXME Task 7: determine whether a placement is valid
         // first set all the pegs states is{0,0,0,0,0,0}
@@ -322,7 +300,7 @@ public class LinkGame {
                 str[mm] = placement.substring(mm * 3, mm * 3 + 3);      //placement to piece
             }
             for (String piecePlacement : str) {
-                System.out.println(piecePlacement);
+//                System.out.println(piecePlacement);
                 int[] pegindex = getPegsForPiecePlacement(piecePlacement);   // get the peg number for each piece, the order is br1,origin,br2
                 for(int pegposition:pegindex)
                 {
@@ -387,13 +365,12 @@ public class LinkGame {
 
     }
 
-
     /**
      * Return an array of all solutions given a starting placement.
      *
      * @param placement  A valid piece placement string.
      * @return An array of strings, each describing a solution to the game given the
-     * starting point provied by placement.
+     * starting point provided by placement.
      */
     static String[] getSolutions(String placement) {
         // FIXME Task 10: determine all solutions to the game, given a particular starting placement
