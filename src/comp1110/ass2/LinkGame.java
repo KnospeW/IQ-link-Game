@@ -9,6 +9,7 @@ import java.util.*;
  * (http://www.smartgames.eu/en/smartgames/iq-link)
  */
 public class LinkGame {
+    static ArrayList<String> solutions = new ArrayList<>();
     /**
      * Determine whether a piece placement is well-formed according to the following:
      * - it consists of exactly three characters
@@ -374,6 +375,130 @@ public class LinkGame {
      */
     static String[] getSolutions(String placement) {
         // FIXME Task 10: determine all solutions to the game, given a particular starting placement
-        return null;
+        /*
+        Read initial placement
+        Determine what pieces haven't been placed
+        Place first unused piece
+        If it doesn't work, rotate it by 1 stage
+        If rotating doesn't work, move it one peg
+        Repeat until all pieces have been placed OR no pieces can be placed
+        if no pieces can be placed, scrap current attempt
+         */
+
+        System.out.println("Given placement "+placement);
+        findSolution('A', placement);
+//        findSolution('A', 'A', placement);
+
+        // Return the solutions as an array rather than a list.
+
+        System.out.println();
+        System.out.println("Solutions:");
+        solutions.forEach(System.out::println);
+
+        String[] solutionString = new String[solutions.size()];
+        for (int i = 0; i < solutions.size(); i++) solutionString[i] = solutions.get(i);
+        return solutionString;
+//        return (String[]) solutions.toArray();
+    }
+
+    private static boolean findSolution(char piece, String placement) {
+        System.out.println("Using placement "+placement);
+        if (placement.length() == 36) {
+            if(isPlacementWellFormed(placement) && isPlacementValid(placement))
+                solutions.add(placement);
+            System.out.println("Adding solution "+placement);
+            return true;
+        }
+        if (piece > 'L') {
+            return false;
+        }
+
+//        String tmp = placement;
+        List<Character> usedPieces = new ArrayList<>();
+        System.out.println("Checking used pieces: ");
+        for (int i = 0; i < placement.length() / 3; i++) {
+            System.out.print(placement.charAt(i * 3 + 1));
+            usedPieces.add(placement.charAt(i * 3 + 1));
+        }
+        System.out.println();
+        if (usedPieces.contains(piece)) {
+            System.out.println("Solution already used "+piece);
+            return findSolution(++piece, placement);
+        }
+        System.out.println("Trying piece " +piece);
+
+        for (char peg = 'A'; peg <= 'X'; peg++) {
+            for (char rot = 'A'; rot <= 'L'; rot++) {
+                String toPlace = "" + peg + piece + rot;
+                System.out.println("Trying "+toPlace);
+                if (isPlacementValid(placement + toPlace)) {
+                    System.out.println("Found placement with piece " + toPlace);
+                    System.out.println();
+                    if (findSolution(piece, placement + toPlace))
+                        return true;
+                }
+            }
+            System.out.println("Piece doesn't fit, moving");
+//            if (findSolution(piece, placement))
+//                return true;
+//            }
+        }
+
+        System.out.println("Nothing found, start from next piece");
+        if (findSolution(++piece, placement))
+            return true;
+
+        System.out.println("Dunno what happened, boss");
+        return false;
+    }
+
+//    private static boolean findSolution(char piece, char peg, String placement) {
+//        System.out.println("Using placement "+placement);
+//        if (placement.length() == 36) {
+//            if(isPlacementWellFormed(placement) && isPlacementValid(placement))
+//                solutions.add(placement);
+//            System.out.println("Adding solution "+placement);
+//            return true;
+//        }
+//        if (piece >= 'M') {
+//            return false;
+//        }
+//        if (peg > 'X') {
+//            System.out.println("Trying next piece");
+//            peg = 'A';
+//            if (findSolution(++piece, peg, placement))
+//                return true;
+//        }
+//
+//        List<Character> usedPieces = new ArrayList<>();
+//        System.out.println("Checking used pieces: ");
+//        for (int i = 0; i < placement.length() / 3; i++) {
+//            System.out.print(placement.charAt(i * 3 + 1));
+//            usedPieces.add(placement.charAt(i * 3 + 1));
+//        }
+//        System.out.println();
+//        if (usedPieces.contains(piece)) {
+//            System.out.println("Solution already used "+piece);
+//            return findSolution(++piece, 'A', placement);
+//        }
+//        System.out.println("Trying piece " +piece);
+//
+//        for (char r = 'A'; r <= 'L'; r++) {
+//            String toPlace = "" + peg + piece + r;
+//            System.out.println("Trying "+toPlace);
+//            if (isPlacementValid(placement + toPlace)) {
+//                System.out.println("Found placement with piece " + toPlace);
+//                if (findSolution(++piece, 'A', placement + toPlace))
+//                    return true;
+//            }
+//        }
+//
+//        System.out.println("Nothing found, bouncing");
+//        findSolution(piece, ++peg, placement);
+//        return false;
+//    }
+//
+    public static void main(String[] args) {
+        System.out.println(isPlacementValid("KAFUBAICCPDALEFEFEQGHSHBNIBCJF"));
     }
 }
