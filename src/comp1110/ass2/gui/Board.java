@@ -11,9 +11,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -24,6 +24,7 @@ import java.util.*;
 import static comp1110.ass2.LinkGame.isPlacementValid;
 
 public class Board extends Application {
+    // Game board size variables
     private static final int BOARD_WIDTH = 933;
     private static final int BOARD_HEIGHT = 700;
     private static final int SQUARE_SIZE = 80;
@@ -35,6 +36,7 @@ public class Board extends Application {
 
     private static final String URI_BASE = "assets/";
 
+    // Group declarations
     private final Group root = new Group();
     private final Group pieces = new Group();
     private final Group pegs = new Group();
@@ -45,23 +47,41 @@ public class Board extends Application {
 
     private final Pegs[] board = new Pegs[24];
     private final ArrayList<Circle> pegList = new ArrayList<>();
-    private boolean hovering;
-    private String placement="";
-    private String startPlacement="";
+    private String placement = "";
+    private ArrayList<String> solutions = new ArrayList<>();
+    private String startPlacement = "";
 
     private static Stage primaryStage;
-    private Scene startScene;
-    private Scene mainScene;
+    private Scene startScene, mainScene, victoryScene;
 
-    private class BGM extends MediaView {
-        BGM(int a) {
-        }
-    }
+    /*
+    Easy has 8-10 placements.
+    Medium has 6-7 placements.
+    Hard has 3-5 placements.
+    Credit to Steve Blackburn for these placements.
+     */
+    private final String[][] easyPlacements = {
+        {"KAFCBGUCAGDFLEFPFBBGESHBWIJKJA", "KAFCBGUCAGDFLEFPFBBGESHBWIJKJAHKLJLH"},
+        {"KAFCBGUCAGDFLEFPFBBGESHBOIA", "KAFCBGUCAGDFLEFPFBBGESHBOIAKJARKEJLH"},
+        {"KAFUBAICCPDALEFEFEQGHSHBNIB", "KAFUBAICCPDALEFEFEQGHSHBNIBCJFGKIRLE", "KAFUBAICCPDALEFEFEQGHSHBNIBCJFRKEGLI"},
+        {"KAFTBAICFRDCEELWFJJGDMHK", "KAFTBAICFRDCEELWFJJGDMHKCIGNJCPKEBLF"},
+        {"KAFCBGUCAGDFLEFPFBBGESHB", "KAFCBGUCAGDFLEFPFBBGESHBOIAKJARKEJLH", "KAFCBGUCAGDFLEFPFBBGESHBWIJKJAHKLJLH"}
+    };
+    private final String[][] hardPlacements = {
+        {"JABHBCBCGGDFIEKVFAFGG", "JABHBCBCGGDFIEKVFAFGGSHBXIAJJJUKHKLK"},
+        {"IAFBBGVCAJDJGEDQFEUGI", "IAFBBGVCAJDJGEDQFEUGIRHCIIHFJGNKFOLG", "IAFBBGVCAJDJGEDQFEUGIRHKIIHFJGNKFOLG"},
+        {"JACRBHQCHCDGDELVFJ", "JACRBHQCHCDGDELVFJBGESHBUIAFJEHKLGLL"},
+        {"KAAHBLTCAODEFEGMFC", "KAAHBLTCAODEFEGMFCEGERHGBIGVJCDKFJLF", "KAAHBLTCAODEFEGMFCEGERHGBIGVJIDKFJLF", "KAAHBLTCAODEFEGMFCEGEQHDBIGXJHDKFJLF", "KAAHBLTCAODEFEGMFCEGEVHBBIGXJADKFJLF"}
+    };
+    private final String[][] expertPlacements = {
+        {"IAFBBDRCEPDEWEB", "IAFBBDRCEPDEWEBSFJTGBFHGGILIJAQKIJLI"},
+        {"JADVBJBCJRDCDED", "JADVBJBCJRDCDEDHFEWGBFHEJILSJCOKLMLC", "JADVBJBCJRDCDEDSFBWGBFHEJILGJEOKLHLE"},
+        {"GAEWBABCDJDA", "GAEWBABCDJDALEFMFCCGLUHBTIAQJCKKBILF"},
+        {"JAAPBGVCJRDC", "JAAPBGVCJRDCDEDSFBWGBFHECIFAJDHKGOLF", "JAAPBGVCJRDCDEDSFBWGBFHECIFAJDOKFHLG", "JAAPBGVCJRDCHEFSFBWGBFHEGIICJDDKKOLF"},
+        {"KAFUBAHCI", "KAFUBAHCIPDALEFEFEQGHSHBWIJAJKGKLILI", "KAFUBAHCIPDALEFEFEQGHSHBWIJBJFGKEILI"}
+    };
 
-//    private final ArrayList<String> easy= new ArrayList(Arrays.asList("BAA","BAAHBA","BAAHBAWEB",""));
 
-    // FIXME Task 8: Implement a basic playable Link Game in JavaFX that only allows pieces to be placed in valid places
-    // FIXME Task 11: Implement hints
     // FIXME Task 12: Generate interesting starting placements
 
     /**
@@ -108,6 +128,7 @@ public class Board extends Application {
             setOnMouseReleased(e -> {
 //                grabLocation();                                 // testing
                 snapPeg();
+                checkVictory();
             });
 
             setOnKeyPressed(e -> {                              // due to limitations in the engine, pieces must first be dragged
@@ -142,6 +163,18 @@ public class Board extends Application {
                 this.position = pos;
         }
 
+        private void checkVictory() {
+            System.out.println("Solutions: "+ solutions);
+//            boolean foundIn = false;
+//            for (String s : solutions)
+//                if (s.equals(placement))
+//                    foundIn = true;
+//            System.out.println(foundIn);
+            System.out.println(solutions.contains(placement));
+            if (solutions.contains(placement) && !placement.equals(""))
+                System.out.println("Victory!");
+//                setVictoryScene();
+        }
         /**
          * Fetch method for the initial placement of a piece. Four pieces along the top and bottom, and two
          *  on either side.
@@ -176,6 +209,7 @@ public class Board extends Application {
             setRotate((getRotate() + 60 * modifier) % 360);
             if (pieceOverlaps())
                 setWarning();
+            checkVictory();
         }
 
         /**
@@ -186,6 +220,7 @@ public class Board extends Application {
             setScaleY(getScaleY() * -1);
             if (pieceOverlaps())
                 setWarning();
+            checkVictory();
         }
 
         /**
@@ -479,7 +514,7 @@ public class Board extends Application {
         button1.setLayoutY(640);
         button1.setOnAction(e -> {
             Scene startScene= SetWelcomePage();
-             primaryStage.setScene(startScene);   // if the restart button is clicked, goes to the main
+            primaryStage.setScene(startScene);   // if the restart button is clicked, goes to the main
         });
         controls.getChildren().add(button1);
         Button button2 = new Button("Restart");
@@ -501,11 +536,11 @@ public class Board extends Application {
     }
 
     /**
-     * Creates a text box containing the solution string.
+     * Creates a text box containing the solutions string.
      */
-    private void loadHints() {
-//    private void loadHints(String solution) {
-        String solution = "BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
+//    private void loadHints() {
+    private void loadHints(String solution) {
+//        String solutions = "BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
         Map<Character,String> solutionMap = new HashMap<>();
         for (int i = 0; i < solution.length() / 3; i++)
             solutionMap.put(solution.charAt(3*i+1), solution.substring(3*i,3*i+3));
@@ -545,11 +580,11 @@ public class Board extends Application {
     }
 
     /**
-     * Using a solution string, it breaks it down into each piece's data and returns a given number of them
+     * Using a solutions string, it breaks it down into each piece's data and returns a given number of them
      *  for an initial placement.
      * Written by Yicong.
      * @param num Number of pieces to return.
-     * @return Partially complete solution string of multiple pieces.
+     * @return Partially complete solutions string of multiple pieces.
      * FIXME Task 9: Implement starting placements
      */
     private String getInitPlacement(int num) {
@@ -592,19 +627,23 @@ public class Board extends Application {
 
         //add button easy , when click, there are 9 pieces already on board
         ActionButton easyMode = new ActionButton(1, 100);
-        easyMode.setOnMouseReleased(e -> makeInitialPlacement(9));
+//        easyMode.setOnMouseReleased(e -> makeInitialPlacement(9));
+        easyMode.setOnMouseReleased(e -> makeInitialPlacement('e'));
 
         //add button hard , when click, there are 6 pieces already on board
         ActionButton hardMode = new ActionButton(2, 300);
-        hardMode.setOnMouseReleased(e -> makeInitialPlacement(6));
+//        hardMode.setOnMouseReleased(e -> makeInitialPlacement(6));
+        hardMode.setOnMouseReleased(e -> makeInitialPlacement('h'));
 
         //add button hard , when click, there are 9 pieces already on board
         ActionButton expertMode = new ActionButton(3, 500);
-        expertMode.setOnMouseReleased(e -> makeInitialPlacement(3));
+//        expertMode.setOnMouseReleased(e -> makeInitialPlacement(3));
+        expertMode.setOnMouseReleased(e -> makeInitialPlacement('x'));
 
         //this button represents brand new game
         ActionButton normalMode = new ActionButton(4, 700);
-        normalMode.setOnMousePressed(e -> makeInitialPlacement(0));
+//        normalMode.setOnMousePressed(e -> makeInitialPlacement(0));
+        normalMode.setOnMousePressed(e -> makeInitialPlacement('n'));
 
         // some hints for the player to click on the button to enter the game
         ImageView title=new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
@@ -618,7 +657,7 @@ public class Board extends Application {
         start.getChildren().add(normalMode);
         start.getChildren().add(title);
 
-        this.startScene=startScene;
+        this.startScene = startScene;
         return startScene;
     }
 
@@ -657,6 +696,64 @@ public class Board extends Application {
         makePieces(placement);
     }
 
+    /**
+     * Another helper method. Intended for use with generation solutions.
+     * Written by Alex.
+     * @param difficulty 'e' for easy, 'h' for hard, 'x' for expert, 'n' for normal. Uses chars instead of int due to
+     *                   conflict issues.
+     */
+    private void makeInitialPlacement(char difficulty) {
+        if (!Arrays.asList('e','h','x','n').contains(difficulty))
+            throw new IllegalArgumentException("Invalid difficulty " +difficulty);
+
+        Random r = new Random();
+        int s;
+        switch (difficulty) {
+            case 'e':
+                s = r.nextInt(easyPlacements.length);
+                placement = easyPlacements[s][0];
+                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
+                break;
+            case 'h':
+                s = r.nextInt(hardPlacements.length);
+                placement = hardPlacements[s][0];
+                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
+                break;
+            case 'x':
+                s = r.nextInt(expertPlacements.length);
+                placement = expertPlacements[s][0];
+                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
+                break;
+            default:
+                s = -1;
+                break;
+        }
+
+        if (s == -1) {
+            placement = "";
+        }
+        startPlacement = placement;
+        primaryStage.setScene(mainScene);
+        makePieces(placement);
+        loadHints(solutions.get(0));
+    }
+
+    private void setVictoryScene() {
+        Group vic = new Group();
+        Scene scene = new Scene(vic, BOARD_WIDTH, BOARD_HEIGHT);
+        vic.getChildren().add(pegs);
+        vic.getChildren().add(pieces);
+        vic.getChildren().add(controls);
+
+        Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
+        bg.setOpacity(0.05);
+        vic.getChildren().add(bg);
+
+        victoryScene = scene;
+        primaryStage.setScene(victoryScene);
+        primaryStage.show();
+    }
+
     ///this method is to create the main game scene
     private void SetMainPage() {
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
@@ -666,7 +763,7 @@ public class Board extends Application {
         root.getChildren().add(warnings);
 
         createBoard();
-        loadHints();
+//        loadHints();
         loadInstruction();
         makeControls();
 
@@ -689,7 +786,7 @@ public class Board extends Application {
             if (e.getCode() == KeyCode.I) root.getChildren().remove(instructions);
         });
 
-       this.mainScene=scene;
+       mainScene = scene;
     }
 
     private void loadMusic() {
@@ -706,11 +803,11 @@ public class Board extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Board.primaryStage =primaryStage;
+        Board.primaryStage = primaryStage;
         primaryStage.setTitle("IQ Link");
         SetWelcomePage();
         SetMainPage();
-        loadMusic();
+//        loadMusic();
         primaryStage.setScene(startScene);
         primaryStage.show();
     }
