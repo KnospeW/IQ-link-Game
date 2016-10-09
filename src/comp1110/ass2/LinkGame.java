@@ -16,6 +16,7 @@ public class LinkGame {
      * - the second character is in the range A .. L
      * - the third character is in the range A .. F if the second character is A, otherwise
      * in the range A .. L
+     * Written by Yicong, and rewritten for presentation by Alex.
      *
      * @param piecePlacement A string describing a piece placement
      * @return True if the piece placement is well-formed
@@ -44,6 +45,7 @@ public class LinkGame {
      * - it consists of exactly N three-character piece placements (where N = 1 .. 12);
      * - each piece placement is well-formed
      * - no piece appears more than once in the placement
+     * Written by Yicong.
      *
      * @param placement A string describing a placement of one or more pieces
      * @return True if the placement is well-formed
@@ -84,6 +86,7 @@ public class LinkGame {
      * piece.
      * The code needs to account for the origin of the piece, the piece shape, and the piece
      * orientation.
+     * Written by Yicong.
      *
      * @param piecePlacement A valid string describing a piece placement
      * @return An array of integers corresponding to the pegs which the piece placement touches,
@@ -151,9 +154,14 @@ public class LinkGame {
         return PegLocations;
     }
 
-    //translate the pieceplacement to update the pegs states indicates whether there's a ball/ring and the direction for opening and connection
-    //input:piceplacement
-    //output the string with states for origin,br1,br2
+    /**
+     * Translates a piece placement string to update peg states.
+     * Indicates whether the piece's segment has a ball or ring, and the directions for openings and connections.
+     * Written by Yicong.
+     *
+     * @param piecePlacement A three-character piece placement string
+     * @return An integer array containing the states for the origin and branch segments
+     */
     static int[] updatePegsPiecePlacement(String piecePlacement) {
         //three states will contain the states for three pegs
         // 0-5 for the peg of origin, 6-11 for branch1,12-17 for branch2
@@ -276,6 +284,7 @@ public class LinkGame {
     /**
      * Determine whether a placement is valid.  To be valid, the placement must be well-formed
      * and each piece must correctly connect with each other.
+     * Written by Yicong.
      *
      * @param placement A placement string
      * @return True if the placement is valid
@@ -374,6 +383,7 @@ public class LinkGame {
 
     /**
      * Return an array of all solutions given a starting placement.
+     * Written by Alex.
      *
      * @param placement  A valid piece placement string.
      * @return An array of strings, each describing a solution to the game given the
@@ -403,6 +413,16 @@ public class LinkGame {
         return solutionString;
     }
 
+    /**
+     * Finds all solutions to a given placement string and stores them in a provided array list.
+     * Recurses on itself to pass continually built placement strings and solution arrays.
+     * Written by Alex.
+     *
+     * @param piece The initial piece to start searching from.
+     * @param placement The initial valid piece placement string.
+     * @param solutions The (potentially empty) array of solution strings, which will be written to.
+     * @return True if a solution has been found, or false otherwise.
+     */
     private static boolean findSolution(char piece, String placement, ArrayList<String> solutions) {
         if (placement.length() == 36) {
             if(isPlacementWellFormed(placement) && isPlacementValid(placement) && !solutions.contains(placement))
