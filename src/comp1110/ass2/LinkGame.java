@@ -395,11 +395,8 @@ public class LinkGame {
 
         System.out.println("Given placement "+placement);
         char lastPiece = placement.charAt(placement.length() - 2);
-        System.out.println(lastPiece);
         findSolution(lastPiece, placement, solutions);
-//        findSolution('A', placement, solutions);
 //        findSolution(placement, solutions);
-//        findSolution('A', 'A', placement);
 
         // Return the solutions as an array rather than a list.
         System.out.println();
@@ -435,22 +432,24 @@ public class LinkGame {
         if (piece > 'L') {
             return false;
         }
-
-//        ArrayList<Character> emptyPegs = new ArrayList<>();
-//        for (char p = 'A'; p <= 'X'; p++)
-//            emptyPegs.add(p);
+        ArrayList<Character> openPegs = new ArrayList<>();
         ArrayList<Character> usedPieces = new ArrayList<>();
+        List ringPieces = Arrays.asList('B','C','D','E','F','H');
+
+        for (char p = 'A'; p <= 'X'; p++)
+            openPegs.add(p);
         for (int i = 0; i < placement.length() / 3; i++) {
             usedPieces.add(placement.charAt(i * 3 + 1));
-//            emptyPegs.remove(Character.valueOf(placement.charAt(i * 3)));
+            if (ringPieces.contains(placement.charAt(i * 3 + 1)))
+                openPegs.remove(Character.valueOf(placement.charAt(i*3)));
         }
 
         if (usedPieces.contains(piece)) {
             return findSolution(++piece, placement, solutions);
         }
 
-//        for (char peg : emptyPegs) {
-        for (char peg = 'A'; peg <= 'X'; peg++) {
+        for (char peg : openPegs) {
+//        for (char peg = 'A'; peg <= 'X'; peg++) {
             for (char rot = 'A'; rot <= 'L'; rot++) {
                 String toPlace = "" + peg + piece + rot;
                 if (isPlacementValid(placement + toPlace)) {
@@ -511,23 +510,54 @@ public class LinkGame {
         return false;
     }
 
-//    private static boolean findSolution(String placement, ArrayList<String> solutions) {
-//
-//        for (char piece = 'A'; piece <= 'L'; piece++) {
+    private static boolean findSolution(String placement, ArrayList<String> solutions) {
+        ArrayList<Character> openPegs = new ArrayList<>();
+        List ringPieces = Arrays.asList('B','C','D','E','F','H');
+        for (char p = 'A'; p <= 'X'; p++)
+            openPegs.add(p);
+        for (int i = 0; i < placement.length() / 3; i++)
+            if (ringPieces.contains(placement.charAt(i * 3 + 1)))
+                openPegs.remove(Character.valueOf(placement.charAt(i*3)));
+
+        char lastPiece = placement.charAt(placement.length() - 2);
+        for (char piece = lastPiece; piece <= 'L'; piece++) {
 //            for (char peg = 'A'; peg <= 'X'; peg++) {
-//                for (char rot = 'A'; rot <= 'L'; rot++) {
-//
-//                }
-//            }
-//        }
-//    }
+            for (char peg : openPegs) {
+                for (char rot = 'A'; rot <= 'L'; rot++) {
+                    if (isPlacementValid(placement) && placement.length() == 36) {
+                        solutions.add(placement);
+                        return true;
+                    }
+                    if (isPlacementValid(placement + "" + peg + piece + rot))
+                        if (findSolution(placement + "" + peg + piece + rot, solutions))
+                            return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     public static void main(String[] args) {
-        getSolutions("KAFCBGUCAGDFLEFPFBBGESHBWIJKJA");
-        getSolutions("KAFCBGUCAGDFLEFPFBBGESHBOIA");
+        String[][] SOLUTIONS_ONE = {
+                {"KAFCBGUCAGDFLEFPFBBGESHBWIJKJA", "KAFCBGUCAGDFLEFPFBBGESHBWIJKJAHKLJLH"},
+                {"KAFCBGUCAGDFLEFPFBBGESHBOIA", "KAFCBGUCAGDFLEFPFBBGESHBOIAKJARKEJLH"},
+                {"KAFTBAICFRDCEELWFJJGDMHK", "KAFTBAICFRDCEELWFJJGDMHKCIGNJCPKEBLF"},
+                {"JABHBCBCGGDFIEKVFAFGG", "JABHBCBCGGDFIEKVFAFGGSHBXIAJJJUKHKLK"},
+                {"JACRBHQCHCDGDELVFJ", "JACRBHQCHCDGDELVFJBGESHBUIAFJEHKLGLL"},
+                {"IAFBBDRCEPDEWEB", "IAFBBDRCEPDEWEBSFJTGBFHGGILIJAQKIJLI"},
+                {"GAEWBABCDJDA", "GAEWBABCDJDALEFMFCCGLUHBTIAQJCKKBILF"},
+        };
 
-        long start = System.nanoTime();
-        getSolutions("IAFBBDRCEPDEWEB");
-        System.out.println("That took "+((System.nanoTime() - start) / 1000000)+" ms");
+        long init = System.nanoTime();
+
+        for (String[] s : SOLUTIONS_ONE) {
+            long start = System.nanoTime();
+            getSolutions(s[0]);
+            System.out.println("That took "+((System.nanoTime() - start) / 1000000)+" ms");
+            System.out.println("----------------");
+        }
+
+        System.out.println("Total time: "+((System.nanoTime() - init) / 1000000)+"ms");
     }
 }
