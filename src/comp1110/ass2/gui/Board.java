@@ -9,11 +9,15 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.*;
 
@@ -48,6 +52,11 @@ public class Board extends Application {
     private static Stage primaryStage;
     private Scene startScene;
     private Scene mainScene;
+
+    private class BGM extends MediaView {
+        BGM(int a) {
+        }
+    }
 
 //    private final ArrayList<String> easy= new ArrayList(Arrays.asList("BAA","BAAHBA","BAAHBAWEB",""));
 
@@ -683,6 +692,14 @@ public class Board extends Application {
        this.mainScene=scene;
     }
 
+    private void loadMusic() {
+        MediaPlayer music = new MediaPlayer(new Media(Board.class.getResource(URI_BASE + "music.mp3").toString()));
+        music.setAutoPlay(true);
+        music.setOnEndOfMedia(() -> music.seek(Duration.ZERO));
+
+        music.play();
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -693,6 +710,7 @@ public class Board extends Application {
         primaryStage.setTitle("IQ Link");
         SetWelcomePage();
         SetMainPage();
+        loadMusic();
         primaryStage.setScene(startScene);
         primaryStage.show();
     }
