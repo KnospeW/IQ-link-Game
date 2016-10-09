@@ -302,6 +302,7 @@ public class LinkGame {
             }
             for (String piecePlacement : str) {
 //                System.out.println(piecePlacement);
+               // System.out.println(piecePlacement);
                 int[] pegindex = getPegsForPiecePlacement(piecePlacement);   // get the peg number for each piece, the order is br1,origin,br2
                 for(int pegposition:pegindex)
                 {
@@ -310,18 +311,22 @@ public class LinkGame {
                 }
                 int temp=pegindex[0];
                 pegindex[0]=pegindex[1];
-                pegindex[1]=temp;              //exchange the position of br1 and origin to make the order become origin,br1,br2, the same with threestates from updatepegsstate
+                pegindex[1]=temp;
+                 //exchange the position of br1 and origin to make the order become origin,br1,br2, the same with threestates from updatepegsstate
+              //  System.out.println(Arrays.toString(pegindex));
                 int[] updateStates=updatePegsPiecePlacement(piecePlacement);
                 for(int i=0;i<3;i++)         // do for three components
                 {
                     int index= pegindex[i];
                     int[] currStates=pegs[index].getStateArray();    //the current states of the peg
                     int[] updatePegStates= Arrays.copyOfRange(updateStates,i*6,i*6+6);  //the states for each component
+                 //   System.out.println(Arrays.toString(currStates));
+                  //  System.out.println(Arrays.toString(updatePegStates));
                     if(updatePegStates[0]==1)                //the component is a ball
                     {
                         // the current states shouldn't involve a ball
                         if (currStates[0]==0) {
-                            if(currStates[3]==0||(currStates[3]==1&&(currStates[4]==updatePegStates[1]&&currStates[5]==updatePegStates[2])||(currStates[4]==updatePegStates[2]&&currStates[5]==updatePegStates[1])))
+                            if(currStates[3]==0||(currStates[3]==1&&(currStates[4]==updatePegStates[1]&&currStates[5]==updatePegStates[2])||(currStates[4]==updatePegStates[2]&&currStates[5]==updatePegStates[1]||(currStates[4]==updatePegStates[1]&&updatePegStates[2]==0)||(currStates[5]==updatePegStates[1]&&updatePegStates[2]==0))))
                             {
                                   //the current states can involve a ring with the same direction. notice that the order of the two openings doesn't matter.
                                  // so the judgement involve two different situations
@@ -330,7 +335,9 @@ public class LinkGame {
                                         updatePegStates[j]=currStates[j];        //if the components is ok, contitnue and update the states,the first 3 is the new component indicates a ball
                                                                                 // the second 3 should keep the original current states where the last 3 indicates a ring
                                     }
-                                    pegs[index].updateStates(updatePegStates);   //change the pegs states
+                                    pegs[index].updateStates(updatePegStates);
+
+                                     //change the pegs states
 
                             }
                             else
@@ -342,7 +349,7 @@ public class LinkGame {
                     else if(updatePegStates[3]==1)       //ring is also the same
                     {
                         if (currStates[3]==0) {
-                            if(currStates[0]==0||(currStates[0]==1&&(currStates[1]==updatePegStates[4]&&currStates[2]==updatePegStates[5])||(currStates[1]==updatePegStates[5]&&currStates[2]==updatePegStates[4])))
+                            if(currStates[0]==0||(currStates[0]==1&&(currStates[1]==updatePegStates[4]&&currStates[2]==updatePegStates[5])||(currStates[1]==updatePegStates[5]&&currStates[2]==updatePegStates[4]||(currStates[1]==updatePegStates[4]&&currStates[2]==0)||(currStates[1]==updatePegStates[5]&&currStates[2]==0))))
 
                             {
                                     for(int k=0;k<3;k++)
