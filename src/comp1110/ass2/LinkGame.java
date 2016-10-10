@@ -387,13 +387,14 @@ public class LinkGame {
      * @return An array of strings, each describing a solution to the game given the
      * starting point provided by placement.
      */
-    static String[] getSolutions(String placement) {
+    public static String[] getSolutions(String placement) {
         // FIXME Task 10: determine all solutions to the game, given a particular starting placement
         ArrayList<String> solutions = new ArrayList<>();
 
         System.out.println("Given placement "+placement);
-        char lastPiece = placement.charAt(placement.length() - 2);
-        findSolution(lastPiece, placement, solutions);
+//        char lastPiece = placement.charAt(placement.length() - 2);
+        findSolution('A',placement,solutions);
+//        findSolution(lastPiece, placement, solutions);
 //        findSolution(placement, solutions);
 
         // Return the solutions as an array rather than a list.
@@ -549,12 +550,14 @@ public class LinkGame {
 
         long init = System.nanoTime();
 
-        for (String[] s : SOLUTIONS_ONE) {
-            long start = System.nanoTime();
-            getSolutions(s[0]);
-            System.out.println("That took "+((System.nanoTime() - start) / 1000000)+" ms");
-            System.out.println("----------------");
-        }
+        getSolutions("");
+
+//        for (String[] s : SOLUTIONS_ONE) {
+//            long start = System.nanoTime();
+//            getSolutions(s[0]);
+//            System.out.println("That took "+((System.nanoTime() - start) / 1000000)+" ms");
+//            System.out.println("----------------");
+//        }
 
         System.out.println("Total time: "+((System.nanoTime() - init) / 1000000)+"ms");
     }

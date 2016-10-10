@@ -1,6 +1,7 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.Pegs;
+import comp1110.ass2.LinkGame;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -20,6 +21,7 @@ import javafx.util.Duration;
 
 import java.util.*;
 
+import static comp1110.ass2.LinkGame.getSolutions;
 import static comp1110.ass2.LinkGame.isPlacementValid;
 
 public class Board extends Application {
@@ -317,8 +319,12 @@ public class Board extends Application {
             System.out.println(currPlacement);
             if (isPlacementValid(currPlacement)) {
                 placement = currPlacement;
-                if(currPlacement.length()==36)
-                {   setVictoryScene();
+                if (currPlacement.length() == 36)
+                    setVictoryScene();
+                if (currPlacement.length() >= 24) { // Can almost do 21, but there's a bit of lag when placing (0.3s computation time)
+                    String[] tmpSolutions = getSolutions(placement);
+                    if (tmpSolutions.length > 0)
+                        loadHints(tmpSolutions[0]);
                 }
                 return false;
             }
