@@ -13,7 +13,6 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -129,7 +128,7 @@ public class Board extends Application {
             setOnMouseReleased(e -> {
 //                grabLocation();                                 // testing
                 snapPeg();
-                checkVictory();
+              //  checkVictory();
             });
 
             setOnKeyPressed(e -> {                              // due to limitations in the engine, pieces must first be dragged
@@ -210,7 +209,7 @@ public class Board extends Application {
             setRotate((getRotate() + 60 * modifier) % 360);
             if (pieceOverlaps())
                 setWarning();
-            checkVictory();
+          //  checkVictory();
         }
 
         /**
@@ -221,7 +220,7 @@ public class Board extends Application {
             setScaleY(getScaleY() * -1);
             if (pieceOverlaps())
                 setWarning();
-            checkVictory();
+          // checkVictory();
         }
 
         /**
@@ -288,8 +287,8 @@ public class Board extends Application {
             if (pieceOverlaps())
                //setWarning();
                 snapHome();
-            else
-                placement += getPieceString();
+//            else
+//                placement += getPieceString();
         }
 
         /**
@@ -318,6 +317,9 @@ public class Board extends Application {
             System.out.println(currPlacement);
             if (isPlacementValid(currPlacement)) {
                 placement = currPlacement;
+                if(currPlacement.length()==36)
+                {   setVictoryScene();
+                }
                 return false;
             }
             else{return true;}
@@ -772,14 +774,21 @@ public class Board extends Application {
 
     private void setVictoryScene() {
         Group vic = new Group();
+        Text ins = new Text(20, 30, "You wins!!!!!!!!!");
+        ins.setFill(Color.DARKBLUE);
+        ins.setFont(new Font(20));
+        vic.getChildren().add(ins);
+        makeControls();
         Scene scene = new Scene(vic, BOARD_WIDTH, BOARD_HEIGHT);
         vic.getChildren().add(pegs);
         vic.getChildren().add(pieces);
         vic.getChildren().add(controls);
 
-        Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
+      /*  Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
         bg.setOpacity(0.05);
         vic.getChildren().add(bg);
+*/
+
 
         victoryScene = scene;
         primaryStage.setScene(victoryScene);
