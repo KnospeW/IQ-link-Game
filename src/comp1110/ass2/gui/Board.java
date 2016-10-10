@@ -505,50 +505,35 @@ public class Board extends Application {
     }
 
     /**
-     * Using a solutions string, it breaks it down into each piece's data and returns a given number of them
-     *  for an initial placement.
-     * Written by Yicong.
-     *
-     * @param num Number of pieces to return.
-     * @return Partially complete solutions string of multiple pieces.
-     */
-    private String getInitPlacement(int num) {
-        String solution1="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
-        String InitPlacement="";
-        List<String> so1=new ArrayList<>();   //so1 contains 12 different piece placement in order
-        List<Boolean> state=new ArrayList<>();  //if it used,then it is true;
-        Random r=new Random();
-        int order;
-        for (int i=0;i<solution1.length()/3;i++)
-        {
-            so1.add(solution1.substring(3*i,3*i+3));
-            state.add(false);
-        }
-        for (int j=0;j<num;j++)
-        {
-            do{
-                order=r.nextInt(12);                //pick 6 pieces randomly
-            }while(state.get(order));
-            state.set(order,true);
-            InitPlacement+=so1.get(order);      //get the placement
-        }
-        startPlacement=InitPlacement;
-        return InitPlacement;
-    }
-
-    /**
-     * Helper method for setWelcomePage.
-     * Written by Alex.
+     * Given a solution string, sets the global initial placement string to a random substring of the solution.
+     * Written by Yicong and added to by Alex.
      *
      * @param n Number of pieces to place.
      */
-    private void makeInitialPlacement(int n) {
+    private void makeinitialPlacement(String solution, int n) {
         primaryStage.setScene(mainScene);
         if (n == 0)
             placement = "";
-        else
-            placement = getInitPlacement(n);
-        makePieces(placement);
+        else {
+            List<String> so1 = new ArrayList<>();   //so1 contains 12 different piece placement in order
+            List<Boolean> state = new ArrayList<>();  //if it used,then it is true;
+            Random r = new Random();
+            int order;
+
+            for (int i = 0; i < solution.length() / 3; i++) {
+                so1.add(solution.substring(3 * i, 3 * i + 3));
+                state.add(false);
+            }
+
+            for (int j = 0; j < n; j++) {
+                do order = r.nextInt(12);                //pick 6 pieces randomly
+                    while (state.get(order));
+                state.set(order, true);
+                placement += so1.get(order);      //get the placement
+            }
+
+            startPlacement = placement;
+        }
     }
 
     /**
@@ -558,8 +543,10 @@ public class Board extends Application {
      * @param difficulty 'e' for easy, 'h' for hard, 'x' for expert, 'n' for normal. Uses chars instead of int due to
      *                   conflict issues.
      */
-    private void makeInitialPlacement(char difficulty) {
-        if (!Arrays.asList('e','h','x','n').contains(difficulty))
+    private void makeInitialPlacement(int difficulty) {
+//    private void makeInitialPlacement(char difficulty) {
+//        if (!Arrays.asList('e','h','x','n').contains(difficulty))
+        if (difficulty > 3)
             throw new IllegalArgumentException("Invalid difficulty " +difficulty);
 
         // Reset solution list on a new game.
@@ -569,34 +556,38 @@ public class Board extends Application {
 
         Random r = new Random();
         int s;
-        switch (difficulty) {
-            case 'e':
-                s = r.nextInt(easyPlacements.length);
-                placement = easyPlacements[s][0];
-                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
-                break;
-            case 'h':
-                s = r.nextInt(hardPlacements.length);
-                placement = hardPlacements[s][0];
-                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
-                break;
-            case 'x':
-                s = r.nextInt(expertPlacements.length);
-                placement = expertPlacements[s][0];
-                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
-                break;
-            default:
-                s = -1;
-                break;
-        }
+//        switch (difficulty) {
+//            case 'e':
+//                s = r.nextInt(easyPlacements.length);
+//                placement = easyPlacements[s][0];
+//                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
+//                break;
+//            case 'h':
+//                s = r.nextInt(hardPlacements.length);
+//                placement = hardPlacements[s][0];
+//                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
+//                break;
+//            case 'x':
+//                s = r.nextInt(expertPlacements.length);
+//                placement = expertPlacements[s][0];
+//                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
+//                break;
+//            default:
+//                s = -1;
+//                break;
+//        }
 
-        if (s == -1) {
+        if (difficulty == 3)
             placement = "";
+        else {
+            s = r.nextInt(placements[difficulty].length);
+            placement = placements[difficulty][s][0];
+            solutions.addAll(Arrays.asList(placements[difficulty][s]).subList(1, placements[difficulty][s].length));
+            loadHints(solutions.get(0));
         }
         startPlacement = placement;
         primaryStage.setScene(mainScene);
         makePieces(placement);
-        loadHints(solutions.get(0));
     }
 
     /**
@@ -707,22 +698,26 @@ public class Board extends Application {
         //add button easy , when click, there are 9 pieces already on board
         ActionButton easyMode = new ActionButton(1, 100);
 //        easyMode.setOnMouseReleased(e -> makeInitialPlacement(9));
-        easyMode.setOnMouseReleased(e -> makeInitialPlacement('e'));
+//        easyMode.setOnMouseReleased(e -> makeInitialPlacement('e'));
+        easyMode.setOnMouseReleased(e -> makeInitialPlacement(0));
 
         //add button hard , when click, there are 6 pieces already on board
         ActionButton hardMode = new ActionButton(2, 300);
 //        hardMode.setOnMouseReleased(e -> makeInitialPlacement(6));
-        hardMode.setOnMouseReleased(e -> makeInitialPlacement('h'));
+//        hardMode.setOnMouseReleased(e -> makeInitialPlacement('h'));
+        hardMode.setOnMouseReleased(e -> makeInitialPlacement(1));
 
         //add button hard , when click, there are 9 pieces already on board
         ActionButton expertMode = new ActionButton(3, 500);
 //        expertMode.setOnMouseReleased(e -> makeInitialPlacement(3));
-        expertMode.setOnMouseReleased(e -> makeInitialPlacement('x'));
+//        expertMode.setOnMouseReleased(e -> makeInitialPlacement('x'));
+        expertMode.setOnMouseReleased(e -> makeInitialPlacement(2));
 
         //this button represents brand new game
         ActionButton normalMode = new ActionButton(4, 700);
 //        normalMode.setOnMousePressed(e -> makeInitialPlacement(0));
-        normalMode.setOnMousePressed(e -> makeInitialPlacement('n'));
+//        normalMode.setOnMousePressed(e -> makeInitialPlacement('n'));
+        normalMode.setOnMousePressed(e -> makeInitialPlacement(3));
 
         // some hints for the player to click on the button to enter the game
         ImageView title=new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
