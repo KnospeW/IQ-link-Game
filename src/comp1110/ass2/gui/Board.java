@@ -322,7 +322,7 @@ public class Board extends Application {
                 if (currPlacement.length() == 36)
                     setVictoryScene();
                 if (currPlacement.length() >= 24) { // Can almost do 21, but there's a bit of lag when placing (0.3s computation time)
-                    String[] tmpSolutions = getSolutions(placement);
+                    String[] tmpSolutions = getSolutions(currPlacement);
                     if (tmpSolutions.length > 0)
                         loadHints(tmpSolutions[0]);
                 }
