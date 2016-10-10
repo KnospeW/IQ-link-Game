@@ -538,9 +538,13 @@ public class Board extends Application {
     /**
      * Creates a text box containing the solutions string.
      */
-//    private void loadHints() {
     private void loadHints(String solution) {
-//        String solutions = "BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
+
+        // Reset hints on a new game.
+        if (hints.getChildren().size() > 0)
+            while (hints.getChildren().size() > 0)
+                hints.getChildren().remove(0);
+
         Map<Character,String> solutionMap = new HashMap<>();
         for (int i = 0; i < solution.length() / 3; i++)
             solutionMap.put(solution.charAt(3*i+1), solution.substring(3*i,3*i+3));
@@ -705,6 +709,11 @@ public class Board extends Application {
     private void makeInitialPlacement(char difficulty) {
         if (!Arrays.asList('e','h','x','n').contains(difficulty))
             throw new IllegalArgumentException("Invalid difficulty " +difficulty);
+
+        // Reset solution list on a new game.
+        if (solutions.size() > 0)
+            while (solutions.size() > 0)
+                solutions.remove(0);
 
         Random r = new Random();
         int s;
