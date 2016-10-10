@@ -536,9 +536,12 @@ public class Board extends Application {
     }
 
     /**
-     * Creates a text box containing the solutions string.
+     * Creates a visual overlay of a solution.
+     * @param solution A valid placement solution string.
      */
     private void loadHints(String solution) {
+        if (solution.length() != 36)
+            throw new IllegalArgumentException("Invalid solution string for loadHints");
 
         // Reset hints on a new game.
         if (hints.getChildren().size() > 0)
@@ -564,17 +567,6 @@ public class Board extends Application {
                 hints.getChildren().add(piece);
             }
         }
-//        int boxW = 470;
-//        int boxH = 27;
-//
-//        Rectangle box = new Rectangle(10, BOARD_HEIGHT - boxH - 8, boxW, boxH);
-//        box.setFill(Color.LIGHTGREY);
-//
-//        Text sol = new Text(15, BOARD_HEIGHT - 15, "BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ");
-//        sol.setFill(Color.DARKRED);
-//        sol.setFont(new Font(20));
-//
-//        hints.getChildren().addAll(box, sol);
     }
 
     // if the placement is not well formed, return the warning
