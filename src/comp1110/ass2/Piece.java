@@ -3,7 +3,10 @@ package comp1110.ass2;
 import static comp1110.ass2.Orientation.*;
 import static comp1110.ass2.PieceSegment.*;
 import static comp1110.ass2.PieceType.*;
-
+/**
+ * Created by Yicong and Alex
+ *
+ */
 public enum Piece {
     /*  Defines the possible pieces.
         Each piece has an 11-bit sequence defining their configuration.
@@ -108,6 +111,7 @@ public enum Piece {
 
     /**
      * @param index Takes 0 (origin), 1 (branch that always lands on space 0), or 2 (second branch)
+     * written by Alex
      * @return A 3-bit string for the segment type and its connectors
      */
     public String[] getSegment(int index) throws ArrayIndexOutOfBoundsException {

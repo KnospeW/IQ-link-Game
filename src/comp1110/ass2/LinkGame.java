@@ -6,6 +6,7 @@ import java.util.*;
  * This class provides the text interface for the Link Game
  *
  * The game is based directly on Smart Games' IQ-Link game
+ * Written by Alex and Yicong
  * (http://www.smartgames.eu/en/smartgames/iq-link)
  */
 public class LinkGame {
