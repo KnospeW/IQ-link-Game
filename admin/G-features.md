@@ -7,4 +7,6 @@ of our project implements the following features:
  - A basic playable link game that snaps pieces to pegs and checks for validity (Task 8)
  - A basic implementation  of starting piece placements (Task 9)
  - Solution hints
+ - Dynamic hints in partially-complete games
  - Viewable instruction card
+ - Music
