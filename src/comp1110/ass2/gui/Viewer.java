@@ -47,7 +47,6 @@ public class Viewer extends Application {
      * @param placement  A valid placement string
      */
     private void makePlacement(String placement) {
-        // FIXME Task 5: implement the simple placement viewer
         // Will import a location, a piece, and a rotation.
         while (root.getChildren().size() > 25)
             root.getChildren().remove(root.getChildren().size()-1);      //remove any pieces before(acturally there's 24 circles at first)

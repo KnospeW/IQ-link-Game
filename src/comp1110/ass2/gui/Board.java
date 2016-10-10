@@ -80,6 +80,7 @@ public class Board extends Application {
         {"JAAPBGVCJRDC", "JAAPBGVCJRDCDEDSFBWGBFHECIFAJDHKGOLF", "JAAPBGVCJRDCDEDSFBWGBFHECIFAJDOKFHLG", "JAAPBGVCJRDCHEFSFBWGBFHEGIICJDDKKOLF"},
         {"KAFUBAHCI", "KAFUBAHCIPDALEFEFEQGHSHBWIJAJKGKLILI", "KAFUBAHCIPDALEFEFEQGHSHBWIJBJFGKEILI"}
     };
+    private final String[][][] placements = {easyPlacements, hardPlacements, expertPlacements};
 
 
     // FIXME Task 12: Generate interesting starting placements
@@ -97,8 +98,8 @@ public class Board extends Application {
 
         /**
          * Instantiates a piece.
+         *
          * @param id A character ID between A and L inclusive, corresponding to the piece.
-         * @throws IllegalArgumentException Given an ID greater than L.
          */
         FXPiece(char id) {
             if (id > 'L') throw new IllegalArgumentException("Invalid piece id: " + id);
@@ -277,7 +278,6 @@ public class Board extends Application {
 
         /**
          * Places a piece centred on a peg rather than where the player lets go of the piece.
-         * TODO: Implement bounce home.
          */
         private void snapPeg() {
             Circle n = getNearestPeg();
@@ -444,8 +444,7 @@ public class Board extends Application {
      * Creates the board for playing on. Draws 24 circles and initialises the board container.
      * Written by Yicong, optimised by Alex for readability and dynamicity.
      */
-    private void createBoard()
-    {
+    private void createBoard() {
         int[] blank = {0,0,0,0,0,0};
         for (int i = 0; i < 24; i++) {
             board[i]=new Pegs(blank);
@@ -472,6 +471,7 @@ public class Board extends Application {
      * Creates a set of pieces on the board given a placement string. Any pieces not contained in the
      *  placement string are created in their initial locations.
      * Written by Yicong.
+     *
      * @param placement
      * TODO: Merge this and makeInitialPlacement
      * TODO: Split this into another sub-method (createPiece?) to use with the hints
@@ -505,83 +505,12 @@ public class Board extends Application {
     }
 
     /**
-     * Creates the button controls (restart and new game) present in the bottom right corner of the game screen.
-     * TODO: Make the placement location dynamic
-     */
-    private void makeControls() {
-        Button button1 = new Button("New Game");
-        button1.setLayoutX(850);
-        button1.setLayoutY(640);
-        button1.setOnAction(e -> {
-            Scene startScene= SetWelcomePage();
-            primaryStage.setScene(startScene);   // if the restart button is clicked, goes to the main
-        });
-        controls.getChildren().add(button1);
-        Button button2 = new Button("Restart");
-        button2.setLayoutX(850);
-        button2.setLayoutY(600);
-        button2.setOnAction(e -> {
-            placement=startPlacement;
-            makePieces(startPlacement);
-        });
-        controls.getChildren().add(button2);
-    }
-
-    /**
-     * Creates the instruction image.
-     */
-    private void loadInstruction() {
-        ImageView instruction=new ImageView(new Image(Board.class.getResource(URI_BASE+"instruction.jpg").toString()));
-        instructions.getChildren().add(instruction);
-    }
-
-    /**
-     * Creates a visual overlay of a solution.
-     * @param solution A valid placement solution string.
-     */
-    private void loadHints(String solution) {
-        if (solution.length() != 36)
-            throw new IllegalArgumentException("Invalid solution string for loadHints");
-
-        // Reset hints on a new game.
-        if (hints.getChildren().size() > 0)
-            while (hints.getChildren().size() > 0)
-                hints.getChildren().remove(0);
-
-        Map<Character,String> solutionMap = new HashMap<>();
-        for (int i = 0; i < solution.length() / 3; i++)
-            solutionMap.put(solution.charAt(3*i+1), solution.substring(3*i,3*i+3));
-
-        for (char p = 'A'; p <= 'L'; p++) {
-            if (solutionMap.containsKey(p)) {
-                String pieces = solutionMap.get(p);
-                int location = pieces.charAt(0) - 'A';
-                int rotation = pieces.charAt(2) - 'A';
-                int flip = rotation > 5 ? -1 : 1;
-                int yPeg = location / 6;
-                int xPeg = location % 6;
-
-                LockedPiece piece = new LockedPiece(p, xPeg, yPeg, rotation % 6, flip);
-                piece.setPosition(location);
-                piece.setOpacity(0.2);
-                hints.getChildren().add(piece);
-            }
-        }
-    }
-
-    // if the placement is not well formed, return the warning
-    // TODO: Implement or remove this if unneeded
-    public void invalidPlacement(String placement) {
-
-    }
-
-    /**
      * Using a solutions string, it breaks it down into each piece's data and returns a given number of them
      *  for an initial placement.
      * Written by Yicong.
+     *
      * @param num Number of pieces to return.
      * @return Partially complete solutions string of multiple pieces.
-     * FIXME Task 9: Implement starting placements
      */
     private String getInitPlacement(int num) {
         String solution1="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
@@ -607,80 +536,10 @@ public class Board extends Application {
         return InitPlacement;
     }
 
-
     /**
-     * Creates the welcoming scene.
-     * Created by Yicong, modularised and tidied by Alex.
-     * @return The opening splash screen.
-     * TODO: make placement location dynamic
-     */
-    private Scene SetWelcomePage() {
-        Group start= new Group();
-        Scene startScene = new Scene(start, BOARD_WIDTH, BOARD_HEIGHT);
-
-        //add background Image
-        Image background=new Image(Board.class.getResource("background.jpg").toString());
-
-        //add button easy , when click, there are 9 pieces already on board
-        ActionButton easyMode = new ActionButton(1, 100);
-//        easyMode.setOnMouseReleased(e -> makeInitialPlacement(9));
-        easyMode.setOnMouseReleased(e -> makeInitialPlacement('e'));
-
-        //add button hard , when click, there are 6 pieces already on board
-        ActionButton hardMode = new ActionButton(2, 300);
-//        hardMode.setOnMouseReleased(e -> makeInitialPlacement(6));
-        hardMode.setOnMouseReleased(e -> makeInitialPlacement('h'));
-
-        //add button hard , when click, there are 9 pieces already on board
-        ActionButton expertMode = new ActionButton(3, 500);
-//        expertMode.setOnMouseReleased(e -> makeInitialPlacement(3));
-        expertMode.setOnMouseReleased(e -> makeInitialPlacement('x'));
-
-        //this button represents brand new game
-        ActionButton normalMode = new ActionButton(4, 700);
-//        normalMode.setOnMousePressed(e -> makeInitialPlacement(0));
-        normalMode.setOnMousePressed(e -> makeInitialPlacement('n'));
-
-        // some hints for the player to click on the button to enter the game
-        ImageView title=new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
-        title.setLayoutX(0);
-        title.setLayoutY(550);
-
-        start.getChildren().add(new ImageView(background));
-        start.getChildren().add(easyMode);
-        start.getChildren().add(hardMode);
-        start.getChildren().add(expertMode);
-        start.getChildren().add(normalMode);
-        start.getChildren().add(title);
-
-        this.startScene = startScene;
-        return startScene;
-    }
-
-    /**
-     * Modular class to create a button in SetWelcomePage.
+     * Helper method for setWelcomePage.
      * Written by Alex.
-     */
-    private class ActionButton extends ImageView {
-        ActionButton(int imageIndex, double x, double y) {
-            setImage(new Image(Board.class.getResource(URI_BASE+imageIndex+".png").toString()));
-            setStyle("-fx-background-color: transparent;");
-            setLayoutX(x);
-            setLayoutY(y);
-        }
-
-        // Alternate constructor, given the pieces are created on the same y coordinate.
-        ActionButton(int imageIndex, double x) {
-            setImage(new Image(Board.class.getResource(URI_BASE+imageIndex+".png").toString()));
-            setStyle("-fx-background-color: transparent;");
-            setLayoutX(x);
-            setLayoutY(450);
-        }
-    }
-
-    /**
-     * Helper method for SetWelcomePage.
-     * Written by Alex.
+     *
      * @param n Number of pieces to place.
      */
     private void makeInitialPlacement(int n) {
@@ -695,6 +554,7 @@ public class Board extends Application {
     /**
      * Another helper method. Intended for use with generation solutions.
      * Written by Alex.
+     *
      * @param difficulty 'e' for easy, 'h' for hard, 'x' for expert, 'n' for normal. Uses chars instead of int due to
      *                   conflict issues.
      */
@@ -739,24 +599,149 @@ public class Board extends Application {
         loadHints(solutions.get(0));
     }
 
-    private void setVictoryScene() {
-        Group vic = new Group();
-        Scene scene = new Scene(vic, BOARD_WIDTH, BOARD_HEIGHT);
-        vic.getChildren().add(pegs);
-        vic.getChildren().add(pieces);
-        vic.getChildren().add(controls);
+    /**
+     * Creates the instruction image.
+     */
+    private void loadInstructions() {
+        ImageView instruction=new ImageView(new Image(Board.class.getResource(URI_BASE+"instruction.jpg").toString()));
+        instructions.getChildren().add(instruction);
+    }
 
-        Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
-        bg.setOpacity(0.05);
-        vic.getChildren().add(bg);
+    /**
+     * Creates a visual overlay of a solution.
+     * @param solution A valid placement solution string.
+     */
+    private void loadHints(String solution) {
+        if (solution.length() != 36)
+            throw new IllegalArgumentException("Invalid solution string for loadHints");
 
-        victoryScene = scene;
-        primaryStage.setScene(victoryScene);
-        primaryStage.show();
+        // Reset hints on a new game.
+        if (hints.getChildren().size() > 0)
+            while (hints.getChildren().size() > 0)
+                hints.getChildren().remove(0);
+
+        Map<Character,String> solutionMap = new HashMap<>();
+        for (int i = 0; i < solution.length() / 3; i++)
+            solutionMap.put(solution.charAt(3*i+1), solution.substring(3*i,3*i+3));
+
+        for (char p = 'A'; p <= 'L'; p++) {
+            if (solutionMap.containsKey(p)) {
+                String pieces = solutionMap.get(p);
+                int location = pieces.charAt(0) - 'A';
+                int rotation = pieces.charAt(2) - 'A';
+                int flip = rotation > 5 ? -1 : 1;
+                int yPeg = location / 6;
+                int xPeg = location % 6;
+
+                LockedPiece piece = new LockedPiece(p, xPeg, yPeg, rotation % 6, flip);
+                piece.setPosition(location);
+                piece.setOpacity(0.2);
+                hints.getChildren().add(piece);
+            }
+        }
+    }
+
+    /**
+     * Creates the button controls (restart and new game) present in the bottom right corner of the game screen.
+     * TODO: Make the placement location dynamic
+     */
+    private void makeControls() {
+        Button button1 = new Button("New Game");
+        button1.setLayoutX(850);
+        button1.setLayoutY(640);
+        button1.setOnAction(e -> {
+            Scene startScene= setWelcomePage();
+            primaryStage.setScene(startScene);   // if the restart button is clicked, goes to the main
+        });
+        controls.getChildren().add(button1);
+        Button button2 = new Button("Restart");
+        button2.setLayoutX(850);
+        button2.setLayoutY(600);
+        button2.setOnAction(e -> {
+            placement=startPlacement;
+            makePieces(startPlacement);
+        });
+        controls.getChildren().add(button2);
+    }
+
+    // if the placement is not well formed, return the warning
+    // TODO: Implement or remove this if unneeded
+    public void invalidPlacement(String placement) {
+
+    }
+
+    /**
+     * Modular class to create a button in setWelcomePage.
+     * Written by Alex.
+     */
+    private class ActionButton extends ImageView {
+        ActionButton(int imageIndex, double x, double y) {
+            setImage(new Image(Board.class.getResource(URI_BASE+imageIndex+".png").toString()));
+            setStyle("-fx-background-color: transparent;");
+            setLayoutX(x);
+            setLayoutY(y);
+        }
+
+        // Alternate constructor, given the pieces are created on the same y coordinate.
+        ActionButton(int imageIndex, double x) {
+            setImage(new Image(Board.class.getResource(URI_BASE+imageIndex+".png").toString()));
+            setStyle("-fx-background-color: transparent;");
+            setLayoutX(x);
+            setLayoutY(450);
+        }
+    }
+
+    /**
+     * Creates the welcoming scene.
+     * Created by Yicong, modularised and tidied by Alex.
+     * @return The opening splash screen.
+     * TODO: make placement location dynamic
+     */
+    private Scene setWelcomePage() {
+        Group start= new Group();
+        Scene startScene = new Scene(start, BOARD_WIDTH, BOARD_HEIGHT);
+
+        //add background Image
+        Image background=new Image(Board.class.getResource("background.jpg").toString());
+
+        //add button easy , when click, there are 9 pieces already on board
+        ActionButton easyMode = new ActionButton(1, 100);
+//        easyMode.setOnMouseReleased(e -> makeInitialPlacement(9));
+        easyMode.setOnMouseReleased(e -> makeInitialPlacement('e'));
+
+        //add button hard , when click, there are 6 pieces already on board
+        ActionButton hardMode = new ActionButton(2, 300);
+//        hardMode.setOnMouseReleased(e -> makeInitialPlacement(6));
+        hardMode.setOnMouseReleased(e -> makeInitialPlacement('h'));
+
+        //add button hard , when click, there are 9 pieces already on board
+        ActionButton expertMode = new ActionButton(3, 500);
+//        expertMode.setOnMouseReleased(e -> makeInitialPlacement(3));
+        expertMode.setOnMouseReleased(e -> makeInitialPlacement('x'));
+
+        //this button represents brand new game
+        ActionButton normalMode = new ActionButton(4, 700);
+//        normalMode.setOnMousePressed(e -> makeInitialPlacement(0));
+        normalMode.setOnMousePressed(e -> makeInitialPlacement('n'));
+
+        // some hints for the player to click on the button to enter the game
+        ImageView title=new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
+        title.setLayoutX(0);
+        title.setLayoutY(550);
+
+        start.getChildren().add(new ImageView(background));
+        start.getChildren().add(easyMode);
+        start.getChildren().add(hardMode);
+        start.getChildren().add(expertMode);
+        start.getChildren().add(normalMode);
+        start.getChildren().add(title);
+
+        this.startScene = startScene;
+        return startScene;
     }
 
     ///this method is to create the main game scene
-    private void SetMainPage() {
+    private void setMainPage() {
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
         root.getChildren().add(pieces);
@@ -765,7 +750,7 @@ public class Board extends Application {
 
         createBoard();
 //        loadHints();
-        loadInstruction();
+        loadInstructions();
         makeControls();
 
         Text ins = new Text(20, 30, "Press 'I' for Instructions");
@@ -790,6 +775,23 @@ public class Board extends Application {
        mainScene = scene;
     }
 
+    private void setVictoryScene() {
+        Group vic = new Group();
+        Scene scene = new Scene(vic, BOARD_WIDTH, BOARD_HEIGHT);
+        vic.getChildren().add(pegs);
+        vic.getChildren().add(pieces);
+        vic.getChildren().add(controls);
+
+        Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
+        bg.setOpacity(0.05);
+        vic.getChildren().add(bg);
+
+        victoryScene = scene;
+        primaryStage.setScene(victoryScene);
+        primaryStage.show();
+    }
+
+    // TODO: Adjust volume, etc.
     private void loadMusic() {
         MediaPlayer music = new MediaPlayer(new Media(Board.class.getResource(URI_BASE + "music.mp3").toString()));
         music.setAutoPlay(true);
@@ -806,8 +808,8 @@ public class Board extends Application {
     public void start(Stage primaryStage) throws Exception {
         Board.primaryStage = primaryStage;
         primaryStage.setTitle("IQ Link");
-        SetWelcomePage();
-        SetMainPage();
+        setWelcomePage();
+        setMainPage();
 //        loadMusic();
         primaryStage.setScene(startScene);
         primaryStage.show();

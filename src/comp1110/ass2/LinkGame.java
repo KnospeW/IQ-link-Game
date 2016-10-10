@@ -51,7 +51,6 @@ public class LinkGame {
      * @return True if the placement is well-formed
      */
     static boolean isPlacementWellFormed(String placement) {
-        // FIXME Task 4: determine whether a placement is well-formed
         if (placement==null||placement.equals("") || placement.length() % 3 != 0)
             return false;
 
@@ -94,7 +93,6 @@ public class LinkGame {
      * peg 'A', 1 to peg 'B', etc.
      */
     static int[] getPegsForPiecePlacement(String piecePlacement) {
-        // FIXME Task 6: determine the pegs touched by a piece placement
         int[] PegLocations = new int[3];
         int[] OddNeighbour = {-1, -7, -6, +1, +6, +5};
         int[] EvenNeighbour = {-1, -6, -5, +1, +7, +6};
@@ -290,7 +288,6 @@ public class LinkGame {
      * @return True if the placement is valid
      */
     public static boolean isPlacementValid(String placement) {
-        // FIXME Task 7: determine whether a placement is valid
         // first set all the pegs states is{0,0,0,0,0,0}
          int[] pegstates=new int[6];
          Pegs a= new Pegs(pegstates);     Pegs b= new Pegs(pegstates);  Pegs c= new Pegs(pegstates);   Pegs d= new Pegs(pegstates);
