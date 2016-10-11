@@ -642,12 +642,11 @@ public class Board extends Application {
 
     /**
      * Creates the button controls (restart and new game) present in the bottom right corner of the game screen.
-     * TODO: Make the placement location dynamic
      */
     private void makeControls() {
         Button button1 = new Button("New Game");
         button1.setLayoutX(BOARD_WIDTH - 105);
-        button1.setLayoutY(BOARD_HEIGHT - 60);
+        button1.setLayoutY(BOARD_HEIGHT - 40);
         button1.setOnAction(e -> {
             Scene startScene= setWelcomePage();
             primaryStage.setScene(startScene);   // if the restart button is clicked, goes to the main
@@ -655,7 +654,7 @@ public class Board extends Application {
         controls.getChildren().add(button1);
         Button button2 = new Button("Restart");
         button2.setLayoutX(BOARD_WIDTH - 80);
-        button2.setLayoutY(BOARD_HEIGHT - 100);
+        button2.setLayoutY(BOARD_HEIGHT - 80);
         button2.setOnAction(e -> {
             placement=startPlacement;
             makePieces(startPlacement);
