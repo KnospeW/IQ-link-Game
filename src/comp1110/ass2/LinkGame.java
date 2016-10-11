@@ -288,6 +288,72 @@ public class LinkGame {
      * @param placement A placement string
      * @return True if the placement is valid
      */
+
+//    public static boolean isPlacementValid(String placement) {
+//        ArrayList<Pegs> pegs = new ArrayList<>();
+//        for (char peg = 'A'; peg <= 'X'; peg++) pegs.add(new Pegs(new int[]{0, 0, 0, 0, 0, 0}));
+//
+//        if (!isPlacementWellFormed(placement))
+//            return false;
+//        else {
+//            String[] pieces = new String[placement.length() / 3];
+//            for (int i = 0; i < placement.length() / 3; i++) pieces[i] = placement.substring(i * 3, i * 3 + 3);
+//
+//            for (String piecePlacement : pieces) {
+//                int[] pegIndex = getPegsForPiecePlacement(piecePlacement);
+//                if (piecePlacement.charAt(0) < 0 || piecePlacement.charAt(0) > 23)
+//                    return false;
+//                int tmp = pegIndex[0]; pegIndex[0] = pegIndex[1]; pegIndex[1] = tmp;
+//
+//                int[] updateStates = updatePegsPiecePlacement(piecePlacement);
+//                for (int i = 0; i < 3; i++) {
+//                    int index = pegIndex[i];
+//                    int[] currStates = pegs.get(index).getStateArray();
+//                    int[] updatePegStates = Arrays.copyOfRange(updateStates, i * 6, i * 6 + 6);
+//
+//                    if (updatePegStates[0] == 1)            // BALL
+//                        if (currStates[0] == 0) {
+//                            if (currStates[3] == 0
+//                                    || (currStates[3] == 1
+//                                        && (currStates[4] == updatePegStates[1]
+//                                        && currStates[5] == updatePegStates[2]
+//                                    ) || (currStates[4] == updatePegStates[2]
+//                                        && currStates[5] == updatePegStates[1]
+//                                        || (currStates[4] == updatePegStates[1]
+//                                            && updatePegStates[2] == 0)
+//                                        || (currStates[5] == updatePegStates[1]
+//                                            && updatePegStates[2] == 0)))) {
+//                                System.arraycopy(currStates, 3, updatePegStates, 3, 3);
+//                                pegs.get(index).updateStates(updatePegStates);
+//                            } else
+//                                return false;
+//                        } else
+//                            return false;
+//                    else if (updatePegStates[3] == 1) {     // RING
+//                        if (currStates[3] == 0) {
+//                            if (currStates[0] == 0
+//                                    || (currStates[0] == 1
+//                                    && (currStates[1] == updatePegStates[4]
+//                                    && currStates[2] == updatePegStates[5]
+//                            ) || (currStates[1] == updatePegStates[5]
+//                                    && currStates[2] == updatePegStates[4]
+//                                    || (currStates[1] == updatePegStates[4]
+//                                    && updatePegStates[2] == 0)
+//                                    || (currStates[1] == updatePegStates[5]
+//                                    && updatePegStates[2] == 0)))) {
+//                                System.arraycopy(currStates, 0, updatePegStates, 0, 3);
+//                                pegs.get(index).updateStates(updatePegStates);
+//                            } else
+//                                return false;
+//                        } else
+//                            return false;
+//                    }
+//                }
+//            }
+//            return true;
+//        }
+//    }
+
     public static boolean isPlacementValid(String placement) {
         // first set all the pegs states is{0,0,0,0,0,0}
          int[] pegstates=new int[6];
