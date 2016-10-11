@@ -1,7 +1,6 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.Pegs;
-import comp1110.ass2.LinkGame;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -14,6 +13,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -53,7 +53,7 @@ public class Board extends Application {
     private String startPlacement = "";
 
     private static Stage primaryStage;
-    private Scene startScene, mainScene, victoryScene;
+    private Scene startScene, mainScene;
 
     /*
     Easy has 8-10 placements.
@@ -642,6 +642,7 @@ public class Board extends Application {
 
     /**
      * Creates the button controls (restart and new game) present in the bottom right corner of the game screen.
+     * Written by Yicong.
      */
     private void makeControls() {
         Button button1 = new Button("New Game");
@@ -693,7 +694,7 @@ public class Board extends Application {
      * Creates the welcoming scene.
      * Created by Yicong, modularised and tidied by Alex.
      * @return The opening splash screen.
-     * TODO: make placement location dynamic
+     * TODO: make placement location more dynamic?
      */
     private Scene setWelcomePage() {
         Group start= new Group();
@@ -704,30 +705,22 @@ public class Board extends Application {
 
         //add button easy , when click, there are 9 pieces already on board
         ActionButton easyMode = new ActionButton(1, 100);
-//        easyMode.setOnMouseReleased(e -> makeInitialPlacement(9));
-//        easyMode.setOnMouseReleased(e -> makeInitialPlacement('e'));
         easyMode.setOnMouseReleased(e -> makeInitialPlacement(0));
 
         //add button hard , when click, there are 6 pieces already on board
         ActionButton hardMode = new ActionButton(2, 300);
-//        hardMode.setOnMouseReleased(e -> makeInitialPlacement(6));
-//        hardMode.setOnMouseReleased(e -> makeInitialPlacement('h'));
         hardMode.setOnMouseReleased(e -> makeInitialPlacement(1));
 
         //add button hard , when click, there are 9 pieces already on board
         ActionButton expertMode = new ActionButton(3, 500);
-//        expertMode.setOnMouseReleased(e -> makeInitialPlacement(3));
-//        expertMode.setOnMouseReleased(e -> makeInitialPlacement('x'));
         expertMode.setOnMouseReleased(e -> makeInitialPlacement(2));
 
         //this button represents brand new game
         ActionButton normalMode = new ActionButton(4, 700);
-//        normalMode.setOnMousePressed(e -> makeInitialPlacement(0));
-//        normalMode.setOnMousePressed(e -> makeInitialPlacement('n'));
         normalMode.setOnMousePressed(e -> makeInitialPlacement(3));
 
         // some hints for the player to click on the button to enter the game
-        ImageView title=new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
+        ImageView title = new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
         title.setLayoutX(0);
         title.setLayoutY(550);
 
@@ -753,7 +746,6 @@ public class Board extends Application {
         root.getChildren().add(warnings);
 
         createBoard();
-//        loadHints();
         loadInstructions();
         makeControls();
 
@@ -761,8 +753,6 @@ public class Board extends Application {
         ins.setFill(Color.DARKBLUE);
         ins.setFont(new Font(20));
         root.getChildren().add(ins);
-        //placement="BAAHBATCJRDKWEBEFDNGLPHEDIFMJJQKIKLJ";
-        //makePieces(placement);
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SLASH)
@@ -781,25 +771,18 @@ public class Board extends Application {
 
     private void setVictoryScene() {
         Group vic = new Group();
+
+        Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
+        bg.setOpacity(0.8);
+        vic.getChildren().add(bg);
+        vic.getChildren().add(controls);
+
         Text ins = new Text(20, 30, "You wins!!!!!!!!!");
         ins.setFill(Color.DARKBLUE);
         ins.setFont(new Font(20));
         vic.getChildren().add(ins);
-        makeControls();
-        Scene scene = new Scene(vic, BOARD_WIDTH, BOARD_HEIGHT);
-        vic.getChildren().add(pegs);
-        vic.getChildren().add(pieces);
-        vic.getChildren().add(controls);
 
-      /*  Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
-        bg.setOpacity(0.05);
-        vic.getChildren().add(bg);
-*/
-
-
-        victoryScene = scene;
-        primaryStage.setScene(victoryScene);
-        primaryStage.show();
+        root.getChildren().add(vic);
     }
 
     // TODO: Adjust volume, etc.
