@@ -405,42 +405,6 @@ public class Board extends Application {
     }
 
     /**
-     * Creates a set of pieces on the board given a placement string. Any pieces not contained in the
-     *  placement string are created in their initial locations.
-     * Written by Yicong.
-     *
-     * @param placement
-     * TODO: Merge this and makeInitialPlacement
-     * TODO: Split this into another sub-method (createPiece?) to use with the hints
-     */
-    private void makePieces(String placement) {
-        pieces.getChildren().clear();
-        Map<Character,String> prePieces= new HashMap<>();  // the piece as key, piecePlacement as value
-        for (int i = 0; i < placement.length() / 3; i++)
-            prePieces.put(placement.charAt(3*i+1),placement.substring(3*i,3*i+3));
-
-        for (char p = 'A'; p <= 'L'; p++) {
-            if (prePieces.containsKey(p))               //if it is in the starting placement
-            {
-                String piecePlacement=prePieces.get(p);
-                int location = piecePlacement.charAt(0)-'A';                           // pulls the location char
-                int rotation = piecePlacement.charAt(2)-'A';
-                int flip = rotation > 5 ? - 1 : 1;
-                int xPeg = location % 6;
-                int yPeg = location / 6;
-
-                LockedPiece piece= new LockedPiece(p,xPeg,yPeg,rotation%6,flip);
-                piece.setPosition(location);
-                pieces.getChildren().add(piece);
-            } else {
-                FXPiece piece = new FXPiece(p);
-                piece.setPosition(-1);
-                pieces.getChildren().add(piece);
-            }
-        }
-    }
-
-    /**
      * Given a solution string, sets the global initial placement string to a random substring of the solution.
      * Written by Yicong and added to by Alex.
      *
@@ -476,12 +440,9 @@ public class Board extends Application {
      * Another helper method. Intended for use with generation solutions.
      * Written by Alex.
      *
-     * @param difficulty 'e' for easy, 'h' for hard, 'x' for expert, 'n' for normal. Uses chars instead of int due to
-     *                   conflict issues.
+     * @param difficulty An integer 0 to 2 for easy through expert difficulties, or 3 for free-form
      */
     private void makeInitialPlacement(int difficulty) {
-//    private void makeInitialPlacement(char difficulty) {
-//        if (!Arrays.asList('e','h','x','n').contains(difficulty))
         if (difficulty > 3)
             throw new IllegalArgumentException("Invalid difficulty " +difficulty);
 
@@ -506,6 +467,63 @@ public class Board extends Application {
         makePieces(placement);
     }
 
+    /**
+     * Creates a set of pieces on the board given a placement string. Any pieces not contained in the
+     *  placement string are created in their initial locations.
+     * Written by Yicong.
+     *
+     * @param placement
+     * TODO: Merge this and makeInitialPlacement
+     * TODO: Split this into another sub-method (createPiece?) to use with the hints
+     */
+    private void makePieces(String placement) {
+        pieces.getChildren().clear();
+        Map<Character,String> prePieces= new HashMap<>();  // the piece as key, piecePlacement as value
+        for (int i = 0; i < placement.length() / 3; i++)
+            prePieces.put(placement.charAt(3*i+1),placement.substring(3*i,3*i+3));
+
+        for (char p = 'A'; p <= 'L'; p++) {
+            if (prePieces.containsKey(p))               //if it is in the starting placement
+            {
+                String piecePlacement=prePieces.get(p);
+                int location = piecePlacement.charAt(0)-'A';                           // pulls the location char
+                int rotation = piecePlacement.charAt(2)-'A';
+                int flip = rotation > 5 ? - 1 : 1;
+                int xPeg = location % 6;
+                int yPeg = location / 6;
+
+                LockedPiece piece= new LockedPiece(p,xPeg,yPeg,rotation%6,flip);
+                piece.setPosition(location);
+                pieces.getChildren().add(piece);
+            } else {
+                FXPiece piece = new FXPiece(p);
+                piece.setPosition(-1);
+                pieces.getChildren().add(piece);
+            }
+        }
+    }
+
+    public void createLockedPieces(String placement, Group g) {
+        Map<Character,String> placementMap = new HashMap<>();
+        for (int i = 0; i < placement.length() / 3; i++)
+            placementMap.put(placement.charAt(3*i+1), placement.substring(3*i,3*i+3));
+
+        for (char p = 'A'; p <= 'L'; p++) {
+            if (placementMap.containsKey(p)) {
+                String pieces = placementMap.get(p);
+                int location = pieces.charAt(0) - 'A';
+                int rotation = pieces.charAt(2) - 'A';
+                int flip = rotation > 5 ? -1 : 1;
+                int yPeg = location / 6;
+                int xPeg = location % 6;
+
+                LockedPiece piece = new LockedPiece(p, xPeg, yPeg, rotation % 6, flip);
+                piece.setPosition(location);
+                piece.setOpacity(0.2);
+                g.getChildren().add(piece);
+            }
+        }
+    }
     /**
      * Creates the instruction image.
      */
