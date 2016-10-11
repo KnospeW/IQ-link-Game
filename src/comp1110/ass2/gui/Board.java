@@ -51,7 +51,6 @@ public class Board extends Application {
     private String placement = "";
     private ArrayList<String> solutions = new ArrayList<>();
     private String startPlacement = "";
-    private List<Integer> usedInitialPlaces = new ArrayList<>();
 
     private static Stage primaryStage;
     private Scene startScene, mainScene;
@@ -83,9 +82,12 @@ public class Board extends Application {
         {"KAFUBAHCI", "KAFUBAHCIPDALEFEFEQGHSHBWIJAJKGKLILI", "KAFUBAHCIPDALEFEFEQGHSHBWIJBJFGKEILI"}
     };
     private final String[][][] placements = {easyPlacements, hardPlacements, expertPlacements};
-
-
-    // FIXME Task 12: Generate interesting starting placements
+    private final int[][] initialPlaces = { // TODO: Add more sets?
+            {5,2,7,4,1,11,8,0,6,9,3,10},
+            {8,1,10,4,0,6,2,9,5,7,3,11},
+            {0,5,8,3,10,11,9,4,2,6,7,1}
+    };
+    private int[] initialList;
 
     /**
      * The driving class behind the game. Contains anything to do with manipulating or querying a piece.
@@ -167,11 +169,10 @@ public class Board extends Application {
         /**
          * Fetch method for the initial placement of a piece. Four pieces along the top and bottom, and two
          *  on either side.
-         * TODO: Make location dynamic?
-         * TODO: Randomise piece placements.
          */
         private void findInitialPlacement() {
             int mod = id - 'A';
+            mod = initialList[mod];
             if (mod < 4) {
                 initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
                 if (mod % 2 != 0) initY = 40;
@@ -186,7 +187,6 @@ public class Board extends Application {
                 initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
                 initY = BOARD_HEIGHT - SQUARE_SIZE * 5 / 2;
             }
-            usedInitialPlaces.add(mod);
         }
 
         /**
@@ -452,6 +452,7 @@ public class Board extends Application {
                 solutions.remove(0);
 
         Random r = new Random();
+        initialList = initialPlaces[r.nextInt(3)];
         int s;
 
         if (difficulty == 3)
@@ -578,7 +579,6 @@ public class Board extends Application {
      * Created by Yicong, modularised and tidied by Alex.
      *
      * @return The opening splash screen.
-     * TODO: make placement location more dynamic?
      */
     private Scene setWelcomePage() {
         Group start= new Group();
