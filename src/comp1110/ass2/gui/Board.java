@@ -259,13 +259,6 @@ public class Board extends Application {
             return n;
         }
 
-        // TODO: Remember what this was for and use it
-        private void checkLocation() {
-            for (Circle c : pegList ) {
-                double d = getDistanceTo(c);
-            }
-        }
-
         /**
          * Places a piece centred on a peg rather than where the player lets go of the piece.
          */
@@ -545,12 +538,6 @@ public class Board extends Application {
             createLockedPieces(placement, pieces, true);
         });
         controls.getChildren().add(button2);
-    }
-
-    // if the placement is not well formed, return the warning
-    // TODO: Implement or remove this if unneeded
-    public void invalidPlacement(String placement) {
-
     }
 
     /**
