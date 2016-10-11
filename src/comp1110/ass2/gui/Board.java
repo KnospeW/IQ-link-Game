@@ -165,22 +165,11 @@ public class Board extends Application {
                 this.position = pos;
         }
 
-        private void checkVictory() {
-            System.out.println("Solutions: "+ solutions);
-//            boolean foundIn = false;
-//            for (String s : solutions)
-//                if (s.equals(placement))
-//                    foundIn = true;
-//            System.out.println(foundIn);
-            System.out.println(solutions.contains(placement));
-            if (solutions.contains(placement) && !placement.equals(""))
-                System.out.println("Victory!");
-//                setVictoryScene();
-        }
         /**
          * Fetch method for the initial placement of a piece. Four pieces along the top and bottom, and two
          *  on either side.
          * TODO: Make location dynamic?
+         * TODO: Randomise piece placements.
          */
         private void findInitialPlacement() {
             int mod = id - 'A';
@@ -333,65 +322,6 @@ public class Board extends Application {
         }
 
         /**
-         * Deprecated debugging method for snapGrid.
-         */
-        private void grabLocation() {
-            int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
-            int xOffset = 0;
-            if (nearestYIndex % 2 == 1) xOffset += SQUARE_SIZE / 2;
-            int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
-
-            double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
-            double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
-
-           /* System.out.println("Raw location: " + getLayoutX() + ", " + getLayoutY());
-            System.out.println("Nearest points: " + nearestX + ", " + nearestY);
-            System.out.println("Nearest indexes: " + nearestXIndex + ", " + nearestYIndex);
-            System.out.println(this);*/
-
-        }
-
-        /**
-         * Snapping method made deprecated by the introduction of using the pegs' locations in snapPeg.
-         */
-        private void snapGrid() {
-            boolean onGrid = true;
-            int nearestYIndex = (int) ((getLayoutY() + SQUARE_SIZE / 2 - Y_BORDER) / ROW_HEIGHT);
-            if (nearestYIndex < 0) {    // bounce if placing outside the grid
-                nearestYIndex = 0;
-                onGrid = false;
-            }
-            if (nearestYIndex > 3) {
-                nearestYIndex = 3;
-                onGrid = false;
-            }
-            int xOffset = 0;            // account for hexagonal placement
-            if (nearestYIndex % 2 != 0) xOffset += SQUARE_SIZE / 2;
-            int nearestXIndex = (int) ((getLayoutX() + SQUARE_SIZE / 2 - X_BORDER - xOffset) / SQUARE_SIZE);
-            if (nearestXIndex < 0) {    // bounce again
-                nearestXIndex = 0;
-                onGrid = false;
-            }
-            if (nearestXIndex > 5) {
-                nearestXIndex = 5;
-                onGrid = false;
-            }
-
-            double nearestY = nearestYIndex * ROW_HEIGHT + Y_BORDER;
-            double nearestX = nearestXIndex * SQUARE_SIZE + X_BORDER + xOffset;
-            setPosition(nearestXIndex + nearestYIndex * 6);
-
-            if (onGrid && isPlacementValid(getPieceString())) {
-                 if (!pieceOverlaps()) {
-                      setLayoutX(nearestX);
-                      setLayoutY(nearestY);
-                 } else
-                     snapHome();
-            } else
-                snapHome();
-        }
-
-        /**
          * Modularising the returning home mechanic used in snapGrid and snapPeg.
          */
         private void snapHome() {
@@ -405,10 +335,9 @@ public class Board extends Application {
          * Written by Yicong.
          * @return if angle<0, then make it a positive angle for mode calculation.
          */
-        private double positiveOrientation(double angle)
-        {
-            while(angle<0)
-                angle+=360;
+        private double positiveOrientation(double angle) {
+            while(angle < 0)
+                angle += 360;
             return angle;
         }
         /**
@@ -508,7 +437,6 @@ public class Board extends Application {
                 piece.setPosition(-1);
                 pieces.getChildren().add(piece);
             }
-           // pieces.getChildren().clear();
         }
     }
 
@@ -564,26 +492,6 @@ public class Board extends Application {
 
         Random r = new Random();
         int s;
-//        switch (difficulty) {
-//            case 'e':
-//                s = r.nextInt(easyPlacements.length);
-//                placement = easyPlacements[s][0];
-//                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
-//                break;
-//            case 'h':
-//                s = r.nextInt(hardPlacements.length);
-//                placement = hardPlacements[s][0];
-//                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
-//                break;
-//            case 'x':
-//                s = r.nextInt(expertPlacements.length);
-//                placement = expertPlacements[s][0];
-//                solutions.addAll(Arrays.asList(easyPlacements[s]).subList(1, easyPlacements[s].length));
-//                break;
-//            default:
-//                s = -1;
-//                break;
-//        }
 
         if (difficulty == 3)
             placement = "";
@@ -693,6 +601,7 @@ public class Board extends Application {
     /**
      * Creates the welcoming scene.
      * Created by Yicong, modularised and tidied by Alex.
+     *
      * @return The opening splash screen.
      * TODO: make placement location more dynamic?
      */
@@ -735,7 +644,10 @@ public class Board extends Application {
         return startScene;
     }
 
-    ///this method is to create the main game scene
+    /**
+     * Initialises the main game page.
+     * Written by Yicong and Alex.
+     */
     private void setMainPage() {
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
@@ -769,6 +681,10 @@ public class Board extends Application {
        mainScene = scene;
     }
 
+    /**
+     * Creates the victory splash on completing the game.
+     * Written by Alex.
+     */
     private void setVictoryScene() {
         Group vic = new Group();
 
@@ -785,7 +701,11 @@ public class Board extends Application {
         root.getChildren().add(vic);
     }
 
-    // TODO: Adjust volume, etc.
+    /**
+     * Loads some BGM.
+     * Written by Alex.
+     * TODO: Adjust volume, etc.
+     */
     private void loadMusic() {
         MediaPlayer music = new MediaPlayer(new Media(Board.class.getResource(URI_BASE + "music.mp3").toString()));
         music.setAutoPlay(true);
