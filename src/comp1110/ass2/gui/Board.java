@@ -747,6 +747,8 @@ public class Board extends Application {
     private void setMainPage() {
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
+        root.getChildren().add(hints);
+            hints.setOpacity(0);
         root.getChildren().add(pieces);
         root.getChildren().add(controls);
         root.getChildren().add(warnings);
@@ -764,15 +766,15 @@ public class Board extends Application {
         //makePieces(placement);
 
         scene.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.SLASH && !root.getChildren().contains(hints))
-                root.getChildren().add(hints);
+            if (e.getCode() == KeyCode.SLASH)
+                hints.setOpacity(1);
             if (e.getCode() == KeyCode.I && !root.getChildren().contains(instructions))
                 root.getChildren().add(instructions);
         });
 
         scene.setOnKeyReleased(e -> {
-            if (e.getCode() == KeyCode.SLASH) root.getChildren().remove(hints);
-            if (e.getCode() == KeyCode.I) root.getChildren().remove(instructions);
+            if (e.getCode() == KeyCode.SLASH)   hints.setOpacity(0);
+            if (e.getCode() == KeyCode.I)       root.getChildren().remove(instructions);
         });
 
        mainScene = scene;
