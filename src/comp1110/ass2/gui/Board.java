@@ -646,16 +646,16 @@ public class Board extends Application {
      */
     private void makeControls() {
         Button button1 = new Button("New Game");
-        button1.setLayoutX(850);
-        button1.setLayoutY(640);
+        button1.setLayoutX(BOARD_WIDTH - 105);
+        button1.setLayoutY(BOARD_HEIGHT - 60);
         button1.setOnAction(e -> {
             Scene startScene= setWelcomePage();
             primaryStage.setScene(startScene);   // if the restart button is clicked, goes to the main
         });
         controls.getChildren().add(button1);
         Button button2 = new Button("Restart");
-        button2.setLayoutX(850);
-        button2.setLayoutY(600);
+        button2.setLayoutX(BOARD_WIDTH - 80);
+        button2.setLayoutY(BOARD_HEIGHT - 100);
         button2.setOnAction(e -> {
             placement=startPlacement;
             makePieces(startPlacement);
