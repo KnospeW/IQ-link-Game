@@ -51,6 +51,7 @@ public class Board extends Application {
     private String placement = "";
     private ArrayList<String> solutions = new ArrayList<>();
     private String startPlacement = "";
+    private List<Integer> usedInitialPlaces = new ArrayList<>();
 
     private static Stage primaryStage;
     private Scene startScene, mainScene;
@@ -152,8 +153,6 @@ public class Board extends Application {
          */
         int getPosition() { return this.position; }
         boolean isFlipped() { return getScaleY() == -1; }
-        String getPieceString() { return this.toString(); }
-
         /**
          * Sets the position component of the piece's data. Numbered 1 to 24, starting from the top left and working
          *  left to right, top to bottom. -1 is off the board.
@@ -187,6 +186,7 @@ public class Board extends Application {
                 initX = (mod - 8) * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
                 initY = BOARD_HEIGHT - SQUARE_SIZE * 5 / 2;
             }
+            usedInitialPlaces.add(mod);
         }
 
         /**
@@ -444,7 +444,7 @@ public class Board extends Application {
      */
     private void makeInitialPlacement(int difficulty) {
         if (difficulty > 3)
-            throw new IllegalArgumentException("Invalid difficulty " +difficulty);
+            throw new IllegalArgumentException("Invalid difficulty " + difficulty);
 
         // Reset solution list on a new game.
         if (solutions.size() > 0)
@@ -464,46 +464,19 @@ public class Board extends Application {
         }
         startPlacement = placement;
         primaryStage.setScene(mainScene);
-        makePieces(placement);
+        pieces.getChildren().clear();
+        createLockedPieces(placement, pieces, true);
     }
 
     /**
-     * Creates a set of pieces on the board given a placement string. Any pieces not contained in the
-     *  placement string are created in their initial locations.
-     * Written by Yicong.
+     * Creates a set of locked pieces given a placement string.
+     * Written by Yicong and modularised by Alex.
      *
-     * @param placement
-     * TODO: Merge this and makeInitialPlacement
-     * TODO: Split this into another sub-method (createPiece?) to use with the hints
+     * @param placement A valid placement string.
+     * @param g The group to add the pieces to.
+     * @param allPieces If true, will place all pieces not in the placement string in their initial positions, unlocked.
      */
-    private void makePieces(String placement) {
-        pieces.getChildren().clear();
-        Map<Character,String> prePieces= new HashMap<>();  // the piece as key, piecePlacement as value
-        for (int i = 0; i < placement.length() / 3; i++)
-            prePieces.put(placement.charAt(3*i+1),placement.substring(3*i,3*i+3));
-
-        for (char p = 'A'; p <= 'L'; p++) {
-            if (prePieces.containsKey(p))               //if it is in the starting placement
-            {
-                String piecePlacement=prePieces.get(p);
-                int location = piecePlacement.charAt(0)-'A';                           // pulls the location char
-                int rotation = piecePlacement.charAt(2)-'A';
-                int flip = rotation > 5 ? - 1 : 1;
-                int xPeg = location % 6;
-                int yPeg = location / 6;
-
-                LockedPiece piece= new LockedPiece(p,xPeg,yPeg,rotation%6,flip);
-                piece.setPosition(location);
-                pieces.getChildren().add(piece);
-            } else {
-                FXPiece piece = new FXPiece(p);
-                piece.setPosition(-1);
-                pieces.getChildren().add(piece);
-            }
-        }
-    }
-
-    public void createLockedPieces(String placement, Group g) {
+    private void createLockedPieces(String placement, Group g, boolean allPieces) {
         Map<Character,String> placementMap = new HashMap<>();
         for (int i = 0; i < placement.length() / 3; i++)
             placementMap.put(placement.charAt(3*i+1), placement.substring(3*i,3*i+3));
@@ -519,11 +492,15 @@ public class Board extends Application {
 
                 LockedPiece piece = new LockedPiece(p, xPeg, yPeg, rotation % 6, flip);
                 piece.setPosition(location);
-                piece.setOpacity(0.2);
+                g.getChildren().add(piece);
+            } else if (allPieces) {
+                FXPiece piece = new FXPiece(p);
+                piece.setPosition(-1);
                 g.getChildren().add(piece);
             }
         }
     }
+
     /**
      * Creates the instruction image.
      */
@@ -541,29 +518,9 @@ public class Board extends Application {
             throw new IllegalArgumentException("Invalid solution string for loadHints");
 
         // Reset hints on a new game.
-        if (hints.getChildren().size() > 0)
-            while (hints.getChildren().size() > 0)
-                hints.getChildren().remove(0);
+        hints.getChildren().clear();
 
-        Map<Character,String> solutionMap = new HashMap<>();
-        for (int i = 0; i < solution.length() / 3; i++)
-            solutionMap.put(solution.charAt(3*i+1), solution.substring(3*i,3*i+3));
-
-        for (char p = 'A'; p <= 'L'; p++) {
-            if (solutionMap.containsKey(p)) {
-                String pieces = solutionMap.get(p);
-                int location = pieces.charAt(0) - 'A';
-                int rotation = pieces.charAt(2) - 'A';
-                int flip = rotation > 5 ? -1 : 1;
-                int yPeg = location / 6;
-                int xPeg = location % 6;
-
-                LockedPiece piece = new LockedPiece(p, xPeg, yPeg, rotation % 6, flip);
-                piece.setPosition(location);
-                piece.setOpacity(0.2);
-                hints.getChildren().add(piece);
-            }
-        }
+        createLockedPieces(solution, hints, false);
     }
 
     /**
@@ -583,8 +540,8 @@ public class Board extends Application {
         button2.setLayoutX(BOARD_WIDTH - 80);
         button2.setLayoutY(BOARD_HEIGHT - 80);
         button2.setOnAction(e -> {
-            placement=startPlacement;
-            makePieces(startPlacement);
+            placement = startPlacement;
+            createLockedPieces(placement, pieces, true);
         });
         controls.getChildren().add(button2);
     }
@@ -686,7 +643,7 @@ public class Board extends Application {
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SLASH)
-                hints.setOpacity(1);
+                hints.setOpacity(0.2);
             if (e.getCode() == KeyCode.I && !root.getChildren().contains(instructions))
                 root.getChildren().add(instructions);
         });
@@ -696,7 +653,7 @@ public class Board extends Application {
             if (e.getCode() == KeyCode.I)       root.getChildren().remove(instructions);
         });
 
-       mainScene = scene;
+        mainScene = scene;
     }
 
     /**
