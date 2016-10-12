@@ -1,0 +1,145 @@
+\documentclass[12pt]{beamer}
+\title{IQ Link}
+\subtitle{COMP1110/1140/1510/6710 major assignment}
+\author[u5838800, u6127601]{Alex Smith (u5838800), Yicong Du (u6127601)}
+\date{Week 11, 2016}
+
+\usetheme{Rochester}
+\usecolortheme{orchid}
+
+\usepackage{pdflscape}
+\usepackage{color}
+\usepackage{listings}
+\lstset{language=Java,
+                basicstyle=\footnotesize\ttfamily,
+                keywordstyle=\footnotesize\color{blue}\ttfamily, }
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.png}
+
+\newcommand{\fitimagewidth}[1]{\includegraphics[width=\textwidth]{#1}}
+\newcommand{\fitimageheight}[1]{\centering{\includegraphics[height=\textheight]{#1}}}
+
+\hypersetup{pdfstartview={Fit}}
+\setbeamertemplate{navigation symbols}{}
+\begin{document}
+
+%Your presentation pdf file must be suitable for viewing on the lab projectors, and must include the following:
+%- Names of all students who contributed.
+%- A summary of what you did.
+%- The class diagram as part of a design section.
+%- Screen shots of your game.
+
+%\section{Intro}
+\frame{\titlepage}
+\begin{frame}{Table of Contents}
+	\tableofcontents[currentsection]
+\end{frame}
+
+\section{Summary}
+\begin{frame}{Summary}
+% Talk briefly about each point.
+	\begin{itemize}
+	\item Created Piece class with enumerators
+		% Type, Segment, Orientation, Location
+	\item Added placement methods
+		% is_Valid, {get,update}PegsForPiecePlacement
+	\item Implemented Viewer with one, then multiple, piece viewer
+		% I did one, Yicong finished multiple
+	\item Implemented full GUI for game
+		\begin{itemize}
+		\item Piece drawing and movement
+			% Piece class, movement, two iterations of snapping
+		\item Game selection
+			% Welcome and main screen, then victory
+		\item Hint viewer as string, then image
+			% Useless little text box, then faded pieces
+		\item Other QoL additions
+			% Music, dynamic hints after a certain point?, 
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\section{Design}
+\begin{frame}
+	\centering{\Huge Design}
+\end{frame}
+\begin{frame}{Structure}
+	\begin{itemize}
+	\item Enumerators for pieces and info, int array for pegs
+	\item Store piece rotation, info, etc. in the enumerator
+	\item Store ball/ring, connectors/gaps, in peg info
+	\item Handle all GUI-related things in Board, all back-end in LinkGame
+	\end{itemize}
+\end{frame}
+\begin{frame}{Structure}
+	% Old class diagram version.
+	\fitimagewidth{uml.png}
+
+\end{frame}
+\begin{frame}{Structure}
+	% Class diagram version.
+	%\fitimagewidth{newuml.png}
+
+\end{frame}
+\begin{frame}[fragile]
+	\frametitle{Piece and Peg classes, mk. I}
+	% Note that we ended up rewriting Piece somewhere along the line accidentally instead of just implementing the enumerator.
+	\begin{columns}[T]
+		\column{0.4\textwidth}
+		Enumerator declaration
+			\begin{lstlisting}
+enum Piece {
+A (LINE,OA,
+	RING,2,3,
+	BALL,4,0,
+	BALL,1,0),
+...
+}
+			\end{lstlisting}
+		\column{0.67\textwidth}
+		Peg declaration
+			\begin{lstlisting}
+public Pegs(int[] states) {
+	this.ballExit = states[0];
+	this.ballCon1 = states[1];
+	this.ballCon2 = states[2];
+	this.ringExit = states[3];
+	this.ringOpn1 = states[4];
+	this.ringOpn2 = states[5];
+}
+		\end{lstlisting}
+	\end{columns}
+
+\end{frame}
+\begin{frame}{Invalid placements}
+	% Decisions on why we used snapping or warnings, issues with implementing warnings?
+	\begin{itemize}
+	\item
+	\end{itemize}
+\end{frame}
+\begin{frame}{Game remake buttons}
+	% New game and restart. Decisions, issues (with hints)
+
+\end{frame}
+\begin{frame}{Board / LinkGame}
+
+\end{frame}
+
+\section{Screenshots}
+\begin{frame} 				\centering{\Huge Screenshots}	\end{frame}
+\begin{frame}{Welcome screen}	\fitimageheight{welcome.png}	\end{frame}
+%\begin{frame}{Main game}		\fitimageheight{game.png}		\end{frame}
+% Moving a piece and hints
+%\begin{frame}{Solving}		\fitimageheight{hints.png}	\end{frame}
+% Warning
+%\begin{frame}{Can't do that}	\fitimageheight{warning.png}	\end{frame}
+%\begin{frame}{Victory}		\fitimageheight{victory.png}	\end{frame}
+
+\section{Credits}
+\begin{frame}{Credits}
+
+\end{frame}
+
+\appendix
+
+\end{document}
