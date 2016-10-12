@@ -537,7 +537,8 @@ public class Board extends Application {
         button2.setLayoutY(BOARD_HEIGHT - 80);
         button2.setOnAction(e -> {
             placement = startPlacement;
-            createLockedPieces(placement, pieces, true);
+            pieces.getChildren().clear();
+            createLockedPieces(startPlacement, pieces, true);
         });
         controls.getChildren().add(button2);
     }
