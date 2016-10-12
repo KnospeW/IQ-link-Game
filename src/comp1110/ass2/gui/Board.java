@@ -471,6 +471,8 @@ public class Board extends Application {
      * @param allPieces If true, will place all pieces not in the placement string in their initial positions, unlocked.
      */
     private void createLockedPieces(String placement, Group g, boolean allPieces) {
+        if (!isPlacementValid(placement))
+            throw new IllegalArgumentException("Not a valid placement string for createLockedPieces");
         Map<Character,String> placementMap = new HashMap<>();
         for (int i = 0; i < placement.length() / 3; i++)
             placementMap.put(placement.charAt(3*i+1), placement.substring(3*i,3*i+3));
@@ -544,8 +546,8 @@ public class Board extends Application {
      * Modular class to create a button in setWelcomeScene.
      * Written by Alex.
      */
-    private class ActionButton extends ImageView {
-        ActionButton(int imageIndex, double x, double y) {
+    private class ImageButton extends ImageView {
+        ImageButton(int imageIndex, double x, double y) {
             setImage(new Image(Board.class.getResource(URI_BASE+imageIndex+".png").toString()));
             setStyle("-fx-background-color: transparent;");
             setLayoutX(x);
@@ -553,7 +555,7 @@ public class Board extends Application {
         }
 
         // Alternate constructor, given the pieces are created on the same y coordinate.
-        ActionButton(int imageIndex, double x) {
+        ImageButton(int imageIndex, double x) {
             setImage(new Image(Board.class.getResource(URI_BASE+imageIndex+".png").toString()));
             setStyle("-fx-background-color: transparent;");
             setLayoutX(x);
@@ -575,19 +577,19 @@ public class Board extends Application {
         Image background=new Image(Board.class.getResource("background.jpg").toString());
 
         //add button easy , when click, there are 9 pieces already on board
-        ActionButton easyMode = new ActionButton(1, 100);
+        ImageButton easyMode = new ImageButton(1, 100);
         easyMode.setOnMouseReleased(e -> makeInitialPlacement(0));
 
         //add button hard , when click, there are 6 pieces already on board
-        ActionButton hardMode = new ActionButton(2, 300);
+        ImageButton hardMode = new ImageButton(2, 300);
         hardMode.setOnMouseReleased(e -> makeInitialPlacement(1));
 
         //add button hard , when click, there are 9 pieces already on board
-        ActionButton expertMode = new ActionButton(3, 500);
+        ImageButton expertMode = new ImageButton(3, 500);
         expertMode.setOnMouseReleased(e -> makeInitialPlacement(2));
 
         //this button represents brand new game
-        ActionButton normalMode = new ActionButton(4, 700);
+        ImageButton normalMode = new ImageButton(4, 700);
         normalMode.setOnMousePressed(e -> makeInitialPlacement(3));
 
         // some hints for the player to click on the button to enter the game
@@ -677,13 +679,12 @@ public class Board extends Application {
     /**
      * Loads some BGM.
      * Written by Alex.
-     * TODO: Adjust volume, etc.
      */
     private void loadMusic() {
         MediaPlayer music = new MediaPlayer(new Media(Board.class.getResource(URI_BASE + "music.mp3").toString()));
         music.setAutoPlay(true);
         music.setOnEndOfMedia(() -> music.seek(Duration.ZERO));
-
+        music.setVolume(0.2);
         music.play();
     }
 
