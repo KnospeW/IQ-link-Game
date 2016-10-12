@@ -526,7 +526,7 @@ public class Board extends Application {
         button1.setLayoutX(BOARD_WIDTH - 105);
         button1.setLayoutY(BOARD_HEIGHT - 40);
         button1.setOnAction(e -> {
-            Scene startScene= setWelcomePage();
+            Scene startScene= setWelcomeScene();
             primaryStage.setScene(startScene);   // if the restart button is clicked, goes to the main
         });
         controls.getChildren().add(button1);
@@ -541,7 +541,7 @@ public class Board extends Application {
     }
 
     /**
-     * Modular class to create a button in setWelcomePage.
+     * Modular class to create a button in setWelcomeScene.
      * Written by Alex.
      */
     private class ActionButton extends ImageView {
@@ -567,7 +567,7 @@ public class Board extends Application {
      *
      * @return The opening splash screen.
      */
-    private Scene setWelcomePage() {
+    private Scene setWelcomeScene() {
         Group start= new Group();
         Scene startScene = new Scene(start, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -610,7 +610,7 @@ public class Board extends Application {
      * Initialises the main game page.
      * Written by Yicong and Alex.
      */
-    private void setMainPage() {
+    private void setMainScene() {
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
         root.getChildren().add(hints);
@@ -653,12 +653,23 @@ public class Board extends Application {
         Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
         bg.setOpacity(0.8);
         vic.getChildren().add(bg);
-        vic.getChildren().add(controls);
+//        vic.getChildren().add(controls);
 
-        Text ins = new Text(20, 30, "You wins!!!!!!!!!");
+        Text ins = new Text(BOARD_WIDTH / 2 - 100, BOARD_HEIGHT / 2 - 10, "You win!");
         ins.setFill(Color.DARKBLUE);
-        ins.setFont(new Font(20));
+        ins.setFont(new Font(50));
         vic.getChildren().add(ins);
+
+        Button returnButton = new Button("Return home");
+        returnButton.setPrefWidth(150);
+        returnButton.setPrefHeight(20);
+        returnButton.setLayoutX(BOARD_WIDTH / 2 - 75);
+        returnButton.setLayoutY(BOARD_HEIGHT * 3/4 - 10);
+        returnButton.setOnMouseReleased(e -> {
+            primaryStage.setScene(startScene);
+            root.getChildren().remove(vic);
+        });
+        vic.getChildren().add(returnButton);
 
         root.getChildren().add(vic);
     }
@@ -684,9 +695,10 @@ public class Board extends Application {
     public void start(Stage primaryStage) throws Exception {
         Board.primaryStage = primaryStage;
         primaryStage.setTitle("IQ Link");
-        setWelcomePage();
-        setMainPage();
+        setWelcomeScene();
+        setMainScene();
 //        loadMusic();
+
         primaryStage.setScene(startScene);
         primaryStage.show();
     }
