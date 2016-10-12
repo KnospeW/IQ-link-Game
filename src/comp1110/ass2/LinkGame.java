@@ -1,5 +1,7 @@
 package comp1110.ass2;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -22,7 +24,6 @@ public class LinkGame {
      * @param piecePlacement A string describing a piece placement
      * @return True if the piece placement is well-formed
      */
-
     static boolean isPiecePlacementWellFormed(String piecePlacement) {
         int len = piecePlacement.length();
         char[] chars = piecePlacement.toCharArray();
@@ -454,22 +455,22 @@ public class LinkGame {
      * starting point provided by placement.
      */
     public static String[] getSolutions(String placement) {
-        // FIXME Task 10: determine all solutions to the game, given a particular starting placement
         ArrayList<String> solutions = new ArrayList<>();
 
         System.out.println("Given placement "+placement);
-//        char lastPiece = placement.charAt(placement.length() - 2);
-        findSolution('A',placement,solutions);
-//        findSolution(lastPiece, placement, solutions);
-//        findSolution(placement, solutions);
 
-        // Return the solutions as an array rather than a list.
+        // Cheat a little bit by starting our search after the last piece given.
+        if (placement.length() != 0) {
+            char lastPiece = placement.charAt(placement.length() - 2);
+            findSolution(lastPiece, placement, solutions);
+        } else findSolution('A', placement, solutions);
+
         System.out.println();
         System.out.println("Solutions:");
         solutions.forEach(System.out::println);
         System.out.println();
 
-        // Return solutions
+        // Return the solutions as an array rather than a list.
         String[] solutionString = new String[solutions.size()];
         for (int i = 0; i < solutions.size(); i++) solutionString[i] = solutions.get(i);
         return solutionString;
@@ -486,19 +487,40 @@ public class LinkGame {
      * @return True if a solution has been found, or false otherwise.
      */
     private static boolean findSolution(char piece, String placement, ArrayList<String> solutions) {
+        // When we hit a full string, check if it's valid (which it should be anyway, but it doesn't hurt to double
+        // check), and unique to what's already found.
         if (placement.length() == 36) {
-            if(isPlacementWellFormed(placement) && isPlacementValid(placement) && !solutions.contains(placement))
+            if(isPlacementWellFormed(placement) && isPlacementValid(placement) && !solutions.contains(placement)) {
+//                FileWriter writer = null;
+//                try {
+//                    writer = new FileWriter("solutions.txt", true);
+//                    writer.write(placement);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } finally {
+//                    try {
+//                        if (writer != null) {
+//                            writer.close();
+//                        }
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 solutions.add(placement);
-            return true;
-            // Returning true here prevents the algorithm from recursing once it finds a result. This is a good and bad thing.
-            // On one hand, it will stop as soon as it finds the first result, giving a much faster return on one-solution systems.
-            // On the other hand, it obviously won't find every solution if there is more than one.
+                System.out.println(placement);
+            }
+//            return true;
+            /*
+              Returning true here prevents the algorithm from recursing once it finds a result. This is a good and bad thing.
+              On one hand, it will stop as soon as it finds the first result, giving a much faster return on one-solution systems.
+              On the other hand, it obviously won't find every solution if there is more than one.
+             */
         }
-        if (piece > 'L') {
-            return false;
-        }
+
+        // Just a quick way to check what pegs are valid.
         ArrayList<Character> openPegs = new ArrayList<>();
         ArrayList<Character> usedPieces = new ArrayList<>();
+        // These pieces are closed rings and can't have any other segment share the same peg.
         List ringPieces = Arrays.asList('B','C','D','E','F','H');
 
         for (char p = 'A'; p <= 'X'; p++)
@@ -509,12 +531,17 @@ public class LinkGame {
                 openPegs.remove(Character.valueOf(placement.charAt(i*3)));
         }
 
+        // Save a little bit of time by only checking valid pegs.
         if (usedPieces.contains(piece)) {
             return findSolution(++piece, placement, solutions);
         }
 
+        /*
+          Fairly straight-forward recursion. For a given piece, for each peg and rotation combo, check if the piece will
+          fit into the provided placement. If it does, then restart the process with the added piece. Since a valid
+          solution will return true, the return will propagate all the way down to the first added piece call.
+         */
         for (char peg : openPegs) {
-//        for (char peg = 'A'; peg <= 'X'; peg++) {
             for (char rot = 'A'; rot <= 'L'; rot++) {
                 String toPlace = "" + peg + piece + rot;
                 if (isPlacementValid(placement + toPlace)) {
@@ -524,54 +551,8 @@ public class LinkGame {
             }
         }
 
-        return findSolution(++piece, placement, solutions);
-    }
-
-
-    private static boolean findSolutionVerbose(char piece, String placement, ArrayList<String> solutions) {
-        System.out.println("Using placement "+placement);
-        if (placement.length() == 36) {
-            if(isPlacementWellFormed(placement) && isPlacementValid(placement))
-                solutions.add(placement);
-            System.out.println("Adding solution "+placement);
-            return true;
-        }
-        if (piece > 'L') {
-            return false;
-        }
-
-        ArrayList<Character> usedPieces = new ArrayList<>();
-        System.out.println("Checking used pieces: ");
-        for (int i = 0; i < placement.length() / 3; i++) {
-            System.out.print(placement.charAt(i * 3 + 1));
-            usedPieces.add(placement.charAt(i * 3 + 1));
-        }
-        System.out.println();
-        if (usedPieces.contains(piece)) {
-            System.out.println("Solution already used "+piece);
-            return findSolution(++piece, placement, solutions);
-        }
-        System.out.println("Trying piece " +piece);
-
-        for (char peg = 'A'; peg <= 'X'; peg++) {
-            for (char rot = 'A'; rot <= 'L'; rot++) {
-                String toPlace = "" + peg + piece + rot;
-                System.out.print(toPlace+", ");
-                if (isPlacementValid(placement + toPlace)) {
-                    System.out.println();
-                    System.out.println("Found placement with piece " + toPlace);
-                    System.out.println();
-                    if (findSolution(piece, placement + toPlace, solutions))
-                        return true;
-                }
-            }
-        }
-
-        System.out.println("Nothing found, start from next piece");
-        if (findSolution(++piece, placement, solutions))
-            return true;
-
-        System.out.println("Dunno what happened, boss");
+        // If it hits this, then a piece doesn't fit. If one piece doesn't fit, there won't be a solution. At that point,
+        // there's no point continuing.
         return false;
     }
 
@@ -604,16 +585,6 @@ public class LinkGame {
     }
 
     public static void main(String[] args) {
-        String[][] SOLUTIONS_ONE = {
-                {"KAFCBGUCAGDFLEFPFBBGESHBWIJKJA", "KAFCBGUCAGDFLEFPFBBGESHBWIJKJAHKLJLH"},
-                {"KAFCBGUCAGDFLEFPFBBGESHBOIA", "KAFCBGUCAGDFLEFPFBBGESHBOIAKJARKEJLH"},
-                {"KAFTBAICFRDCEELWFJJGDMHK", "KAFTBAICFRDCEELWFJJGDMHKCIGNJCPKEBLF"},
-                {"JABHBCBCGGDFIEKVFAFGG", "JABHBCBCGGDFIEKVFAFGGSHBXIAJJJUKHKLK"},
-                {"JACRBHQCHCDGDELVFJ", "JACRBHQCHCDGDELVFJBGESHBUIAFJEHKLGLL"},
-                {"IAFBBDRCEPDEWEB", "IAFBBDRCEPDEWEBSFJTGBFHGGILIJAQKIJLI"},
-                {"GAEWBABCDJDA", "GAEWBABCDJDALEFMFCCGLUHBTIAQJCKKBILF"},
-        };
-
         long init = System.nanoTime();
 
         getSolutions("");
