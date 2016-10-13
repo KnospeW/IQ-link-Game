@@ -183,49 +183,33 @@ public class LinkGame {
                     // so the orientation 6 indicates flip, other will first flip then rotates
 
                     // first do for the second element in the state
-                    switch (pieceInfo[3 * i + 3]) {
-                        case "2":
-                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
-                            break;
-                        case "3":
-                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
-                            break;
-                        case "4":
-                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
-                            break;
-                        case "5":
-                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
-                            break;
-                        case "6":
-                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
-                            break;
-                        default:
-                            //no opening or connection, no change
-                            threeStates[i * 6 + 1] = 0;
-                            break;
-                    }
+                    if (pieceInfo[3 * i + 3].equals("1") || pieceInfo[3 * i + 3].equals("4"))
+                        threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
+                    else if (pieceInfo[3 * i + 3].equals("3"))
+                        threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 3].equals("5"))
+                        threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 3].equals("2"))
+                        threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 3].equals("6"))
+                        threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
+                    else
+                        //no opening or connection, no change
+                        threeStates[i * 6 + 1] = 0;
 
                     // then do for the third element in the states, this is just for components with two openings and connections
-                    switch (pieceInfo[3 * i + 4]) {
-                        case "2":
-                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
-                            break;
-                        case "3":
-                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
-                            break;
-                        case "4":
-                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
-                            break;
-                        case "5":
-                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
-                            break;
-                        case "6":
-                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
-                            break;
-                        default:
-                            threeStates[i * 6 + 2] = 0;
-                            break;
-                    }
+                    if (pieceInfo[3 * i + 4].equals("1") || pieceInfo[3 * i + 4].equals("4"))
+                        threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
+                    else if (pieceInfo[3 * i + 4].equals("3"))
+                        threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 4].equals("5"))
+                        threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 4].equals("2"))
+                        threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 4].equals("6"))
+                        threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
+                    else
+                        threeStates[i * 6 + 2] = 0;
 
                     orientation = orientation + 6;
                 }
@@ -243,46 +227,30 @@ public class LinkGame {
                         threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
                 } else {
                     orientation = orientation - 6;
-                    switch (pieceInfo[3 * i + 3]) {
-                        case "2":
-                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
-                            break;
-                        case "3":
-                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
-                            break;
-                        case "4":
-                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
-                            break;
-                        case "5":
-                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
-                            break;
-                        case "6":
-                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
-                            break;
-                        default:
-                            threeStates[i * 6 + 4] = 0;
-                            break;
-                    }
-                    switch (pieceInfo[3 * i + 4]) {
-                        case "2":
-                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
-                            break;
-                        case "3":
-                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
-                            break;
-                        case "4":
-                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
-                            break;
-                        case "5":
-                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
-                            break;
-                        case "6":
-                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
-                            break;
-                        default:
-                            threeStates[i * 6 + 5] = 0;
-                            break;
-                    }
+                    if (pieceInfo[3 * i + 3].equals("1") || pieceInfo[3 * i + 3].equals("4"))
+                        threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
+                    else if (pieceInfo[3 * i + 3].equals("3"))
+                        threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 3].equals("5"))
+                        threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 3].equals("2"))
+                        threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 3].equals("6"))
+                        threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
+                    else
+                        threeStates[i * 6 + 4] = 0;
+                    if (pieceInfo[3 * i + 4].equals("1") || pieceInfo[3 * i + 4].equals("4"))
+                        threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
+                    else if (pieceInfo[3 * i + 4].equals("3"))
+                        threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 4].equals("5"))
+                        threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 4].equals("2"))
+                        threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
+                    else if (pieceInfo[3 * i + 4].equals("6"))
+                        threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
+                    else
+                        threeStates[i * 6 + 5] = 0;
                     orientation = orientation + 6;
                 }
                 //states should contains direction of 1 2 3 4 5 6 but 6%6=0 so if it is 6, the chance is that it should be 6 not zero
@@ -384,10 +352,10 @@ public class LinkGame {
         System.out.println("Given placement "+placement);
 
         // Cheat a little bit by starting our search after the last piece given.
-        if (placement.length() != 0) {
+        /* if (placement.length() != 0) {
             char lastPiece = placement.charAt(placement.length() - 2);
             findSolution(lastPiece, placement, solutions);
-        } else findSolution('A', placement, solutions);
+        } else*/ findSolution('A', placement, solutions);
 
         System.out.println();
         System.out.println("Solutions:");
@@ -553,11 +521,9 @@ public class LinkGame {
     public static void main(String[] args) {
         long init = System.nanoTime();
 
-        getSolutions("JADPDF");       // Get every solution possible.
+        System.out.println(isPlacementValid("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE"));
 
 //        findUniqueStart("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE");
-
-//        getSolutions("BAAHEAMFKPGLLHH");
 
         System.out.println("Total time: "+((System.nanoTime() - init) / 1000000)+"ms");
     }
