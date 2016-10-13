@@ -152,7 +152,6 @@ public class Board extends Application {
          */
         private void findInitialPlacement() {
             int mod = id - 'A';
-//            mod = initialList[mod];
             if (mod < 4) {
                 initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
                 if (mod % 2 != 0) initY = 40;
@@ -180,7 +179,6 @@ public class Board extends Application {
             setRotate((getRotate() + 60 * modifier) % 360);
             if (pieceOverlaps())
                 setWarning();
-          //  checkVictory();
         }
 
         /**
@@ -191,7 +189,6 @@ public class Board extends Application {
             setScaleY(getScaleY() * -1);
             if (pieceOverlaps())
                 setWarning();
-          // checkVictory();
         }
 
         /**
@@ -224,18 +221,16 @@ public class Board extends Application {
         private Circle getNearestPeg() {
             Circle n = null;
             double d = 1000;
-            int i=0;
+            int i = 0;
             for (Circle c : pegList) {
                 double distance = getDistanceTo(c.getLayoutX(), c.getLayoutY());
-//                System.out.println(distance);
                 if ( distance < d) {
                     d = distance;
                     n = c;
                     this.position=i;
                 }
-                i=i+1;
+                i = i + 1;
             }
-//            System.out.println("x: " + n.getLayoutX() + ", y: " + n.getLayoutY()); // debugging
             return n;
         }
 
@@ -249,10 +244,7 @@ public class Board extends Application {
             setLayoutY(n.getLayoutY() - PIECE_IMAGE_SIZE / 2);
 
             if (pieceOverlaps())
-               //setWarning();
                 snapHome();
-//            else
-//                placement += getPieceString();
         }
 
         /**
@@ -696,6 +688,10 @@ public class Board extends Application {
         System.out.println("...done");
     }
 
+    /**
+     * Loads solutions from a provided file in the assets folder.
+     * Though it ended up unused, code is taken from T.J. Crowder on StackExchange.
+     */
     private void loadSolutions() {
 //        try {
 //            try (FileInputStream in = new FileInputStream("assets/solutions.txt")) {
@@ -735,7 +731,7 @@ public class Board extends Application {
     public void start(Stage primaryStage) throws Exception {
         Board.primaryStage = primaryStage;
         primaryStage.setTitle("IQ Link");
-        loadSolutions();
+//        loadSolutions();
         setWelcomeScene();
         setMainScene();
 //        loadMusic();
