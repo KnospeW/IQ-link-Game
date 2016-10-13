@@ -172,7 +172,7 @@ public class Board extends Application {
          */
         private void findInitialPlacement() {
             int mod = id - 'A';
-            mod = initialList[mod];
+//            mod = initialList[mod];
             if (mod < 4) {
                 initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
                 if (mod % 2 != 0) initY = 40;
