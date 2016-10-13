@@ -471,7 +471,7 @@ public class Board extends Application {
      * @param allPieces If true, will place all pieces not in the placement string in their initial positions, unlocked.
      */
     private void createLockedPieces(String placement, Group g, boolean allPieces) {
-        if (!isPlacementValid(placement))
+        if (!placement.equals("")&&!isPlacementValid(placement))
             throw new IllegalArgumentException("Not a valid placement string for createLockedPieces");
         Map<Character,String> placementMap = new HashMap<>();
         for (int i = 0; i < placement.length() / 3; i++)
