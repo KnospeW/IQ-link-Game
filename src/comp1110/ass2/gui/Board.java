@@ -60,6 +60,8 @@ public class Board extends Application {
     /*
       Solutions array is set up as solution, easy, hard, expert [placements].
       Easy placements have 9 pieces, hard placements have 6 pieces, and expert placements have 4 pieces.
+      Placements have been made by hand, but given time and processing power, could be generated using findUniqueSolution
+        in LinkGame.
       Any solutions not starting with BAA are taken from Steve Blackburn.
      */
     private final String[][] solutionSet = {
@@ -69,9 +71,8 @@ public class Board extends Application {
             {"BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE",    "BAAEBDVCJODDHEAMFKPGLLHHIIC",  "BAAEBDVCJODDHEAMFK",   "BAAEBDVCJODD"},
             {"BAAEBGWCAGDFJEJRFEVGISHBLIHIJAUKHOLA",    "BAAEBGWCAGDFJEJRFEVGISHBLIH",  "BAAEBGWCAGDFJEJSHB",   "BAAJEJWCASHB"},
             {"BAAEBGUCAGDFLEHWFBPGGSHBNICKJEIKKHLJ",    "BAAEBGUCAGDFLEHWFBPGGSHBHLJ",  "BAAUCALEHPGGSHBHLJ",   "BAAEBGPGGHLJ"},
-            {"BAAEBGWCAGDFJEJRFEVGIHHDLIHSJIUKHPLH"}
+            {"BAAEBGWCAGDFJEJRFEVGIHHDLIHSJIUKHPLH",    "BAAEBGWCAJEJRFEVGIHHDLIHSJI",  "BAAWCARFEHHDLIHSJI",   "BAAJEJHHDRFE"}
     };
-    private int[] initialList;
 
     /**
      * The driving class behind the game. Contains anything to do with manipulating or querying a piece.
@@ -288,8 +289,8 @@ public class Board extends Application {
                 }
                 return false;
             }
-            else{return true;}
-
+            else
+                return true;
         }
 
         /**
