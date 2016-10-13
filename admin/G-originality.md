@@ -4,6 +4,7 @@ This two weeks:
 * The structure of getSolutions came from [Bob Carpenter](https://bob-carpenter.github.io/games/sudoku/java_sudoku.html).
 * The initial set of solutions come from Steve Blackburn's TestUtility.
 * Music is sourced from [Bensound](http://www.bensound.com/) and is distributed under the [Creative Commons license](http://www.bensound.com/licensing).
+* File reading code in Board is taken from [T.J. Crowder's answer](http://stackoverflow.com/a/7413900) to a question on StackExchange.
 * All the fonts come from http://zhongwen.laoxiezi.com/
 * Button made from https://dabuttonfactory.com/
 * Ideas of having different scenes and the method to deal with changing scene http://blog.csdn.net/lykangjia/article/details/8772964

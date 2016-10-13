@@ -19,6 +19,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import static comp1110.ass2.LinkGame.getSolutions;
@@ -51,43 +53,27 @@ public class Board extends Application {
     private String placement = "";
     private ArrayList<String> solutions = new ArrayList<>();
     private String startPlacement = "";
+    private boolean dynamicHints = false;
 
     private static Stage primaryStage;
     private Scene startScene, mainScene;
 
     /*
-    Easy has 8-10 placements.
-    Medium has 6-7 placements.
-    Hard has 3-5 placements.
-    Credit to Steve Blackburn for these placements.
+      Solutions array is set up as solution, easy, hard, expert [placements].
+      Easy placements have 9 pieces, hard placements have 6 pieces, and expert placements have 4 pieces.
+      Placements have been made by hand, but given time and processing power, could be generated using findUniqueSolution
+        in LinkGame.
+      Any solutions not starting with BAA are taken from Steve Blackburn.
      */
-    private final String[][] easyPlacements = {
-        {"KAFCBGUCAGDFLEFPFBBGESHBWIJKJA", "KAFCBGUCAGDFLEFPFBBGESHBWIJKJAHKLJLH"},
-        {"KAFCBGUCAGDFLEFPFBBGESHBOIA", "KAFCBGUCAGDFLEFPFBBGESHBOIAKJARKEJLH"},
-        {"KAFUBAICCPDALEFEFEQGHSHBNIB", "KAFUBAICCPDALEFEFEQGHSHBNIBCJFGKIRLE", "KAFUBAICCPDALEFEFEQGHSHBNIBCJFRKEGLI"},
-        {"KAFTBAICFRDCEELWFJJGDMHK", "KAFTBAICFRDCEELWFJJGDMHKCIGNJCPKEBLF"},
-        {"KAFCBGUCAGDFLEFPFBBGESHB", "KAFCBGUCAGDFLEFPFBBGESHBOIAKJARKEJLH", "KAFCBGUCAGDFLEFPFBBGESHBWIJKJAHKLJLH"}
+    private final String[][] solutionSet = {
+        //  SOLUTION                                    EASY                            HARD                    EXPERT
+            {"GAEWBABCDJDALEFMFCCGLUHBTIAQJCKKBILF",    "WBABCDMFCCGLUHBTIAQJCKKBILF",  "WBACGLTIAQJCKKBILF",   "WBACGLQJCKKB"},
+            {"BAAEBDVCJKDGSEBLFFWGBGHLNIKIJAPKFQLA",    "BAAEBDVCJKDGSEBLFFWGBGHLIJA",  "BAAEBDVCJKDGSEBLFF",   "BAAEBDVCJKDG"},
+            {"BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE",    "BAAEBDVCJODDHEAMFKPGLLHHIIC",  "BAAEBDVCJODDHEAMFK",   "BAAEBDVCJODD"},
+            {"BAAEBGWCAGDFJEJRFEVGISHBLIHIJAUKHOLA",    "BAAEBGWCAGDFJEJRFEVGISHBLIH",  "BAAEBGWCAGDFJEJSHB",   "BAAJEJWCASHB"},
+            {"BAAEBGUCAGDFLEHWFBPGGSHBNICKJEIKKHLJ",    "BAAEBGUCAGDFLEHWFBPGGSHBHLJ",  "BAAUCALEHPGGSHBHLJ",   "BAAEBGPGGHLJ"},
+            {"BAAEBGWCAGDFJEJRFEVGIHHDLIHSJIUKHPLH",    "BAAEBGWCAJEJRFEVGIHHDLIHSJI",  "BAAWCARFEHHDLIHSJI",   "BAAJEJHHDRFE"}
     };
-    private final String[][] hardPlacements = {
-        {"JABHBCBCGGDFIEKVFAFGG", "JABHBCBCGGDFIEKVFAFGGSHBXIAJJJUKHKLK"},
-        {"IAFBBGVCAJDJGEDQFEUGI", "IAFBBGVCAJDJGEDQFEUGIRHCIIHFJGNKFOLG", "IAFBBGVCAJDJGEDQFEUGIRHKIIHFJGNKFOLG"},
-        {"JACRBHQCHCDGDELVFJ", "JACRBHQCHCDGDELVFJBGESHBUIAFJEHKLGLL"},
-        {"KAAHBLTCAODEFEGMFC", "KAAHBLTCAODEFEGMFCEGERHGBIGVJCDKFJLF", "KAAHBLTCAODEFEGMFCEGERHGBIGVJIDKFJLF", "KAAHBLTCAODEFEGMFCEGEQHDBIGXJHDKFJLF", "KAAHBLTCAODEFEGMFCEGEVHBBIGXJADKFJLF"}
-    };
-    private final String[][] expertPlacements = {
-        {"IAFBBDRCEPDEWEB", "IAFBBDRCEPDEWEBSFJTGBFHGGILIJAQKIJLI"},
-        {"JADVBJBCJRDCDED", "JADVBJBCJRDCDEDHFEWGBFHEJILSJCOKLMLC", "JADVBJBCJRDCDEDSFBWGBFHEJILGJEOKLHLE"},
-        {"GAEWBABCDJDA", "GAEWBABCDJDALEFMFCCGLUHBTIAQJCKKBILF"},
-        {"JAAPBGVCJRDC", "JAAPBGVCJRDCDEDSFBWGBFHECIFAJDHKGOLF", "JAAPBGVCJRDCDEDSFBWGBFHECIFAJDOKFHLG", "JAAPBGVCJRDCHEFSFBWGBFHEGIICJDDKKOLF"},
-        {"KAFUBAHCI", "KAFUBAHCIPDALEFEFEQGHSHBWIJAJKGKLILI", "KAFUBAHCIPDALEFEFEQGHSHBWIJBJFGKEILI"}
-    };
-    private final String[][][] placements = {easyPlacements, hardPlacements, expertPlacements};
-    private final int[][] initialPlaces = { // TODO: Add more sets?
-            {5,2,7,4,1,11,8,0,6,9,3,10},
-            {8,1,10,4,0,6,2,9,5,7,3,11},
-            {0,5,8,3,10,11,9,4,2,6,7,1}
-    };
-    private int[] initialList;
 
     /**
      * The driving class behind the game. Contains anything to do with manipulating or querying a piece.
@@ -130,11 +116,7 @@ public class Board extends Application {
                 requestFocus();
             });
 
-            setOnMouseReleased(e -> {
-//                grabLocation();                                 // testing
-                snapPeg();
-              //  checkVictory();
-            });
+            setOnMouseReleased(e -> snapPeg());
 
             setOnKeyPressed(e -> {                              // due to limitations in the engine, pieces must first be dragged
                 if (e.getCode() == KeyCode.E)                   // before they can be rotated or flipped
@@ -143,8 +125,6 @@ public class Board extends Application {
                     rotatePiece(1);
                 if (e.getCode() == KeyCode.F)
                     flipPiece();
-
-                //System.out.println(hovering);
             });
 
             setOnScroll(e -> rotatePiece(1) );                  // alternate control to rotate piece
@@ -172,7 +152,6 @@ public class Board extends Application {
          */
         private void findInitialPlacement() {
             int mod = id - 'A';
-//            mod = initialList[mod];
             if (mod < 4) {
                 initX = mod * 2 * SQUARE_SIZE + SQUARE_SIZE * 3 / 2;
                 if (mod % 2 != 0) initY = 40;
@@ -200,7 +179,6 @@ public class Board extends Application {
             setRotate((getRotate() + 60 * modifier) % 360);
             if (pieceOverlaps())
                 setWarning();
-          //  checkVictory();
         }
 
         /**
@@ -211,7 +189,6 @@ public class Board extends Application {
             setScaleY(getScaleY() * -1);
             if (pieceOverlaps())
                 setWarning();
-          // checkVictory();
         }
 
         /**
@@ -244,18 +221,16 @@ public class Board extends Application {
         private Circle getNearestPeg() {
             Circle n = null;
             double d = 1000;
-            int i=0;
+            int i = 0;
             for (Circle c : pegList) {
                 double distance = getDistanceTo(c.getLayoutX(), c.getLayoutY());
-//                System.out.println(distance);
                 if ( distance < d) {
                     d = distance;
                     n = c;
                     this.position=i;
                 }
-                i=i+1;
+                i = i + 1;
             }
-//            System.out.println("x: " + n.getLayoutX() + ", y: " + n.getLayoutY()); // debugging
             return n;
         }
 
@@ -269,10 +244,7 @@ public class Board extends Application {
             setLayoutY(n.getLayoutY() - PIECE_IMAGE_SIZE / 2);
 
             if (pieceOverlaps())
-               //setWarning();
                 snapHome();
-//            else
-//                placement += getPieceString();
         }
 
         /**
@@ -303,15 +275,15 @@ public class Board extends Application {
                 placement = currPlacement;
                 if (currPlacement.length() == 36)
                     setVictoryScene();
-                if (currPlacement.length() >= 24) { // Can almost do 21, but there's a bit of lag when placing (0.3s computation time)
+                if (currPlacement.length() >= 21) { // Can almost do 21, but there's a bit of lag when placing (0.3s computation time)
                     String[] tmpSolutions = getSolutions(currPlacement);
-                    if (tmpSolutions.length > 0)
+                    if (tmpSolutions.length > 0 && dynamicHints)
                         loadHints(tmpSolutions[0]);
                 }
                 return false;
             }
-            else{return true;}
-
+            else
+                return true;
         }
 
         /**
@@ -440,21 +412,20 @@ public class Board extends Application {
             throw new IllegalArgumentException("Invalid difficulty " + difficulty);
 
         // Reset solution list on a new game.
-        if (solutions.size() > 0)
-            while (solutions.size() > 0)
-                solutions.remove(0);
+        while (solutions.size() > 0)
+            solutions.remove(0);
 
         Random r = new Random();
-        initialList = initialPlaces[r.nextInt(3)];
         int s;
 
-        if (difficulty == 3)
+        if (difficulty == 3) {
             placement = "";
-        else {
-            s = r.nextInt(placements[difficulty].length);
-            placement = placements[difficulty][s][0];
-            solutions.addAll(Arrays.asList(placements[difficulty][s]).subList(1, placements[difficulty][s].length));
-            loadHints(solutions.get(0));
+            dynamicHints = true;
+        } else {
+            s = r.nextInt(solutionSet.length);
+            placement = solutionSet[s][difficulty + 1];
+            solutions.add(solutionSet[s][0]);
+            loadHints(solutionSet[s][0]);
         }
         startPlacement = placement;
         primaryStage.setScene(mainScene);
@@ -571,6 +542,8 @@ public class Board extends Application {
      * @return The opening splash screen.
      */
     private Scene setWelcomeScene() {
+        System.out.println("Loading welcome splash...");
+
         Group start= new Group();
         Scene startScene = new Scene(start, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -593,6 +566,8 @@ public class Board extends Application {
         ImageButton normalMode = new ImageButton(4, 700);
         normalMode.setOnMousePressed(e -> makeInitialPlacement(3));
 
+        System.out.println(".buttons");
+
         // some hints for the player to click on the button to enter the game
         ImageView title = new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
         title.setLayoutX(0);
@@ -605,7 +580,10 @@ public class Board extends Application {
         start.getChildren().add(normalMode);
         start.getChildren().add(title);
 
+        System.out.println(".gui");
+
         this.startScene = startScene;
+        System.out.println("...done");
         return startScene;
     }
 
@@ -614,6 +592,8 @@ public class Board extends Application {
      * Written by Yicong and Alex.
      */
     private void setMainScene() {
+        System.out.println("Loading game screen...");
+
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
         root.getChildren().add(hints);
@@ -621,15 +601,18 @@ public class Board extends Application {
         root.getChildren().add(pieces);
         root.getChildren().add(controls);
         root.getChildren().add(warnings);
+        System.out.println(".resources");
 
         createBoard();
         loadInstructions();
         makeControls();
+        System.out.println(".gui");
 
         Text ins = new Text(20, 30, "Press 'I' for Instructions");
         ins.setFill(Color.DARKBLUE);
         ins.setFont(new Font(20));
         root.getChildren().add(ins);
+        System.out.println(".text");
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SLASH)
@@ -642,8 +625,10 @@ public class Board extends Application {
             if (e.getCode() == KeyCode.SLASH)   hints.setOpacity(0);
             if (e.getCode() == KeyCode.I)       root.getChildren().remove(instructions);
         });
+        System.out.println(".keys");
 
         mainScene = scene;
+        System.out.println("...done");
     }
 
     /**
@@ -651,17 +636,22 @@ public class Board extends Application {
      * Written by Alex.
      */
     private void setVictoryScene() {
+        System.out.println("Loading victory...");
+
         Group vic = new Group();
 
         Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
         bg.setOpacity(0.8);
         vic.getChildren().add(bg);
-//        vic.getChildren().add(controls);
+
+        System.out.println(".background");
 
         Text ins = new Text(BOARD_WIDTH / 2 - 100, BOARD_HEIGHT / 2 - 10, "You win!");
         ins.setFill(Color.DARKBLUE);
         ins.setFont(new Font(50));
         vic.getChildren().add(ins);
+
+        System.out.println(".text");
 
         Button returnButton = new Button("Return home");
         returnButton.setPrefWidth(150);
@@ -674,19 +664,63 @@ public class Board extends Application {
         });
         vic.getChildren().add(returnButton);
 
+        System.out.println(".button");
+
         root.getChildren().add(vic);
+        System.out.println("...done");
     }
 
     /**
      * Loads some BGM.
      * Written by Alex.
+     * Music is from Bensound and is distributed under the Creative Commons license.
      */
     private void loadMusic() {
+        System.out.println("Loading music...");
+
         MediaPlayer music = new MediaPlayer(new Media(Board.class.getResource(URI_BASE + "music.mp3").toString()));
+
         music.setAutoPlay(true);
         music.setOnEndOfMedia(() -> music.seek(Duration.ZERO));
         music.setVolume(0.2);
         music.play();
+
+        System.out.println("...done");
+    }
+
+    /**
+     * Loads solutions from a provided file in the assets folder.
+     * Though it ended up unused, code is taken from T.J. Crowder on StackExchange.
+     */
+    private void loadSolutions() {
+//        try {
+//            try (FileInputStream in = new FileInputStream("assets/solutions.txt")) {
+//                for (int i = 0; i < 100; i++) {
+//                    byte b = (byte) in.read();
+//                    System.out.println(b);
+//                }
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        System.out.println("Loading solutions...");
+
+        String line;
+        try (
+                InputStream fis = new FileInputStream("assets/solutions.txt");
+                InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+                BufferedReader br = new BufferedReader(isr)
+        ) {
+            while ((line = br.readLine()) != null) {
+                solutions.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("...done");
     }
 
     public static void main(String[] args) {
@@ -697,6 +731,7 @@ public class Board extends Application {
     public void start(Stage primaryStage) throws Exception {
         Board.primaryStage = primaryStage;
         primaryStage.setTitle("IQ Link");
+//        loadSolutions();
         setWelcomeScene();
         setMainScene();
 //        loadMusic();
