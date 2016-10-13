@@ -20,4 +20,3 @@ of our project implements the following features:
    "return home" that directs the user to the welcome scene.
  - In the game scene, we provide two buttons for the user. 'New game' directs the user to the welcome page and starts a completely new game.
    'Restart' will start with the same initial placement.
- 
