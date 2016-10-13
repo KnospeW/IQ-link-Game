@@ -479,7 +479,8 @@ public class LinkGame {
     /**
      * Finds all solutions to a given placement string and stores them in a provided array list.
      * Recurses on itself to pass continually built placement strings and solution arrays.
-     * Written by Alex.
+     * Structure inspired by Bob Carpenter, adapted by Alex.
+     *  https://bob-carpenter.github.io/games/sudoku/java_sudoku.html
      *
      * @param piece The initial piece to start searching from.
      * @param placement The initial valid piece placement string.
@@ -580,21 +581,99 @@ public class LinkGame {
                 }
             }
         }
-
         return false;
+    }
+
+    // findUniqueSolutions
+    /*
+    For any given input solution string;
+        remove one piece
+        run getSolutions
+        if it returns ONLY the solution string, it's a unique placement
+     */
+
+    /**
+     * Finds a list of placements that uniquely give the provided solution.
+     * NOT exhaustive; it runs a few iterations of removing a RANDOM piece to find placements.
+     * Written by Alex.
+     *
+     * @param solution A valid solution string.
+     * @return True if a placement is minimal (i.e., 4 pieces long), and false otherwise.
+     */
+    private static boolean findUniqueStart (String solution) {
+        int iterations = 20;
+
+        if (solution.length() <= 9)
+            return true;   // Stops us from testing 3-piece placements, which take forever.
+
+        ArrayList<String> uniquePlacement = new ArrayList<>();
+
+        for (int c = 0; c < iterations; c++) {
+            String tmp = removeRandomPiece(solution);   // Remove a piece.
+            if (getSolutions(tmp).length == 1) {        // Check if the updated placement has only one solution.
+                uniquePlacement.add(tmp);
+                System.out.println(tmp);
+                if (findUniqueStart(tmp))                // Recurse.
+                    return true;
+            }
+        }
+
+        System.out.println(uniquePlacement);            // No more placements, so let's print them.
+        return false;
+    }
+
+    /**
+     * Helper method for findUniqueStart. Removes a random piece from a solution string.
+     *
+     * @param solution A valid solution string.
+     * @return The same solution string, sans one piece.
+     */
+    private static String removeRandomPiece(String solution) {
+        Random r = new Random();
+        List<String> splitPieces = new ArrayList<>();
+        for (int i = 0; i < solution.length() / 3; i ++) {
+            splitPieces.add(solution.substring(i * 3, i * 3 + 3));
+        }
+
+        splitPieces.remove(r.nextInt(splitPieces.size()));
+        String rtn = "";
+        for (String s : splitPieces) {
+            rtn += s;
+        }
+
+        return rtn;
+    }
+
+    /**
+     * Helper method for findUniqueStart. Removes a given piece from a solution string.
+     *
+     * @param solution A valid solution string.
+     * @param piece A piece character.
+     * @return The same solution string, sans the provided piece.
+     */
+    private static String removePiece(String solution, char piece) {
+        List<String> splitPieces = new ArrayList<>();
+        for (int i = 0; i < solution.length() / 3; i ++) {
+            splitPieces.add(solution.substring(i * 3, i * 3 + 3));
+        }
+
+        String rtn = "";
+        for (String s : splitPieces)
+            if (s.charAt(1) != piece)
+                rtn += s;
+
+        return rtn;
     }
 
     public static void main(String[] args) {
         long init = System.nanoTime();
 
-        getSolutions("");
+//        getSolutions("");       // Get every solution possible.
 
-//        for (String[] s : SOLUTIONS_ONE) {
-//            long start = System.nanoTime();
-//            getSolutions(s[0]);
-//            System.out.println("That took "+((System.nanoTime() - start) / 1000000)+" ms");
-//            System.out.println("----------------");
-//        }
+        findUniqueStart("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE");
+//        System.out.println(removePiece(removePiece("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE",'B'), 'A'));
+
+//        getSolutions("BAAHEAMFKPGLLHH");
 
         System.out.println("Total time: "+((System.nanoTime() - init) / 1000000)+"ms");
     }
