@@ -53,6 +53,7 @@ public class Board extends Application {
     private String placement = "";
     private ArrayList<String> solutions = new ArrayList<>();
     private String startPlacement = "";
+    private boolean dynamicHints = false;
 
     private static Stage primaryStage;
     private Scene startScene, mainScene;
@@ -284,7 +285,7 @@ public class Board extends Application {
                     setVictoryScene();
                 if (currPlacement.length() >= 21) { // Can almost do 21, but there's a bit of lag when placing (0.3s computation time)
                     String[] tmpSolutions = getSolutions(currPlacement);
-                    if (tmpSolutions.length > 0)
+                    if (tmpSolutions.length > 0 && dynamicHints)
                         loadHints(tmpSolutions[0]);
                 }
                 return false;
@@ -425,9 +426,10 @@ public class Board extends Application {
         Random r = new Random();
         int s;
 
-        if (difficulty == 3)
+        if (difficulty == 3) {
             placement = "";
-        else {
+            dynamicHints = true;
+        } else {
             s = r.nextInt(solutionSet.length);
             placement = solutionSet[s][difficulty + 1];
             solutions.add(solutionSet[s][0]);
