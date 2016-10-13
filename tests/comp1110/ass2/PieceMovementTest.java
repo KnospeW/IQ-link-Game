@@ -8,7 +8,7 @@ import static comp1110.ass2.Orientation.*;
 import static org.junit.Assert.*;
 
 /**
- * Created by azphr on 15/09/16.
+ * Created by Alex on 15/09/16.
  */
 public class PieceMovementTest {
 

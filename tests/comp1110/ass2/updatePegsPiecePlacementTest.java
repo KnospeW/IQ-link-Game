@@ -7,7 +7,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by Administrator on 2016/9/17.
+ * Created by Yicong on 2016/9/17.
  */
 public class updatePegsPiecePlacementTest {
     @Test
