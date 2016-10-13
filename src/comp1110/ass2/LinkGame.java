@@ -519,10 +519,10 @@ public class LinkGame {
     public static void main(String[] args) {
         long init = System.nanoTime();
         String solution = "";
-        String placement = "BAAEBGPGGHLJ";
-        ArrayList<String> placements = new ArrayList<>();
-        findUniqueStart("BAAEBGWCAGDFJEJRFEVGIHHDLIHSJIUKHPLH", placements);
-        System.out.println(placements);
+        String placement = "BAAJEJHHDRFE";
+//        ArrayList<String> placements = new ArrayList<>();
+//        findUniqueStart(solution, placements);
+//        System.out.println(placements);
 
 //        System.out.println(isPlacementValid("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE"));
 
