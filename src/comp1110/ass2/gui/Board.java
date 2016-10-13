@@ -63,11 +63,12 @@ public class Board extends Application {
       Any solutions not starting with BAA are taken from Steve Blackburn.
      */
     private final String[][] solutionSet = {
-            {"GAEWBABCDJDALEFMFCCGLUHBTIAQJCKKBILF", "WBABCDMFCCGLUHBTIAQJCKKBILF", "WBACGLTIAQJCKKBILF", "WBACGLQJCKKB"},
-            {"BAAEBDVCJKDGSEBLFFWGBGHLNIKIJAPKFQLA", "BAAEBDVCJKDGSEBLFFWGBGHLIJA", "BAAEBDVCJKDGSEBLFF", "BAAEBDVCJKDG"},
-            {"BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE", "BAAEBDVCJODDHEAMFKPGLLHHIIC", "BAAEBDVCJODDHEAMFK", "BAAEBDVCJODD"},
-            {"BAAEBGWCAGDFJEJRFEVGISHBLIHIJAUKHOLA", "BAAEBGWCAGDFJEJRFEVGISHBLIH", "BAAEBGWCAGDFJEJSHB", "BAAJEJWCASHB"},
-            {"BAAEBGUCAGDFLEHWFBPGGSHBNICKJEIKKHLJ", "BAAEBGUCAGDFLEHWFBPGGSHBHLJ", "BAAUCALEHPGGSHBHLJ", "BAAEBGPGGHLJ"},
+        //  SOLUTION                                    EASY                            HARD                    EXPERT
+            {"GAEWBABCDJDALEFMFCCGLUHBTIAQJCKKBILF",    "WBABCDMFCCGLUHBTIAQJCKKBILF",  "WBACGLTIAQJCKKBILF",   "WBACGLQJCKKB"},
+            {"BAAEBDVCJKDGSEBLFFWGBGHLNIKIJAPKFQLA",    "BAAEBDVCJKDGSEBLFFWGBGHLIJA",  "BAAEBDVCJKDGSEBLFF",   "BAAEBDVCJKDG"},
+            {"BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE",    "BAAEBDVCJODDHEAMFKPGLLHHIIC",  "BAAEBDVCJODDHEAMFK",   "BAAEBDVCJODD"},
+            {"BAAEBGWCAGDFJEJRFEVGISHBLIHIJAUKHOLA",    "BAAEBGWCAGDFJEJRFEVGISHBLIH",  "BAAEBGWCAGDFJEJSHB",   "BAAJEJWCASHB"},
+            {"BAAEBGUCAGDFLEHWFBPGGSHBNICKJEIKKHLJ",    "BAAEBGUCAGDFLEHWFBPGGSHBHLJ",  "BAAUCALEHPGGSHBHLJ",   "BAAEBGPGGHLJ"},
             {"BAAEBGWCAGDFJEJRFEVGIHHDLIHSJIUKHPLH"}
     };
     private int[] initialList;
@@ -113,11 +114,7 @@ public class Board extends Application {
                 requestFocus();
             });
 
-            setOnMouseReleased(e -> {
-//                grabLocation();                                 // testing
-                snapPeg();
-              //  checkVictory();
-            });
+            setOnMouseReleased(e -> snapPeg());
 
             setOnKeyPressed(e -> {                              // due to limitations in the engine, pieces must first be dragged
                 if (e.getCode() == KeyCode.E)                   // before they can be rotated or flipped
@@ -126,8 +123,6 @@ public class Board extends Application {
                     rotatePiece(1);
                 if (e.getCode() == KeyCode.F)
                     flipPiece();
-
-                //System.out.println(hovering);
             });
 
             setOnScroll(e -> rotatePiece(1) );                  // alternate control to rotate piece
