@@ -19,6 +19,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import static comp1110.ass2.LinkGame.getSolutions;
@@ -571,6 +573,8 @@ public class Board extends Application {
      * @return The opening splash screen.
      */
     private Scene setWelcomeScene() {
+        System.out.println("Loading welcome splash...");
+
         Group start= new Group();
         Scene startScene = new Scene(start, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -593,6 +597,8 @@ public class Board extends Application {
         ImageButton normalMode = new ImageButton(4, 700);
         normalMode.setOnMousePressed(e -> makeInitialPlacement(3));
 
+        System.out.println(".buttons");
+
         // some hints for the player to click on the button to enter the game
         ImageView title = new ImageView(new Image(Board.class.getResource(URI_BASE+"title.jpg").toString()));
         title.setLayoutX(0);
@@ -605,7 +611,10 @@ public class Board extends Application {
         start.getChildren().add(normalMode);
         start.getChildren().add(title);
 
+        System.out.println(".gui");
+
         this.startScene = startScene;
+        System.out.println("...done");
         return startScene;
     }
 
@@ -614,6 +623,8 @@ public class Board extends Application {
      * Written by Yicong and Alex.
      */
     private void setMainScene() {
+        System.out.println("Loading game screen...");
+
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
         root.getChildren().add(pegs);
         root.getChildren().add(hints);
@@ -621,15 +632,18 @@ public class Board extends Application {
         root.getChildren().add(pieces);
         root.getChildren().add(controls);
         root.getChildren().add(warnings);
+        System.out.println(".resources");
 
         createBoard();
         loadInstructions();
         makeControls();
+        System.out.println(".gui");
 
         Text ins = new Text(20, 30, "Press 'I' for Instructions");
         ins.setFill(Color.DARKBLUE);
         ins.setFont(new Font(20));
         root.getChildren().add(ins);
+        System.out.println(".text");
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SLASH)
@@ -642,8 +656,10 @@ public class Board extends Application {
             if (e.getCode() == KeyCode.SLASH)   hints.setOpacity(0);
             if (e.getCode() == KeyCode.I)       root.getChildren().remove(instructions);
         });
+        System.out.println(".keys");
 
         mainScene = scene;
+        System.out.println("...done");
     }
 
     /**
@@ -651,17 +667,22 @@ public class Board extends Application {
      * Written by Alex.
      */
     private void setVictoryScene() {
+        System.out.println("Loading victory...");
+
         Group vic = new Group();
 
         Rectangle bg = new Rectangle(BOARD_WIDTH, BOARD_HEIGHT, Color.WHITE);
         bg.setOpacity(0.8);
         vic.getChildren().add(bg);
-//        vic.getChildren().add(controls);
+
+        System.out.println(".background");
 
         Text ins = new Text(BOARD_WIDTH / 2 - 100, BOARD_HEIGHT / 2 - 10, "You win!");
         ins.setFill(Color.DARKBLUE);
         ins.setFont(new Font(50));
         vic.getChildren().add(ins);
+
+        System.out.println(".text");
 
         Button returnButton = new Button("Return home");
         returnButton.setPrefWidth(150);
@@ -674,19 +695,59 @@ public class Board extends Application {
         });
         vic.getChildren().add(returnButton);
 
+        System.out.println(".button");
+
         root.getChildren().add(vic);
+        System.out.println("...done");
     }
 
     /**
      * Loads some BGM.
      * Written by Alex.
+     * Music is from Bensound and is distributed under the Creative Commons license.
      */
     private void loadMusic() {
+        System.out.println("Loading music...");
+
         MediaPlayer music = new MediaPlayer(new Media(Board.class.getResource(URI_BASE + "music.mp3").toString()));
+
         music.setAutoPlay(true);
         music.setOnEndOfMedia(() -> music.seek(Duration.ZERO));
         music.setVolume(0.2);
         music.play();
+
+        System.out.println("...done");
+    }
+
+    private void loadSolutions() {
+//        try {
+//            try (FileInputStream in = new FileInputStream("assets/solutions.txt")) {
+//                for (int i = 0; i < 100; i++) {
+//                    byte b = (byte) in.read();
+//                    System.out.println(b);
+//                }
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        System.out.println("Loading solutions...");
+
+        String line;
+        try (
+                InputStream fis = new FileInputStream("assets/solutions.txt");
+                InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+                BufferedReader br = new BufferedReader(isr)
+        ) {
+            while ((line = br.readLine()) != null) {
+                solutions.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("...done");
     }
 
     public static void main(String[] args) {
@@ -697,6 +758,7 @@ public class Board extends Application {
     public void start(Stage primaryStage) throws Exception {
         Board.primaryStage = primaryStage;
         primaryStage.setTitle("IQ Link");
+        loadSolutions();
         setWelcomeScene();
         setMainScene();
 //        loadMusic();
