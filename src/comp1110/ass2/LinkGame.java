@@ -128,7 +128,7 @@ public class LinkGame {
         int colBr1 = br1 % 6 + 1;
         int rowBr2 = br2 / 6 + 1;
         int colBr2 = br2 % 6 + 1;
-        //if the column and row are not ajacent or the index out of 0-23 it is offgrid
+        //if the column and row are not ajacent or the index out of 0-23 it is off-grid
         if (Math.abs(rowBr1 - row) > 1 || Math.abs(colBr1 - col) > 1 || br1 > 23 || br1 < 0) {
             br1 = -1;
         }
@@ -172,7 +172,7 @@ public class LinkGame {
         for (int i = 0; i < 3; i++) {
             if (pieceInfo[3 * i + 2].equals("BALL")) {
                 threeStates[i * 6] = 1;  // the first element indicates whether a ball exists
-                if (orientation <= 5) {                 //rotating if no openings and connections doesn't change,if have openings, opengings should rotates
+                if (orientation <= 5) {                 //rotating if no openings and connections doesn't change,if have openings, openings should rotates
                     if (!pieceInfo[3 * i + 3].equals("0"))
                         threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
                     if (!pieceInfo[3 * i + 4].equals("0"))
@@ -419,7 +419,7 @@ public class LinkGame {
                 // Write out results to solutions.txt.
 //                FileWriter writer = null;
 //                try {
-//                    writer = new FileWriter("solutions.txt", true);
+//                    writer = new FileWriter("assets/solutions.txt", true);
 //                    writer.write(placement);
 //                } catch (IOException e) { e.printStackTrace(); }
 //                finally {
@@ -429,7 +429,6 @@ public class LinkGame {
 //                    } catch (IOException e) { e.printStackTrace(); }
 //                }
                 solutions.add(placement);
-                System.out.println(placement);
             }
 //            return true;
             /*
@@ -477,41 +476,6 @@ public class LinkGame {
         // there's no point continuing.
         return false;
     }
-
-    private static boolean findSolution(String placement, ArrayList<String> solutions) {
-        ArrayList<Character> openPegs = new ArrayList<>();
-        List ringPieces = Arrays.asList('B','C','D','E','F','H');
-        for (char p = 'A'; p <= 'X'; p++)
-            openPegs.add(p);
-        for (int i = 0; i < placement.length() / 3; i++)
-            if (ringPieces.contains(placement.charAt(i * 3 + 1)))
-                openPegs.remove(Character.valueOf(placement.charAt(i*3)));
-
-        char lastPiece = placement.charAt(placement.length() - 2);
-        for (char piece = lastPiece; piece <= 'L'; piece++) {
-//            for (char peg = 'A'; peg <= 'X'; peg++) {
-            for (char peg : openPegs) {
-                for (char rot = 'A'; rot <= 'L'; rot++) {
-                    if (isPlacementValid(placement) && placement.length() == 36) {
-                        solutions.add(placement);
-                        return true;
-                    }
-                    if (isPlacementValid(placement + "" + peg + piece + rot))
-                        if (findSolution(placement + "" + peg + piece + rot, solutions))
-                            return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    // findUniqueSolutions
-    /*
-    For any given input solution string;
-        remove one piece
-        run getSolutions
-        if it returns ONLY the solution string, it's a unique placement
-     */
 
     /**
      * Finds a list of placements that uniquely give the provided solution.
