@@ -53,30 +53,21 @@ public class LinkGame {
      * @return True if the placement is well-formed
      */
     static boolean isPlacementWellFormed(String placement) {
-        if (placement==null||placement.equals("") || placement.length() % 3 != 0)
+        if (placement == null || placement.equals("") || placement.length() % 3 != 0)
             return false;
 
         String[] s = new String[placement.length() / 3];  //divide the string placement into sets of 3 characters
 
-        for (int i = 0; i < placement.length() / 3; i++) {
+        for (int i = 0; i < placement.length() / 3; i++)
             s[i] = placement.substring(i * 3, i * 3 + 3);      //placement to piece
-        }
-        for (String str : s) {
+        for (String str : s)
             if (!isPiecePlacementWellFormed(str))
                 return false;
-        }
 
-        //List<String> list = Arrays.asList(s);        //to list
-        Set set = new HashSet();
+        HashSet set = new HashSet();
 
-        for (String str : s) {              //hashset without duplicate,compare hash with the length of String array
-//                set.add(list.get(i));
+        for (String str : s)                //hash set without duplicate,compare hash with the length of String array
             set.add(str.charAt(1));
-        }
-//            if (set.size()==s.length)
-//                return true;                     //if the number of members between hashset and
-//            else                                 //string array are not the same.has duplicate
-//                return false;
         return set.size() == s.length;          // tighter form
 
     }
@@ -100,13 +91,11 @@ public class LinkGame {
         int[] EvenNeighbour = {-1, -6, -5, +1, +7, +6};
         int br1, br2;
 
-        /**
-         *     1    2         neighbours records the origin's neighbour pegs in this order,
-         *  0  origin  3      pay attention that the relationships are not the same
-         *     5    4         for odd and even rows
+        /*
+             1    2         neighbours records the origin's neighbour pegs in this order,
+          0  origin  3      pay attention that the relationships are not the same
+             5    4         for odd and even rows
          */
-//        Piece piece=Piece.valueOf(piecePlacement.substring(1,2));
-//        piece.setOrientation(Orientation.valueOf('O'+piecePlacement.substring(2,3)));
         int origin = piecePlacement.charAt(0) - 'A';
         int PieceType = piecePlacement.charAt(1) - 'A';
         int orientation = piecePlacement.charAt(2) - 'A';
@@ -124,7 +113,7 @@ public class LinkGame {
             else                        // a v type
                 br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(orientation + 1) % 6]) : (origin + OddNeighbour[(orientation + 1) % 6]);
         } else {
-            orientation = orientation - 6;      //flip change the start like the postion 2 will flip to 4, and 1 flip to 5
+            orientation = orientation - 6;      //flip change the start like the position 2 will flip to 4, and 1 flip to 5
             br1 = (row % 2 == 0) ? (origin + EvenNeighbour[orientation]) : (origin + OddNeighbour[orientation]);
             if (PieceType < 3)
                 br2 = (row % 2 == 0) ? (origin + EvenNeighbour[(orientation + 3) % 6]) : (origin + OddNeighbour[(orientation + 3) % 6]);
@@ -135,15 +124,15 @@ public class LinkGame {
         }
 
         // we should judge whether it's off the grid
-        int rowbr1 = br1 / 6 + 1;
-        int colbr1 = br1 % 6 + 1;
-        int rowbr2 = br2 / 6 + 1;
-        int colbr2 = br2 % 6 + 1;
+        int rowBr1 = br1 / 6 + 1;
+        int colBr1 = br1 % 6 + 1;
+        int rowBr2 = br2 / 6 + 1;
+        int colBr2 = br2 % 6 + 1;
         //if the column and row are not ajacent or the index out of 0-23 it is offgrid
-        if (Math.abs(rowbr1 - row) > 1 || Math.abs(colbr1 - col) > 1 || br1 > 23 || br1 < 0) {
+        if (Math.abs(rowBr1 - row) > 1 || Math.abs(colBr1 - col) > 1 || br1 > 23 || br1 < 0) {
             br1 = -1;
         }
-        if (Math.abs(rowbr2 - row) > 1 || Math.abs(colbr2 - col) > 1 || br2 > 23 || br2 < 0) {
+        if (Math.abs(rowBr2 - row) > 1 || Math.abs(colBr2 - col) > 1 || br2 > 23 || br2 < 0) {
             br2 = -1;
         }
         PegLocations[0] = br1;
@@ -163,122 +152,147 @@ public class LinkGame {
      * @return An integer array containing the states for the origin and branch segments
      */
     static int[] updatePegsPiecePlacement(String piecePlacement) {
-        //three states will contain the states for three pegs
-        // 0-5 for the peg of origin, 6-11 for branch1,12-17 for branch2
-        //each 6 digits have the same meaning of the pegs state
-       /* _ _ _ _ _ _ an int array first 3 for ball and last 3 for ring
-        _ _ _ the first digits 1/0 indicates whether there exists a ball/ring
-        the second and third one indicates the direction of openings and connections
-
-        2    3
-        1        4
-        6   5
-                */
-        int[] threestates = new int[18];
+       /*
+         three states will contain the states for three pegs
+         0-5 for the peg of origin, 6-11 for branch1,12-17 for branch2
+         each 6 digits have the same meaning of the pegs state
+         _ _ _ _ _ _ an int array first 3 for ball and last 3 for ring
+         _ _ _ the first digits 1/0 indicates whether there exists a ball/ring
+         the second and third one indicates the direction of openings and connections
+           2  3
+         1      4
+           6  5
+        */
+        int[] threeStates = new int[18];
         Piece currPiece = Piece.valueOf(piecePlacement.substring(1, 2)); // initiate the specific piece
         int orientation = piecePlacement.charAt(2) - 'A';           //orientation is presented as a int in 0-11
-                                                        //  Orientation currOrientation=Orientation.valueOf('O'+piecePlacement.substring(2,3));
         String[] pieceInfo = currPiece.getPieceInfo();
-                                                //   for (String s : pieceInfo)
-                                                //   System.out.println(s);
         // do for three times to get the state of three components in one piece, the order
         // the function behind is to update the states of each ball/ring
         for (int i = 0; i < 3; i++) {
             if (pieceInfo[3 * i + 2].equals("BALL")) {
-                threestates[i * 6] = 1;  // the first element indicates whether a ball exists
+                threeStates[i * 6] = 1;  // the first element indicates whether a ball exists
                 if (orientation <= 5) {                 //rotating if no openings and connections doesn't change,if have openings, opengings should rotates
                     if (!pieceInfo[3 * i + 3].equals("0"))
-                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
+                        threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
                     if (!pieceInfo[3 * i + 4].equals("0"))
-                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
+                        threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
                 } else {
                     orientation = orientation - 6;    // it's a flip, first flip and then rotate for orientation times
                     // orientation 1,4 no change when flip, 3,5 exchange and 2.6 exchange when flip
                     // so the orientation 6 indicates flip, other will first flip then rotates
 
                     // first do for the second element in the state
-                    if (pieceInfo[3 * i + 3].equals("1") || pieceInfo[3 * i + 3].equals("4"))
-                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
-                    else if (pieceInfo[3 * i + 3].equals("3"))
-                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 3].equals("5"))
-                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 3].equals("2"))
-                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 3].equals("6"))
-                        threestates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
-                    else
-                        //no opening or connection, no change
-                        threestates[i * 6 + 1] = 0;
+                    switch (pieceInfo[3 * i + 3]) {
+                        case "2":
+                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
+                            break;
+                        case "3":
+                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
+                            break;
+                        case "4":
+                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
+                            break;
+                        case "5":
+                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
+                            break;
+                        case "6":
+                            threeStates[i * 6 + 1] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
+                            break;
+                        default:
+                            //no opening or connection, no change
+                            threeStates[i * 6 + 1] = 0;
+                            break;
+                    }
 
                     // then do for the third element in the states, this is just for components with two openings and connections
-                    if (pieceInfo[3 * i + 4].equals("1") || pieceInfo[3 * i + 4].equals("4"))
-                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
-                    else if (pieceInfo[3 * i + 4].equals("3"))
-                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 4].equals("5"))
-                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 4].equals("2"))
-                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 4].equals("6"))
-                        threestates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
-                    else
-                        threestates[i * 6 + 2] = 0;
+                    switch (pieceInfo[3 * i + 4]) {
+                        case "2":
+                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
+                            break;
+                        case "3":
+                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
+                            break;
+                        case "4":
+                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
+                            break;
+                        case "5":
+                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
+                            break;
+                        case "6":
+                            threeStates[i * 6 + 2] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
+                            break;
+                        default:
+                            threeStates[i * 6 + 2] = 0;
+                            break;
+                    }
 
                     orientation = orientation + 6;
                 }
-                if (threestates[i * 6 + 1] == 0 && (!pieceInfo[i * 3 + 3].equals("0")))
-                    threestates[i * 6 + 1] = 6;
-                if (threestates[i * 6 + 2] == 0 && (!pieceInfo[i * 3 + 4].equals("0")))
-                    threestates[i * 6 + 2] = 6;
+                if (threeStates[i * 6 + 1] == 0 && (!pieceInfo[i * 3 + 3].equals("0")))
+                    threeStates[i * 6 + 1] = 6;
+                if (threeStates[i * 6 + 2] == 0 && (!pieceInfo[i * 3 + 4].equals("0")))
+                    threeStates[i * 6 + 2] = 6;
             } else {
                 // if the component is a ring, the same thing but the update 3,4,5 of the state array
-                threestates[i * 6 + 3] = 1;
+                threeStates[i * 6 + 3] = 1;
                 if (orientation <= 5) {
                     if (!pieceInfo[3 * i + 3].equals("0"))
-                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
+                        threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
                     if (!pieceInfo[3 * i + 4].equals("0"))
-                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
+                        threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
                 } else {
                     orientation = orientation - 6;
-                    if (pieceInfo[3 * i + 3].equals("1") || pieceInfo[3 * i + 3].equals("4"))
-                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
-                    else if (pieceInfo[3 * i + 3].equals("3"))
-                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 3].equals("5"))
-                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 3].equals("2"))
-                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 3].equals("6"))
-                        threestates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
-                    else
-                        threestates[i * 6 + 4] = 0;
-                    if (pieceInfo[3 * i + 4].equals("1") || pieceInfo[3 * i + 4].equals("4"))
-                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
-                    else if (pieceInfo[3 * i + 4].equals("3"))
-                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 4].equals("5"))
-                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 4].equals("2"))
-                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
-                    else if (pieceInfo[3 * i + 4].equals("6"))
-                        threestates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
-                    else
-                        threestates[i * 6 + 5] = 0;
+                    switch (pieceInfo[3 * i + 3]) {
+                        case "2":
+                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 4 + orientation) % 6;
+                            break;
+                        case "3":
+                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + 2 + orientation) % 6;
+                            break;
+                        case "4":
+                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) + orientation) % 6;
+                            break;
+                        case "5":
+                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 2 + orientation) % 6;
+                            break;
+                        case "6":
+                            threeStates[i * 6 + 4] = (Integer.parseInt(pieceInfo[3 * i + 3]) - 4 + orientation) % 6;
+                            break;
+                        default:
+                            threeStates[i * 6 + 4] = 0;
+                            break;
+                    }
+                    switch (pieceInfo[3 * i + 4]) {
+                        case "2":
+                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 4 + orientation) % 6;
+                            break;
+                        case "3":
+                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + 2 + orientation) % 6;
+                            break;
+                        case "4":
+                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) + orientation) % 6;
+                            break;
+                        case "5":
+                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 2 + orientation) % 6;
+                            break;
+                        case "6":
+                            threeStates[i * 6 + 5] = (Integer.parseInt(pieceInfo[3 * i + 4]) - 4 + orientation) % 6;
+                            break;
+                        default:
+                            threeStates[i * 6 + 5] = 0;
+                            break;
+                    }
                     orientation = orientation + 6;
                 }
                 //states should contains direction of 1 2 3 4 5 6 but 6%6=0 so if it is 6, the chance is that it should be 6 not zero
-                if (threestates[i * 6 + 4] == 0 && (!pieceInfo[i * 3 + 3].equals("0")))
-                    threestates[i * 6 + 4] = 6;
-                if (threestates[i * 6 + 5] == 0 && (!pieceInfo[i * 3 + 4].equals("0")))
-                    threestates[i * 6 + 5] = 6;
-
-
+                if (threeStates[i * 6 + 4] == 0 && (!pieceInfo[i * 3 + 3].equals("0")))
+                    threeStates[i * 6 + 4] = 6;
+                if (threeStates[i * 6 + 5] == 0 && (!pieceInfo[i * 3 + 4].equals("0")))
+                    threeStates[i * 6 + 5] = 6;
             }
         }
-//        for (int s : threestates)
-//            System.out.println(s);
-        return threestates;
+        return threeStates;
     }
 
     /**
@@ -289,161 +303,71 @@ public class LinkGame {
      * @param placement A placement string
      * @return True if the placement is valid
      */
-
-//    public static boolean isPlacementValid(String placement) {
-//        ArrayList<Pegs> pegs = new ArrayList<>();
-//        for (char peg = 'A'; peg <= 'X'; peg++) pegs.add(new Pegs(new int[]{0, 0, 0, 0, 0, 0}));
-//
-//        if (!isPlacementWellFormed(placement))
-//            return false;
-//        else {
-//            String[] pieces = new String[placement.length() / 3];
-//            for (int i = 0; i < placement.length() / 3; i++) pieces[i] = placement.substring(i * 3, i * 3 + 3);
-//
-//            for (String piecePlacement : pieces) {
-//                int[] pegIndex = getPegsForPiecePlacement(piecePlacement);
-//                if (piecePlacement.charAt(0) < 0 || piecePlacement.charAt(0) > 23)
-//                    return false;
-//                int tmp = pegIndex[0]; pegIndex[0] = pegIndex[1]; pegIndex[1] = tmp;
-//
-//                int[] updateStates = updatePegsPiecePlacement(piecePlacement);
-//                for (int i = 0; i < 3; i++) {
-//                    int index = pegIndex[i];
-//                    int[] currStates = pegs.get(index).getStateArray();
-//                    int[] updatePegStates = Arrays.copyOfRange(updateStates, i * 6, i * 6 + 6);
-//
-//                    if (updatePegStates[0] == 1)            // BALL
-//                        if (currStates[0] == 0) {
-//                            if (currStates[3] == 0
-//                                    || (currStates[3] == 1
-//                                        && (currStates[4] == updatePegStates[1]
-//                                        && currStates[5] == updatePegStates[2]
-//                                    ) || (currStates[4] == updatePegStates[2]
-//                                        && currStates[5] == updatePegStates[1]
-//                                        || (currStates[4] == updatePegStates[1]
-//                                            && updatePegStates[2] == 0)
-//                                        || (currStates[5] == updatePegStates[1]
-//                                            && updatePegStates[2] == 0)))) {
-//                                System.arraycopy(currStates, 3, updatePegStates, 3, 3);
-//                                pegs.get(index).updateStates(updatePegStates);
-//                            } else
-//                                return false;
-//                        } else
-//                            return false;
-//                    else if (updatePegStates[3] == 1) {     // RING
-//                        if (currStates[3] == 0) {
-//                            if (currStates[0] == 0
-//                                    || (currStates[0] == 1
-//                                    && (currStates[1] == updatePegStates[4]
-//                                    && currStates[2] == updatePegStates[5]
-//                            ) || (currStates[1] == updatePegStates[5]
-//                                    && currStates[2] == updatePegStates[4]
-//                                    || (currStates[1] == updatePegStates[4]
-//                                    && updatePegStates[2] == 0)
-//                                    || (currStates[1] == updatePegStates[5]
-//                                    && updatePegStates[2] == 0)))) {
-//                                System.arraycopy(currStates, 0, updatePegStates, 0, 3);
-//                                pegs.get(index).updateStates(updatePegStates);
-//                            } else
-//                                return false;
-//                        } else
-//                            return false;
-//                    }
-//                }
-//            }
-//            return true;
-//        }
-//    }
-
     public static boolean isPlacementValid(String placement) {
         // first set all the pegs states is{0,0,0,0,0,0}
-         int[] pegstates=new int[6];
-         Pegs a= new Pegs(pegstates);     Pegs b= new Pegs(pegstates);  Pegs c= new Pegs(pegstates);   Pegs d= new Pegs(pegstates);
-         Pegs e= new Pegs(pegstates);     Pegs f= new Pegs(pegstates);  Pegs g= new Pegs(pegstates);   Pegs h= new Pegs(pegstates);
-         Pegs ii= new Pegs(pegstates);    Pegs jj= new Pegs(pegstates); Pegs kk= new Pegs(pegstates);  Pegs l= new Pegs(pegstates);
-         Pegs m= new Pegs(pegstates);     Pegs n= new Pegs(pegstates);  Pegs o= new Pegs(pegstates);   Pegs p= new Pegs(pegstates);
-         Pegs q= new Pegs(pegstates);     Pegs r= new Pegs(pegstates);  Pegs s= new Pegs(pegstates);   Pegs t= new Pegs(pegstates);
-         Pegs u= new Pegs(pegstates);     Pegs v= new Pegs(pegstates);  Pegs w= new Pegs(pegstates);   Pegs x= new Pegs(pegstates);
+         int[] pegStates=new int[6];
+         Pegs a= new Pegs(pegStates);     Pegs b= new Pegs(pegStates);  Pegs c= new Pegs(pegStates);   Pegs d= new Pegs(pegStates);
+         Pegs e= new Pegs(pegStates);     Pegs f= new Pegs(pegStates);  Pegs g= new Pegs(pegStates);   Pegs h= new Pegs(pegStates);
+         Pegs ii= new Pegs(pegStates);    Pegs jj= new Pegs(pegStates); Pegs kk= new Pegs(pegStates);  Pegs l= new Pegs(pegStates);
+         Pegs m= new Pegs(pegStates);     Pegs n= new Pegs(pegStates);  Pegs o= new Pegs(pegStates);   Pegs p= new Pegs(pegStates);
+         Pegs q= new Pegs(pegStates);     Pegs r= new Pegs(pegStates);  Pegs s= new Pegs(pegStates);   Pegs t= new Pegs(pegStates);
+         Pegs u= new Pegs(pegStates);     Pegs v= new Pegs(pegStates);  Pegs w= new Pegs(pegStates);   Pegs x= new Pegs(pegStates);
          Pegs[] pegs = {a,b,c,d,e,f,g,h,ii,jj,kk,l,m,n,o,p,q,r,s,t,u,v,w,x};
 
-        if (!isPlacementWellFormed(placement)) {
+        if (!isPlacementWellFormed(placement))
             return false;
-        } else {
+        else {
             String[] str = new String[placement.length() / 3];  //divide the string placement into sets of 3 characters
-            for (int mm= 0; mm < placement.length() / 3; mm++) {
+            for (int mm= 0; mm < placement.length() / 3; mm++)
                 str[mm] = placement.substring(mm * 3, mm * 3 + 3);      //placement to piece
-            }
+
             for (String piecePlacement : str) {
-//                System.out.println(piecePlacement);
-               // System.out.println(piecePlacement);
-                int[] pegindex = getPegsForPiecePlacement(piecePlacement);   // get the peg number for each piece, the order is br1,origin,br2
-                for(int pegposition:pegindex)
-                {
-                    if(pegposition<0||pegposition>23)            //offgrid is not good
+                int[] pegIndex = getPegsForPiecePlacement(piecePlacement);   // get the peg number for each piece, the order is br1,origin,br2
+                for(int pegPosition:pegIndex)
+                    if(pegPosition<0||pegPosition>23)            //off-grid is not good
                         return false;
-                }
-                int temp=pegindex[0];
-                pegindex[0]=pegindex[1];
-                pegindex[1]=temp;
-                 //exchange the position of br1 and origin to make the order become origin,br1,br2, the same with threestates from updatepegsstate
-              //  System.out.println(Arrays.toString(pegindex));
+
+                int temp=pegIndex[0];
+                pegIndex[0]=pegIndex[1];
+                pegIndex[1]=temp;
+
+                 //exchange the position of br1 and origin to make the order become origin,br1,br2, the same with threeStates from updatePegsState
                 int[] updateStates=updatePegsPiecePlacement(piecePlacement);
-                for(int i=0;i<3;i++)         // do for three components
-                {
-                    int index= pegindex[i];
+                for(int i=0;i<3;i++) {       // do for three components
+                    int index= pegIndex[i];
                     int[] currStates=pegs[index].getStateArray();    //the current states of the peg
                     int[] updatePegStates= Arrays.copyOfRange(updateStates,i*6,i*6+6);  //the states for each component
-                 //   System.out.println(Arrays.toString(currStates));
-                  //  System.out.println(Arrays.toString(updatePegStates));
                     if(updatePegStates[0]==1)                //the component is a ball
                     {
                         // the current states shouldn't involve a ball
                         if (currStates[0]==0) {
-                            if(currStates[3]==0||(currStates[3]==1&&(currStates[4]==updatePegStates[1]&&currStates[5]==updatePegStates[2])||(currStates[4]==updatePegStates[2]&&currStates[5]==updatePegStates[1]||(currStates[4]==updatePegStates[1]&&updatePegStates[2]==0)||(currStates[5]==updatePegStates[1]&&updatePegStates[2]==0))))
-                            {
+                            if(currStates[3]==0||(currStates[3]==1&&(currStates[4]==updatePegStates[1]&&currStates[5]==updatePegStates[2])||(currStates[4]==updatePegStates[2]&&currStates[5]==updatePegStates[1]||(currStates[4]==updatePegStates[1]&&updatePegStates[2]==0)||(currStates[5]==updatePegStates[1]&&updatePegStates[2]==0)))) {
                                   //the current states can involve a ring with the same direction. notice that the order of the two openings doesn't matter.
                                  // so the judgement involve two different situations
-                                   for(int j=3;j<6;j++)
-                                    {
-                                        updatePegStates[j]=currStates[j];        //if the components is ok, contitnue and update the states,the first 3 is the new component indicates a ball
-                                                                                // the second 3 should keep the original current states where the last 3 indicates a ring
-                                    }
-                                    pegs[index].updateStates(updatePegStates);
+                                System.arraycopy(currStates, 3, updatePegStates, 3, 3);
+                                pegs[index].updateStates(updatePegStates);
 
-                                     //change the pegs states
+                                //change the pegs states
 
-                            }
-                            else
+                            } else
                                 return false;
-                        }
-                        else
+                        } else
                             return false;
-                    }
-                    else if(updatePegStates[3]==1)       //ring is also the same
-                    {
+                    } else if(updatePegStates[3]==1) {       //ring is also the same
                         if (currStates[3]==0) {
-                            if(currStates[0]==0||(currStates[0]==1&&(currStates[1]==updatePegStates[4]&&currStates[2]==updatePegStates[5])||(currStates[1]==updatePegStates[5]&&currStates[2]==updatePegStates[4]||(currStates[1]==updatePegStates[4]&&currStates[2]==0)||(currStates[1]==updatePegStates[5]&&currStates[2]==0))))
-
-                            {
-                                    for(int k=0;k<3;k++)
-                                    {
-                                        updatePegStates[k]=currStates[k];
-                                    }
-                                    pegs[index].updateStates(updatePegStates);
-                            }
-                            else
+                            if(currStates[0]==0||(currStates[0]==1&&(currStates[1]==updatePegStates[4]&&currStates[2]==updatePegStates[5])||(currStates[1]==updatePegStates[5]&&currStates[2]==updatePegStates[4]||(currStates[1]==updatePegStates[4]&&currStates[2]==0)||(currStates[1]==updatePegStates[5]&&currStates[2]==0)))) {
+                                System.arraycopy(currStates, 0, updatePegStates, 0, 3);
+                                pegs[index].updateStates(updatePegStates);
+                            } else
                                 return false;
-                        }
-                        else
+                        } else
                             return false;
 
                     }
                 }
-
             }
             return true;
         }
-
     }
 
     /**
@@ -492,20 +416,17 @@ public class LinkGame {
         // check), and unique to what's already found.
         if (placement.length() == 36) {
             if(isPlacementWellFormed(placement) && isPlacementValid(placement) && !solutions.contains(placement)) {
+                // Write out results to solutions.txt.
 //                FileWriter writer = null;
 //                try {
 //                    writer = new FileWriter("solutions.txt", true);
 //                    writer.write(placement);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } finally {
+//                } catch (IOException e) { e.printStackTrace(); }
+//                finally {
 //                    try {
-//                        if (writer != null) {
+//                        if (writer != null)
 //                            writer.close();
-//                        }
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
+//                    } catch (IOException e) { e.printStackTrace(); }
 //                }
                 solutions.add(placement);
                 System.out.println(placement);
@@ -668,10 +589,9 @@ public class LinkGame {
     public static void main(String[] args) {
         long init = System.nanoTime();
 
-//        getSolutions("");       // Get every solution possible.
+        getSolutions("JADPDF");       // Get every solution possible.
 
-        findUniqueStart("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE");
-//        System.out.println(removePiece(removePiece("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE",'B'), 'A'));
+//        findUniqueStart("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE");
 
 //        getSolutions("BAAHEAMFKPGLLHH");
 
