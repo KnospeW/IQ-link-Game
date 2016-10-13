@@ -349,7 +349,7 @@ public class LinkGame {
     public static String[] getSolutions(String placement) {
         ArrayList<String> solutions = new ArrayList<>();
 
-        System.out.println("Given placement "+placement);
+//        System.out.println("Given placement "+placement);
 
         // Cheat a little bit by starting our search after the last piece given.
         /* if (placement.length() != 0) {
@@ -357,10 +357,10 @@ public class LinkGame {
             findSolution(lastPiece, placement, solutions);
         } else*/ findSolution('A', placement, solutions);
 
-        System.out.println();
-        System.out.println("Solutions:");
-        solutions.forEach(System.out::println);
-        System.out.println();
+//        System.out.println();
+//        System.out.println("Solutions:");
+//        solutions.forEach(System.out::println);
+//        System.out.println();
 
         // Return the solutions as an array rather than a list.
         String[] solutionString = new String[solutions.size()];
@@ -420,7 +420,7 @@ public class LinkGame {
                 openPegs.remove(Character.valueOf(placement.charAt(i*3)));
         }
 
-        // Save a little bit of time by only checking valid pegs.
+        // Don't use anything already on the board.
         if (usedPieces.contains(piece)) {
             return findSolution(++piece, placement, solutions);
         }
@@ -453,25 +453,23 @@ public class LinkGame {
      * @param solution A valid solution string.
      * @return True if a placement is minimal (i.e., 4 pieces long), and false otherwise.
      */
-    private static boolean findUniqueStart (String solution) {
-        int iterations = 20;
+    private static boolean findUniqueStart (String solution, ArrayList<String> uniquePlacements) {
+        int iterations = 4;
 
         if (solution.length() <= 9)
             return true;   // Stops us from testing 3-piece placements, which take forever.
 
-        ArrayList<String> uniquePlacement = new ArrayList<>();
-
         for (int c = 0; c < iterations; c++) {
             String tmp = removeRandomPiece(solution);   // Remove a piece.
             if (getSolutions(tmp).length == 1) {        // Check if the updated placement has only one solution.
-                uniquePlacement.add(tmp);
+                uniquePlacements.add(tmp);
                 System.out.println(tmp);
-                if (findUniqueStart(tmp))                // Recurse.
+                if (findUniqueStart(tmp, uniquePlacements))                // Recurse.
                     return true;
             }
         }
 
-        System.out.println(uniquePlacement);            // No more placements, so let's print them.
+        System.out.println(uniquePlacements);            // No more placements, so let's print them.
         return false;
     }
 
@@ -520,10 +518,15 @@ public class LinkGame {
 
     public static void main(String[] args) {
         long init = System.nanoTime();
+        String solution = "";
+        String placement = "BAAEBGPGGHLJ";
+        ArrayList<String> placements = new ArrayList<>();
+        findUniqueStart("BAAEBGWCAGDFJEJRFEVGIHHDLIHSJIUKHPLH", placements);
+        System.out.println(placements);
 
-        System.out.println(isPlacementValid("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE"));
+//        System.out.println(isPlacementValid("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE"));
 
-//        findUniqueStart("BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE");
+        System.out.println(Arrays.toString(getSolutions(placement)));
 
         System.out.println("Total time: "+((System.nanoTime() - init) / 1000000)+"ms");
     }
