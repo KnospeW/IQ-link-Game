@@ -58,36 +58,17 @@ public class Board extends Application {
     private Scene startScene, mainScene;
 
     /*
-    Easy has 8-10 placements.
-    Medium has 6-7 placements.
-    Hard has 3-5 placements.
-    Credit to Steve Blackburn for these placements.
+      Solutions array is set up as solution, easy, hard, expert [placements].
+      Easy placements have 9 pieces, hard placements have 6 pieces, and expert placements have 4 pieces.
+      Any solutions not starting with BAA are taken from Steve Blackburn.
      */
-    private final String[][] easyPlacements = {
-        {"KAFCBGUCAGDFLEFPFBBGESHBWIJKJA", "KAFCBGUCAGDFLEFPFBBGESHBWIJKJAHKLJLH"},
-        {"KAFCBGUCAGDFLEFPFBBGESHBOIA", "KAFCBGUCAGDFLEFPFBBGESHBOIAKJARKEJLH"},
-        {"KAFUBAICCPDALEFEFEQGHSHBNIB", "KAFUBAICCPDALEFEFEQGHSHBNIBCJFGKIRLE", "KAFUBAICCPDALEFEFEQGHSHBNIBCJFRKEGLI"},
-        {"KAFTBAICFRDCEELWFJJGDMHK", "KAFTBAICFRDCEELWFJJGDMHKCIGNJCPKEBLF"},
-        {"KAFCBGUCAGDFLEFPFBBGESHB", "KAFCBGUCAGDFLEFPFBBGESHBOIAKJARKEJLH", "KAFCBGUCAGDFLEFPFBBGESHBWIJKJAHKLJLH"}
-    };
-    private final String[][] hardPlacements = {
-        {"JABHBCBCGGDFIEKVFAFGG", "JABHBCBCGGDFIEKVFAFGGSHBXIAJJJUKHKLK"},
-        {"IAFBBGVCAJDJGEDQFEUGI", "IAFBBGVCAJDJGEDQFEUGIRHCIIHFJGNKFOLG", "IAFBBGVCAJDJGEDQFEUGIRHKIIHFJGNKFOLG"},
-        {"JACRBHQCHCDGDELVFJ", "JACRBHQCHCDGDELVFJBGESHBUIAFJEHKLGLL"},
-        {"KAAHBLTCAODEFEGMFC", "KAAHBLTCAODEFEGMFCEGERHGBIGVJCDKFJLF", "KAAHBLTCAODEFEGMFCEGERHGBIGVJIDKFJLF", "KAAHBLTCAODEFEGMFCEGEQHDBIGXJHDKFJLF", "KAAHBLTCAODEFEGMFCEGEVHBBIGXJADKFJLF"}
-    };
-    private final String[][] expertPlacements = {
-        {"IAFBBDRCEPDEWEB", "IAFBBDRCEPDEWEBSFJTGBFHGGILIJAQKIJLI"},
-        {"JADVBJBCJRDCDED", "JADVBJBCJRDCDEDHFEWGBFHEJILSJCOKLMLC", "JADVBJBCJRDCDEDSFBWGBFHEJILGJEOKLHLE"},
-        {"GAEWBABCDJDA", "GAEWBABCDJDALEFMFCCGLUHBTIAQJCKKBILF"},
-        {"JAAPBGVCJRDC", "JAAPBGVCJRDCDEDSFBWGBFHECIFAJDHKGOLF", "JAAPBGVCJRDCDEDSFBWGBFHECIFAJDOKFHLG", "JAAPBGVCJRDCHEFSFBWGBFHEGIICJDDKKOLF"},
-        {"KAFUBAHCI", "KAFUBAHCIPDALEFEFEQGHSHBWIJAJKGKLILI", "KAFUBAHCIPDALEFEFEQGHSHBWIJBJFGKEILI"}
-    };
-    private final String[][][] placements = {easyPlacements, hardPlacements, expertPlacements};
-    private final int[][] initialPlaces = { // TODO: Add more sets?
-            {5,2,7,4,1,11,8,0,6,9,3,10},
-            {8,1,10,4,0,6,2,9,5,7,3,11},
-            {0,5,8,3,10,11,9,4,2,6,7,1}
+    private final String[][] solutionSet = {
+            {"GAEWBABCDJDALEFMFCCGLUHBTIAQJCKKBILF", "WBABCDMFCCGLUHBTIAQJCKKBILF", "WBACGLTIAQJCKKBILF", "WBACGLQJCKKB"},
+            {"BAAEBDVCJKDGSEBLFFWGBGHLNIKIJAPKFQLA", "BAAEBDVCJKDGSEBLFFWGBGHLIJA", "BAAEBDVCJKDGSEBLFF", "BAAEBDVCJKDG"},
+            {"BAAEBDVCJODDHEAMFKPGLLHHIICKJGWKCNLE", "BAAEBDVCJODDHEAMFKPGLLHHIIC", "BAAEBDVCJODDHEAMFK", "BAAEBDVCJODD"},
+            {"BAAEBGWCAGDFJEJRFEVGISHBLIHIJAUKHOLA", "BAAEBGWCAGDFJEJRFEVGISHBLIH", "BAAEBGWCAGDFJEJSHB", "BAAJEJWCASHB"},
+            {"BAAEBGUCAGDFLEHWFBPGGSHBNICKJEIKKHLJ", "BAAEBGUCAGDFLEHWFBPGGSHBHLJ", "BAAUCALEHPGGSHBHLJ", "BAAEBGPGGHLJ"},
+            {"BAAEBGWCAGDFJEJRFEVGIHHDLIHSJIUKHPLH"}
     };
     private int[] initialList;
 
@@ -305,7 +286,7 @@ public class Board extends Application {
                 placement = currPlacement;
                 if (currPlacement.length() == 36)
                     setVictoryScene();
-                if (currPlacement.length() >= 24) { // Can almost do 21, but there's a bit of lag when placing (0.3s computation time)
+                if (currPlacement.length() >= 21) { // Can almost do 21, but there's a bit of lag when placing (0.3s computation time)
                     String[] tmpSolutions = getSolutions(currPlacement);
                     if (tmpSolutions.length > 0)
                         loadHints(tmpSolutions[0]);
@@ -442,21 +423,19 @@ public class Board extends Application {
             throw new IllegalArgumentException("Invalid difficulty " + difficulty);
 
         // Reset solution list on a new game.
-        if (solutions.size() > 0)
-            while (solutions.size() > 0)
-                solutions.remove(0);
+        while (solutions.size() > 0)
+            solutions.remove(0);
 
         Random r = new Random();
-        initialList = initialPlaces[r.nextInt(3)];
         int s;
 
         if (difficulty == 3)
             placement = "";
         else {
-            s = r.nextInt(placements[difficulty].length);
-            placement = placements[difficulty][s][0];
-            solutions.addAll(Arrays.asList(placements[difficulty][s]).subList(1, placements[difficulty][s].length));
-            loadHints(solutions.get(0));
+            s = r.nextInt(solutionSet.length);
+            placement = solutionSet[s][difficulty + 1];
+            solutions.add(solutionSet[s][0]);
+            loadHints(solutionSet[s][0]);
         }
         startPlacement = placement;
         primaryStage.setScene(mainScene);
