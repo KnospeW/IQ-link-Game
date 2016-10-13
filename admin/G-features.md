@@ -6,6 +6,7 @@ of our project implements the following features:
  - A simple placement viewer (Task 5)
  - A basic playable link game that snaps pieces to pegs and checks for validity (Task 8)
  - A basic implementation  of starting piece placements (Task 9)
+ - A _working method_ of generating interesting starting placements (Task 12)
  - Solution hints
  - Dynamic hints in partially-complete games
  - Viewable instruction card
