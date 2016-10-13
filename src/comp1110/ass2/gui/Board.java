@@ -270,7 +270,7 @@ public class Board extends Application {
                 if (!p.toString().equals(""))
                     currPlacement += p.toString();
             }
-            System.out.println(currPlacement);
+           // System.out.println(currPlacement);
             if (isPlacementValid(currPlacement)) {
                 placement = currPlacement;
                 if (currPlacement.length() == 36)
