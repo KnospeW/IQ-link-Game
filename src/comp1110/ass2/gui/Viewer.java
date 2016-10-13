@@ -25,7 +25,6 @@ public class Viewer extends Application {
 
     /* board layout */
     private static final int SQUARE_SIZE = 100;
-    private static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
     private static final double ROW_HEIGHT = SQUARE_SIZE * 0.8660254; // 60 degrees
     private static final int VIEWER_WIDTH = 933;
     private static final int VIEWER_HEIGHT = 700;
@@ -43,6 +42,7 @@ public class Viewer extends Application {
 
     /**
      * Draw a placement in the window, removing any previously drawn one
+     * Written by Alex and Yicong.
      *
      * @param placement  A valid placement string
      */
@@ -60,16 +60,12 @@ public class Viewer extends Application {
             GFXPiece piece = new GFXPiece(name);                                      // creates the piece
             int rMod = rotation - 'A';                                          // rotation step
             double sMod = 1;
-  //        int iSize = 100*(int)sMod;                                          // piece size modifier
             int iSize = SQUARE_SIZE * (int) sMod;
             int row = (location - 'A') % 6;
             int col = (location - 'A') / 6;
             double x = 0;
             if (col % 2 != 0)                                          // spacing on odd rows
                 x=iSize/2;                                            //I think the center's position have no relationship with rotation;
-            // x = Math.round(Math.cos(rMod * 60)) * iSize / 2;
-//        int pyt = (iSize * iSize) + ((iSize / 2) * (iSize / 2));            // pythagoras, to save line space
-//        double y = 25 + (col * (Math.sqrt(pyt) -25*sMod) );
             x = x + 25 + row * iSize;
             double y = 25 + (ROW_HEIGHT * col);
 
@@ -81,14 +77,14 @@ public class Viewer extends Application {
             else piece.setScaleY(sMod);
                                                                          // rotate in multiples of 60 deg
             piece.setRotate(60 * rMod);
-
-//        System.out.println(placement);                                      // debugging
-//        System.out.println(row + ", " + col);
-//        System.out.println(x + ", " + y);
             root.getChildren().add(piece);
-        }// adds piece to stage
+        }
     }
 
+    /**
+     * Creates an image of a piece given a character.
+     * Written by Alex.
+     */
     private class GFXPiece extends ImageView {
         GFXPiece(char id) {
             setImage(new Image(Viewer.class.getResource(URI_BASE + id + ".png").toString()));
@@ -97,6 +93,7 @@ public class Viewer extends Application {
 
     /**
      * Create a basic text field for input and a refresh button.
+     * Provided by Steve Blackburn, added to by Alex.
      */
     private void makeControls() {
         Label label1 = new Label("Placement:");
@@ -133,7 +130,7 @@ public class Viewer extends Application {
         for (int i=0;i<24;i++) {
             int col = i / 6;
             int row = i % 6;
-            double x=0,y=0;
+            double x = 0, y;
             if (col % 2 != 0)
                 x =  SQUARE_SIZE / 2;
             x= x + 25 + row * SQUARE_SIZE+150;
@@ -144,45 +141,9 @@ public class Viewer extends Application {
             root.getChildren().add(a);
 
         }
-
-//        makePlacement("BAA");                                               // debugging
-//        makePlacement("HBA");
-//        makePlacement("TCJ");
-//        makePlacement("RDK");
-//        makePlacement("XEB");
-//        makePlacement("EFD");
-//        makePlacement("NGL");
-//        makePlacement("PHE");
-//        makePlacement("DIF");
-//        makePlacement("MJJ");
-//        makePlacement("QKI");
-//        makePlacement("KLJ");
         makeControls();
 
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 }
-
-// SCRAPYARD
-
-//import javafx.event.ActionEvent;
-//import javafx.event.EventHandler;
-
-//import javafx.scene.transform.Rotate;
-//import javafx.scene.transform.Scale;
-//import javafx.scene.transform.Translate;
-
-//        if (rMod > 5) { }
-//        piece.getTransforms().add(new Scale(sMod,sMod));                    // reduces the piece's size a bit
-//        piece.getTransforms().add(new Rotate(60*rMod,x+150,y+150));         // rotates the piece
-//        piece.getTransforms().add(new Translate(x,y));
-//        move(piece,row,col);
-
-//    private void assignImages() {
-//        Image[] imageSet = {A,B,C,D,E,F,G,H,I,J,K,L};
-//        for (int n=0;n<imageSet.length;n++) {
-//            imageSet[n] = new Image(Viewer.class.getResource(URL_BASE + n + ".png").toString());
-//        }
-//        A = new Image(Viewer.class.getResource(URL_BASE + "A.png").toString());
-//    }
