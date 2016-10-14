@@ -735,7 +735,7 @@ public class Board extends Application {
 //        loadSolutions();
         setWelcomeScene();
         setMainScene();
-        loadMusic();
+//        loadMusic(); // Doesn't run on a typical Unix system due to missing libraries. Works fine on Windows.
 
         primaryStage.setScene(startScene);
         primaryStage.show();
