@@ -735,7 +735,7 @@ public class Board extends Application {
 //        loadSolutions();
         setWelcomeScene();
         setMainScene();
-//        loadMusic();
+        loadMusic();
 
         primaryStage.setScene(startScene);
         primaryStage.show();
