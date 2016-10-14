@@ -276,7 +276,7 @@ public class Board extends Application {
                 placement = currPlacement;
                 if (currPlacement.length() == 36)
                     setVictoryScene();
-                if (currPlacement.length() >= 21) { // Can almost do 21, but there's a bit of lag when placing (0.3s computation time)
+                if (currPlacement.length() >= 18) { // Can almost do 21, but there's a bit of lag when placing (0.3s computation time)
                     String[] tmpSolutions = getSolutions(currPlacement);
                     if (tmpSolutions.length > 0 && dynamicHints)
                         loadHints(tmpSolutions[0]);
