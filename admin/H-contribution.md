@@ -3,5 +3,4 @@ We declare that the work toward our submission of Stage H was distributed among 
 * u5838800 50
 * u6127601 50
 
-Signed: Yicong Du(u6127601)
-
+Signed: Yicong Du(u6127601), Alex Smith (u5838800)

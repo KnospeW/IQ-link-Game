@@ -1,4 +1,3 @@
-We declare that the work we have submitted for Stage H of this assignment and all stages before it is entirely our own work
+We declare that the work we have submitted for Stage H of this assignment and all stages before it is entirely our own work.
 
-Signed:Yicong Du(u6127601)
-
+Signed:Yicong Du(u6127601), Alex Smith (u5838800)
